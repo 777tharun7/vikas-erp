@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +9,9 @@
   <!-- Modern Fonts: Outfit for Headings + Plus Jakarta Sans for UI -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
 
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -16,6 +19,7 @@
   <!-- Custom Application Stylesheet -->
   <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body class="theme-light role-principal">
 
   <div class="app-container">
@@ -86,7 +90,8 @@
 
           <div class="search-bar">
             <i data-lucide="search" class="search-icon"></i>
-            <input type="text" id="globalSearchInput" placeholder="Search students, staff, classes, enquiries..." autocomplete="off">
+            <input type="text" id="globalSearchInput" placeholder="Search students, staff, classes, enquiries..."
+              autocomplete="off">
             <kbd class="kbd-badge">⌘K</kbd>
           </div>
         </div>
@@ -116,24 +121,30 @@
 
             <!-- NOTIFICATION DROPDOWN MENU -->
             <div class="notif-dropdown" id="notifDropdown">
-              <div class="notif-header" style="padding:14px 16px; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center; background:var(--bg-card-sub);">
+              <div class="notif-header"
+                style="padding:14px 16px; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center; background:var(--bg-card-sub);">
                 <div style="display:flex; align-items:center; gap:8px;">
                   <i data-lucide="bell" style="color:var(--indigo); width:16px; height:16px;"></i>
                   <h4 style="font-size:0.9rem; font-weight:800; margin:0;">Notifications</h4>
                 </div>
-                <button id="markAllReadBtn" style="font-size:0.75rem; color:var(--indigo); font-weight:700; background:none; border:none; cursor:pointer;">Mark all read</button>
+                <button id="markAllReadBtn"
+                  style="font-size:0.75rem; color:var(--indigo); font-weight:700; background:none; border:none; cursor:pointer;">Mark
+                  all read</button>
               </div>
               <div class="notif-body" id="notifList" style="max-height:360px; overflow-y:auto; padding:8px 0;">
                 <!-- Populated dynamically by JS -->
               </div>
-              <div style="padding:10px 16px; text-align:center; border-top:1px solid var(--border-color); background:var(--bg-card-sub);">
-                <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">Vikas Grammar School Live Feed</span>
+              <div
+                style="padding:10px 16px; text-align:center; border-top:1px solid var(--border-color); background:var(--bg-card-sub);">
+                <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">Vikas Grammar School Live
+                  Feed</span>
               </div>
             </div>
           </div>
 
           <div class="user-pill" id="userProfilePill" title="Logged in user profile">
-            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" alt="Avatar" class="user-avatar" id="userAvatar">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80"
+              alt="Avatar" class="user-avatar" id="userAvatar">
             <div class="user-info">
               <span class="user-name" id="userName">K. Rajesham</span>
               <span class="user-role" id="userRole">Headmaster</span>
@@ -179,13 +190,15 @@
 
       <div class="ai-drawer-body" id="aiChatBody">
         <div class="ai-message assistant">
-          <p>Namaste Headmaster K. Rajesham! How can I assist you with Vikas Grammar School Cherial operations today?</p>
+          <p>Namaste Headmaster K. Rajesham! How can I assist you with Vikas Grammar School Cherial operations today?
+          </p>
         </div>
       </div>
 
       <div class="ai-drawer-footer">
         <form id="aiPromptForm" class="ai-form">
-          <input type="text" id="aiPromptInput" placeholder="Ask AI about student records or attendance..." autocomplete="off">
+          <input type="text" id="aiPromptInput" placeholder="Ask AI about student records or attendance..."
+            autocomplete="off">
           <button type="submit" class="ai-send-btn"><i data-lucide="send"></i></button>
         </form>
       </div>
@@ -196,7 +209,7 @@
   <!-- LOGIN & ROLE IDENTIFICATION PORTAL OVERLAY -->
   <div class="login-modal-overlay active" id="loginModalOverlay">
     <div class="login-modal-card">
-      
+
       <!-- LEFT BRANDING BANNER -->
       <div class="login-branding-panel">
         <div class="login-brand-header">
@@ -213,7 +226,7 @@
           <div class="school-tag">🏫 UDISE: 36182100637</div>
           <h3>Vikas Grammar School HS Cherial</h3>
           <p>Cheriyal, Siddipet District, Telangana — 506223</p>
-          
+
           <div class="login-features-list">
             <div class="feature-item">
               <i data-lucide="shield-check"></i>
@@ -247,32 +260,33 @@
           <div class="quick-title"><i data-lucide="zap"></i> Quick Demo Accounts (Click to Autofill):</div>
           <div class="demo-chips-grid">
             <button type="button" class="demo-chip active" data-email="principal@vikas.edu.in">
-              <span class="chip-icon">👑</span>
+              <span class="chip-icon"></span>
               <span class="chip-text">Principal</span>
             </button>
             <button type="button" class="demo-chip" data-email="teacher@vikas.edu.in">
-              <span class="chip-icon">👩‍🏫</span>
+              <span class="chip-icon"></span>
               <span class="chip-text">Teacher</span>
             </button>
             <button type="button" class="demo-chip" data-email="student@vikas.edu.in">
-              <span class="chip-icon">🎓</span>
+              <span class="chip-icon"></span>
               <span class="chip-text">Student</span>
             </button>
             <button type="button" class="demo-chip" data-email="parent@vikas.edu.in">
-              <span class="chip-icon">👨‍👩‍👧</span>
+              <span class="chip-icon"></span>
               <span class="chip-text">Parent</span>
             </button>
           </div>
         </div>
 
         <form id="loginForm" class="login-form">
-          
+
           <!-- EMAIL INPUT -->
           <div class="form-group">
             <label for="loginEmailInput">Registered Email Address</label>
             <div class="input-with-icon">
               <i data-lucide="mail"></i>
-              <input type="email" id="loginEmailInput" placeholder="e.g. principal@vikas.edu.in" value="principal@vikas.edu.in" required autocomplete="email">
+              <input type="email" id="loginEmailInput" placeholder="e.g. principal@vikas.edu.in"
+                value="principal@vikas.edu.in" required autocomplete="email">
             </div>
           </div>
 
@@ -280,14 +294,16 @@
           <div class="role-detection-box" id="roleDetectionBox">
             <div class="detection-badge" id="detectionBadge">👑 Principal Command Center</div>
             <div class="user-preview">
-              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" alt="Avatar" id="detectionAvatar">
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80"
+                alt="Avatar" id="detectionAvatar">
               <div class="user-details">
                 <div class="detected-name" id="detectionName">K. Rajesham</div>
                 <div class="detected-sub" id="detectionSub">Headmaster & School Administrator</div>
               </div>
             </div>
             <div class="detection-status" id="detectionStatus">
-              <i data-lucide="check-circle-2"></i> Verified School Account • Auto-assigned to <strong>Principal</strong> workspace
+              <i data-lucide="check-circle-2"></i> Verified School Account • Auto-assigned to <strong>Principal</strong>
+              workspace
             </div>
           </div>
 
@@ -295,10 +311,14 @@
           <div class="form-group custom-role-group" id="customRoleGroup" style="display:none;">
             <label>Unregistered Email — Choose Role to Sign In:</label>
             <div class="role-selector-radios">
-              <label class="radio-chip"><input type="radio" name="customRole" value="principal" checked> <span>👑 Principal</span></label>
-              <label class="radio-chip"><input type="radio" name="customRole" value="teacher"> <span>👩‍🏫 Teacher</span></label>
-              <label class="radio-chip"><input type="radio" name="customRole" value="student"> <span>🎓 Student</span></label>
-              <label class="radio-chip"><input type="radio" name="customRole" value="parent"> <span>👨‍👩‍👧 Parent</span></label>
+              <label class="radio-chip"><input type="radio" name="customRole" value="principal" checked> <span>👑
+                  Principal</span></label>
+              <label class="radio-chip"><input type="radio" name="customRole" value="teacher"> <span>👩‍🏫
+                  Teacher</span></label>
+              <label class="radio-chip"><input type="radio" name="customRole" value="student"> <span>🎓
+                  Student</span></label>
+              <label class="radio-chip"><input type="radio" name="customRole" value="parent"> <span>👨‍👩‍👧
+                  Parent</span></label>
             </div>
           </div>
 
@@ -308,7 +328,8 @@
             <div class="input-with-icon">
               <i data-lucide="lock"></i>
               <input type="password" id="loginPasswordInput" value="vikas2026" placeholder="Enter password" required>
-              <button type="button" class="toggle-password-btn" id="togglePasswordBtn"><i data-lucide="eye"></i></button>
+              <button type="button" class="toggle-password-btn" id="togglePasswordBtn"><i
+                  data-lucide="eye"></i></button>
             </div>
           </div>
 
@@ -317,7 +338,9 @@
               <input type="checkbox" checked id="rememberMeCheckbox">
               <span>Remember this account</span>
             </label>
-            <a href="#" class="forgot-link" onclick="event.preventDefault(); alert('Password reset guidance sent to your registered school email!');">Forgot Password?</a>
+            <a href="#" class="forgot-link"
+              onclick="event.preventDefault(); alert('Password reset guidance sent to your registered school email!');">Forgot
+              Password?</a>
           </div>
 
           <!-- SUBMIT BUTTON -->
@@ -332,7 +355,150 @@
     </div>
   </div>
 
+  <!-- USER PROFILE DETAILS & EDIT MODAL OVERLAY -->
+  <div class="profile-modal-overlay" id="profileModalOverlay">
+    <div class="profile-modal-card">
+      
+      <!-- MODAL HEADER COVER -->
+      <div class="profile-cover-banner">
+        <button type="button" class="profile-close-btn" id="closeProfileModalBtn" title="Close Profile">
+          <i data-lucide="x"></i>
+        </button>
+        <div class="profile-cover-badge">🏫 Vikas Grammar School HS Cherial</div>
+      </div>
+
+      <!-- PROFILE HEADER INFO -->
+      <div class="profile-header-main">
+        <div class="profile-avatar-wrapper">
+          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" alt="Profile Avatar" id="modalProfileAvatar">
+          <span class="avatar-edit-badge" title="Profile Avatar Photo"><i data-lucide="camera"></i></span>
+        </div>
+        <div class="profile-title-block">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <h2 id="modalProfileName">K. Rajesham</h2>
+            <span class="badge-role-tag" id="modalProfileRoleBadge">👑 Principal</span>
+          </div>
+          <p id="modalProfileDesignation">Headmaster & School Administrator</p>
+          <div class="profile-meta-tags">
+            <span id="modalProfileEmailTag"><i data-lucide="mail"></i> principal@vikas.edu.in</span>
+            <span id="modalProfilePhoneTag"><i data-lucide="phone"></i> +91 98480 99887</span>
+            <span id="modalProfileIdTag"><i data-lucide="id-card"></i> ID: EMP-VG-001</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROFILE FORM BODY -->
+      <form id="profileForm" class="profile-form-body">
+        
+        <div class="profile-form-grid">
+          
+          <!-- FULL NAME -->
+          <div class="profile-form-group">
+            <label for="profileNameInput">Full Name</label>
+            <div class="input-with-icon">
+              <i data-lucide="user"></i>
+              <input type="text" id="profileNameInput" required placeholder="Enter full name">
+            </div>
+          </div>
+
+          <!-- EMAIL ADDRESS -->
+          <div class="profile-form-group">
+            <label for="profileEmailInput">Official Email Address</label>
+            <div class="input-with-icon">
+              <i data-lucide="mail"></i>
+              <input type="email" id="profileEmailInput" required placeholder="Enter official email">
+            </div>
+          </div>
+
+          <!-- PHONE NUMBER -->
+          <div class="profile-form-group">
+            <label for="profilePhoneInput">Contact Phone Number</label>
+            <div class="input-with-icon">
+              <i data-lucide="phone"></i>
+              <input type="text" id="profilePhoneInput" required placeholder="Enter phone number">
+            </div>
+          </div>
+
+          <!-- ID / ROLL NUMBER -->
+          <div class="profile-form-group">
+            <label for="profileIdInput" id="profileIdLabel">Roll Number / Employee ID</label>
+            <div class="input-with-icon">
+              <i data-lucide="id-card"></i>
+              <input type="text" id="profileIdInput" placeholder="Enter ID or Roll No">
+            </div>
+          </div>
+
+          <!-- PEN ID / UDISE REF -->
+          <div class="profile-form-group">
+            <label for="profilePenInput">PEN ID / State Reg. Reference</label>
+            <div class="input-with-icon">
+              <i data-lucide="file-text"></i>
+              <input type="text" id="profilePenInput" placeholder="Enter PEN ID">
+            </div>
+          </div>
+
+          <!-- CLASS / DEPARTMENT -->
+          <div class="profile-form-group">
+            <label for="profileClassInput">Class / Department / Workspace</label>
+            <div class="input-with-icon">
+              <i data-lucide="book-open"></i>
+              <input type="text" id="profileClassInput" placeholder="Enter class or department">
+            </div>
+          </div>
+
+          <!-- BLOOD GROUP -->
+          <div class="profile-form-group">
+            <label for="profileBloodGroupInput">Blood Group</label>
+            <div class="input-with-icon">
+              <i data-lucide="heart"></i>
+              <input type="text" id="profileBloodGroupInput" placeholder="e.g. O+, B+, A+">
+            </div>
+          </div>
+
+          <!-- EMERGENCY CONTACT -->
+          <div class="profile-form-group">
+            <label for="profileEmergencyInput">Emergency Contact Details</label>
+            <div class="input-with-icon">
+              <i data-lucide="shield-alert"></i>
+              <input type="text" id="profileEmergencyInput" placeholder="Enter emergency contact name & phone">
+            </div>
+          </div>
+
+          <!-- RESIDENTIAL ADDRESS -->
+          <div class="profile-form-group full-width">
+            <label for="profileAddressInput">Residential Address</label>
+            <div class="input-with-icon">
+              <i data-lucide="map-pin"></i>
+              <input type="text" id="profileAddressInput" placeholder="Enter residential address">
+            </div>
+          </div>
+
+          <!-- AVATAR IMAGE URL -->
+          <div class="profile-form-group full-width">
+            <label for="profileAvatarInput">Profile Picture Image URL</label>
+            <div class="input-with-icon">
+              <i data-lucide="image"></i>
+              <input type="url" id="profileAvatarInput" placeholder="Enter image URL for avatar">
+            </div>
+          </div>
+
+        </div>
+
+        <!-- FOOTER ACTIONS -->
+        <div class="profile-modal-footer">
+          <button type="button" class="btn-cancel" id="cancelProfileBtn">Cancel</button>
+          <button type="submit" class="btn-save-profile" id="saveProfileBtn">
+            <i data-lucide="check"></i> Save Profile Details
+          </button>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+
   <script src="js/data.js"></script>
   <script src="js/app.js"></script>
 </body>
+
 </html>

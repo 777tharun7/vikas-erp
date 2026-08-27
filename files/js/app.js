@@ -42,12 +42,116 @@ document.addEventListener('DOMContentLoaded', () => {
   const aiPromptInput = document.getElementById('aiPromptInput');
   const aiChatBody = document.getElementById('aiChatBody');
 
+  // DOM Elements for Profile Modal
+  const userProfilePill = document.getElementById('userProfilePill');
+  const profileModalOverlay = document.getElementById('profileModalOverlay');
+  const closeProfileModalBtn = document.getElementById('closeProfileModalBtn');
+  const cancelProfileBtn = document.getElementById('cancelProfileBtn');
+  const profileForm = document.getElementById('profileForm');
+
+  const modalProfileAvatar = document.getElementById('modalProfileAvatar');
+  const modalProfileName = document.getElementById('modalProfileName');
+  const modalProfileRoleBadge = document.getElementById('modalProfileRoleBadge');
+  const modalProfileDesignation = document.getElementById('modalProfileDesignation');
+  const modalProfileEmailTag = document.getElementById('modalProfileEmailTag');
+  const modalProfilePhoneTag = document.getElementById('modalProfilePhoneTag');
+  const modalProfileIdTag = document.getElementById('modalProfileIdTag');
+
+  const profileNameInput = document.getElementById('profileNameInput');
+  const profileEmailInput = document.getElementById('profileEmailInput');
+  const profilePhoneInput = document.getElementById('profilePhoneInput');
+  const profileIdInput = document.getElementById('profileIdInput');
+  const profilePenInput = document.getElementById('profilePenInput');
+  const profileClassInput = document.getElementById('profileClassInput');
+  const profileBloodGroupInput = document.getElementById('profileBloodGroupInput');
+  const profileEmergencyInput = document.getElementById('profileEmergencyInput');
+  const profileAddressInput = document.getElementById('profileAddressInput');
+  const profileAvatarInput = document.getElementById('profileAvatarInput');
+
   initApp();
 
   function initApp() {
     setupEventListeners();
     setupLoginSystem();
+    setupProfileSystem();
     switchRolePersonality('principal');
+  }
+
+  function setupProfileSystem() {
+    userProfilePill?.addEventListener('click', openProfileModal);
+    closeProfileModalBtn?.addEventListener('click', closeProfileModal);
+    cancelProfileBtn?.addEventListener('click', closeProfileModal);
+    profileModalOverlay?.addEventListener('click', (e) => {
+      if (e.target === profileModalOverlay) closeProfileModal();
+    });
+
+    profileForm?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      saveProfileChanges();
+    });
+  }
+
+  function openProfileModal() {
+    const userObj = authenticatedUser || findUserByRole(activeRole);
+    if (!userObj) return;
+
+    if (modalProfileAvatar) modalProfileAvatar.src = userObj.avatar;
+    if (modalProfileName) modalProfileName.textContent = userObj.name;
+    const roleIcon = userObj.role === 'principal' ? '👑' : userObj.role === 'teacher' ? '👩‍🏫' : userObj.role === 'student' ? '🎓' : '👨‍👩‍👧';
+    if (modalProfileRoleBadge) modalProfileRoleBadge.textContent = `${roleIcon} ${userObj.roleLabel || userObj.role}`;
+    if (modalProfileDesignation) modalProfileDesignation.textContent = userObj.designation || userObj.roleLabel;
+    
+    if (modalProfileEmailTag) modalProfileEmailTag.innerHTML = `<i data-lucide="mail"></i> ${userObj.email || '-'}`;
+    if (modalProfilePhoneTag) modalProfilePhoneTag.innerHTML = `<i data-lucide="phone"></i> ${userObj.phone || '-'}`;
+    if (modalProfileIdTag) modalProfileIdTag.innerHTML = `<i data-lucide="id-card"></i> ID: ${userObj.idNumber || '-'}`;
+
+    if (profileNameInput) profileNameInput.value = userObj.name || '';
+    if (profileEmailInput) profileEmailInput.value = userObj.email || '';
+    if (profilePhoneInput) profilePhoneInput.value = userObj.phone || '';
+    if (profileIdInput) profileIdInput.value = userObj.idNumber || '';
+    if (profilePenInput) profilePenInput.value = userObj.penId || '';
+    if (profileClassInput) profileClassInput.value = userObj.classSec || '';
+    if (profileBloodGroupInput) profileBloodGroupInput.value = userObj.bloodGroup || '';
+    if (profileEmergencyInput) profileEmergencyInput.value = userObj.emergencyContact || '';
+    if (profileAddressInput) profileAddressInput.value = userObj.address || '';
+    if (profileAvatarInput) profileAvatarInput.value = userObj.avatar || '';
+
+    profileModalOverlay?.classList.add('active');
+    if (window.lucide) lucide.createIcons();
+  }
+
+  function closeProfileModal() {
+    profileModalOverlay?.classList.remove('active');
+  }
+
+  function saveProfileChanges() {
+    let userObj = authenticatedUser || findUserByRole(activeRole);
+    if (!userObj) return;
+
+    userObj.name = profileNameInput ? profileNameInput.value.trim() : userObj.name;
+    userObj.email = profileEmailInput ? profileEmailInput.value.trim() : userObj.email;
+    userObj.phone = profilePhoneInput ? profilePhoneInput.value.trim() : userObj.phone;
+    userObj.idNumber = profileIdInput ? profileIdInput.value.trim() : userObj.idNumber;
+    userObj.penId = profilePenInput ? profilePenInput.value.trim() : userObj.penId;
+    userObj.classSec = profileClassInput ? profileClassInput.value.trim() : userObj.classSec;
+    userObj.bloodGroup = profileBloodGroupInput ? profileBloodGroupInput.value.trim() : userObj.bloodGroup;
+    userObj.emergencyContact = profileEmergencyInput ? profileEmergencyInput.value.trim() : userObj.emergencyContact;
+    userObj.address = profileAddressInput ? profileAddressInput.value.trim() : userObj.address;
+    if (profileAvatarInput && profileAvatarInput.value.trim()) {
+      userObj.avatar = profileAvatarInput.value.trim();
+    }
+
+    if (MOCK_DATA.registeredUsers) {
+      const idx = MOCK_DATA.registeredUsers.findIndex(u => u.role === userObj.role || u.email === userObj.email);
+      if (idx !== -1) {
+        MOCK_DATA.registeredUsers[idx] = { ...MOCK_DATA.registeredUsers[idx], ...userObj };
+      }
+    }
+
+    authenticatedUser = userObj;
+    switchRolePersonality(userObj.role, userObj);
+    closeProfileModal();
+    showToast(`Profile details for ${userObj.name} updated successfully!`);
   }
 
   function setupLoginSystem() {
@@ -411,7 +515,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'fees', label: 'Fee Collection Ledger', icon: 'indian-rupee' },
         { id: 'transport', label: 'Transport & Fleet', icon: 'bus' },
         { id: 'library', label: 'School Library', icon: 'book-marked' },
-        { id: 'calendar', label: 'School Holiday Calendar', icon: 'calendar' }
+        { id: 'calendar', label: 'School Holiday Calendar', icon: 'calendar' },
+        { id: 'my_profile', label: 'My Profile & Account Info', icon: 'user-cog' }
       ];
     } else if (role === 'teacher') {
       items = [
@@ -422,7 +527,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'timetable', label: 'My Teaching Schedule', icon: 'clock' },
         { id: 'student_leave_approvals', label: 'Student Leave Approvals', icon: 'file-text' },
         { id: 'teacher_salary', label: 'My Salary & Payslips', icon: 'indian-rupee' },
-        { id: 'calendar', label: 'School Holiday Calendar', icon: 'calendar' }
+        { id: 'calendar', label: 'School Holiday Calendar', icon: 'calendar' },
+        { id: 'my_profile', label: 'My Profile & Account Info', icon: 'user-cog' }
       ];
     } else if (role === 'student') {
       items = [
@@ -432,7 +538,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'my_fees', label: 'My Fee Breakdown', icon: 'indian-rupee' },
         { id: 'student_apply_leave', label: 'Submit Leave Request', icon: 'file-text' },
         { id: 'bus_info', label: 'My Bus Route & Timing', icon: 'bus' },
-        { id: 'calendar', label: 'School Holiday Calendar', icon: 'calendar' }
+        { id: 'calendar', label: 'School Holiday Calendar', icon: 'calendar' },
+        { id: 'my_profile', label: 'My Profile & Account Info', icon: 'user-cog' }
       ];
     } else if (role === 'parent') {
       items = [
@@ -442,7 +549,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'parent_apply_leave', label: 'Apply Child Leave', icon: 'file-text' },
         { id: 'pay_fee', label: 'Pay School Fee', icon: 'indian-rupee' },
         { id: 'bus_tracking', label: 'Child Bus Tracking', icon: 'bus' },
-        { id: 'calendar', label: 'School Holiday Calendar', icon: 'calendar' }
+        { id: 'calendar', label: 'School Holiday Calendar', icon: 'calendar' },
+        { id: 'my_profile', label: 'My Profile & Account Info', icon: 'user-cog' }
       ];
     }
 
@@ -471,6 +579,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* NAV ROUTER CONTROLLER */
   function handleNavClick(viewId) {
+    if (viewId === 'my_profile') {
+      openProfileModal();
+      return;
+    }
+
     if (viewId === 'dashboard') {
       if (activeRole === 'principal') renderPrincipalDashboardScreen();
       else if (activeRole === 'teacher') renderTeacherDashboardScreen();

@@ -28,7 +28,16 @@ const MOCK_DATA = {
       designation: 'Headmaster & School Administrator',
       badge: 'Principal Command Center',
       avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80',
-      details: 'UDISE Admin • Vikas Grammar School HS Cherial'
+      details: 'UDISE Admin • Vikas Grammar School HS Cherial',
+      phone: '+91 98480 99887',
+      idNumber: 'EMP-VG-001',
+      penId: 'UDISE-ADMIN-36182100637',
+      address: 'H.No. 2-45, Headmaster Quarters, Cheriyal Main Road, Siddipet Dist, Telangana — 506223',
+      classSec: 'Administration / All Classes (1–10)',
+      bloodGroup: 'O+',
+      dob: '15 Aug 1978',
+      emergencyContact: 'Mrs. K. Sujatha (+91 98480 99888)',
+      joinedDate: '12 June 2004'
     },
     {
       email: 'teacher@vikas.edu.in',
@@ -39,7 +48,16 @@ const MOCK_DATA = {
       designation: 'Senior Mathematics Lead & Mentor',
       badge: 'Teacher Workspace',
       avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=120&q=80',
-      details: 'EMP-VG-002 • Mathematics Department'
+      details: 'EMP-VG-002 • Mathematics Department',
+      phone: '+91 98481 44332',
+      idNumber: 'EMP-VG-002',
+      penId: 'TCHR-VG-2026-08',
+      address: 'Plot 14, Teachers Colony, Cheriyal, Siddipet Dist, Telangana — 506223',
+      classSec: 'Class VIII Section A (Mentor) & Class X Mathematics',
+      bloodGroup: 'B+',
+      dob: '22 May 1986',
+      emergencyContact: 'S. Raghava Rao (+91 98481 44333)',
+      joinedDate: '01 June 2012'
     },
     {
       email: 'student@vikas.edu.in',
@@ -50,7 +68,16 @@ const MOCK_DATA = {
       designation: 'Class VIII Section A Student',
       badge: 'Gamified Student Portal',
       avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=120&q=80',
-      details: 'Roll No: VIII-014 • PEN-36182100637-801'
+      details: 'Roll No: VIII-014 • PEN-36182100637-801',
+      phone: '+91 98480 12345',
+      idNumber: 'VIII-014',
+      penId: 'PEN-36182100637-801',
+      address: 'H.No. 5-12/A, Near Bus Station, Cheriyal, Siddipet Dist, Telangana — 506223',
+      classSec: 'Class VIII Section A',
+      bloodGroup: 'A+',
+      dob: '14 Nov 2012',
+      emergencyContact: 'V. Reddy (Father) (+91 98480 12345)',
+      joinedDate: '05 June 2018'
     },
     {
       email: 'parent@vikas.edu.in',
@@ -61,7 +88,16 @@ const MOCK_DATA = {
       designation: 'Parent / Guardian',
       badge: 'Parent Info-First Portal',
       avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80',
-      details: 'Parent ID: PRT-VG-101 • Contact: +91 98480 12345'
+      details: 'Parent ID: PRT-VG-101 • Contact: +91 98480 12345',
+      phone: '+91 98480 12345',
+      idNumber: 'PRT-VG-101',
+      penId: 'PRT-REF-Rahul-Reddy-VIII014',
+      address: 'H.No. 5-12/A, Near Bus Station, Cheriyal, Siddipet Dist, Telangana — 506223',
+      classSec: 'Parent of Rahul Reddy (Class VIII A)',
+      bloodGroup: 'O+',
+      dob: '08 Apr 1980',
+      emergencyContact: 'V. Laxmi (Spouse) (+91 98480 12346)',
+      joinedDate: '05 June 2018'
     }
   ],
 
