@@ -319,10 +319,19 @@ document.addEventListener('DOMContentLoaded', () => {
       themeLightBtn.classList.remove('active');
     });
 
-    // Sidebar Responsive Collapse Toggle
+    // Sidebar Responsive Collapse Toggle & Mobile Backdrop Overlay
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+
     sidebarCollapseBtn?.addEventListener('click', () => {
       sidebar.classList.toggle('collapsed');
       document.querySelector('.main-wrapper').classList.toggle('expanded');
+      sidebarOverlay?.classList.toggle('active');
+    });
+
+    sidebarOverlay?.addEventListener('click', () => {
+      sidebar.classList.remove('collapsed');
+      document.querySelector('.main-wrapper').classList.remove('expanded');
+      sidebarOverlay?.classList.remove('active');
     });
 
     // AI Drawer Open / Close
@@ -571,6 +580,13 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.classList.add('active');
         const view = btn.getAttribute('data-view');
         handleNavClick(view);
+
+        // Auto-close mobile sidebar drawer on selection
+        if (window.innerWidth <= 1024) {
+          sidebar.classList.remove('collapsed');
+          document.querySelector('.main-wrapper')?.classList.remove('expanded');
+          document.getElementById('sidebarOverlay')?.classList.remove('active');
+        }
       });
     });
 
