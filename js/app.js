@@ -343,23 +343,44 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const currentUserObj = userObj || (MOCK_DATA.registeredUsers ? MOCK_DATA.registeredUsers.find(u => u.role === role) : null);
 
+    const sessionRoleIcon = document.getElementById('sessionRoleIcon');
+    const sessionRoleTitle = document.getElementById('sessionRoleTitle');
+    const sessionEmailText = document.getElementById('sessionEmailText');
+
     if (currentUserObj) {
       if (userName) userName.textContent = currentUserObj.name;
       if (userRole) userRole.textContent = currentUserObj.roleLabel || currentUserObj.designation;
       if (userAvatar && currentUserObj.avatar) userAvatar.src = currentUserObj.avatar;
+
+      const roleIcon = currentUserObj.role === 'principal' ? '👑' : currentUserObj.role === 'teacher' ? '👩‍🏫' : currentUserObj.role === 'student' ? '🎓' : '👨‍👩‍👧';
+      if (sessionRoleIcon) sessionRoleIcon.textContent = roleIcon;
+      if (sessionRoleTitle) sessionRoleTitle.textContent = currentUserObj.badge || (currentUserObj.role.toUpperCase() + ' WORKSPACE');
+      if (sessionEmailText) sessionEmailText.textContent = currentUserObj.email || (currentUserObj.role + '@vikas.edu.in');
     } else {
       if (role === 'principal') {
         if (userName) userName.textContent = 'K. Rajesham';
         if (userRole) userRole.textContent = 'Headmaster';
+        if (sessionRoleIcon) sessionRoleIcon.textContent = '👑';
+        if (sessionRoleTitle) sessionRoleTitle.textContent = '👑 Principal Command Center';
+        if (sessionEmailText) sessionEmailText.textContent = 'principal@vikas.edu.in';
       } else if (role === 'teacher') {
         if (userName) userName.textContent = 'Mrs. S. Radhika';
         if (userRole) userRole.textContent = 'Class Teacher (VIII A)';
+        if (sessionRoleIcon) sessionRoleIcon.textContent = '👩‍🏫';
+        if (sessionRoleTitle) sessionRoleTitle.textContent = '👩‍🏫 Teacher Workspace';
+        if (sessionEmailText) sessionEmailText.textContent = 'teacher@vikas.edu.in';
       } else if (role === 'student') {
         if (userName) userName.textContent = 'Rahul Reddy';
         if (userRole) userRole.textContent = 'Student (Class VIII A)';
+        if (sessionRoleIcon) sessionRoleIcon.textContent = '🎓';
+        if (sessionRoleTitle) sessionRoleTitle.textContent = '🎓 Student Portal';
+        if (sessionEmailText) sessionEmailText.textContent = 'student@vikas.edu.in';
       } else if (role === 'parent') {
         if (userName) userName.textContent = 'Parent of Rahul Reddy';
         if (userRole) userRole.textContent = 'Parent';
+        if (sessionRoleIcon) sessionRoleIcon.textContent = '👨‍👩‍👧';
+        if (sessionRoleTitle) sessionRoleTitle.textContent = '👨‍👩‍👧 Parent Info Portal';
+        if (sessionEmailText) sessionEmailText.textContent = 'parent@vikas.edu.in';
       }
     }
 

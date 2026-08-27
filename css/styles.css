@@ -481,36 +481,46 @@ code {
   font-weight: 700;
 }
 
-/* ROLE PERSONALITY SWITCHER PILLS */
-.role-personality-pills {
-  background-color: var(--bg-card-sub);
-  padding: 4px;
-  border-radius: 26px;
+/* OFFICIAL LOGGED-IN SESSION BANNER STYLES */
+.active-session-banner {
+  background: var(--bg-card-sub);
+  padding: 5px 14px 5px 6px;
+  border-radius: 28px;
   display: flex;
-  gap: 4px;
+  align-items: center;
+  gap: 10px;
   border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.25s ease;
 }
 
-.role-pill {
-  padding: 7px 17px;
+.session-role-badge {
+  background: var(--accent-grad);
+  color: #ffffff;
+  padding: 5px 12px;
   border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--text-secondary);
+  font-size: 0.76rem;
+  font-weight: 800;
   display: flex;
   align-items: center;
   gap: 6px;
-  transition: all 0.2s ease;
-}
-
-.role-pill:hover:not(.active) {
-  color: var(--indigo);
-}
-
-.role-pill.active {
-  background: var(--accent-grad);
-  color: white;
   box-shadow: var(--shadow-glow);
+  letter-spacing: -0.01em;
+}
+
+.session-email-tag {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.session-email-tag i {
+  width: 14px;
+  height: 14px;
+  color: var(--indigo);
 }
 
 .nav-right {
