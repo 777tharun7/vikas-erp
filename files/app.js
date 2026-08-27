@@ -329,52 +329,60 @@ document.addEventListener('DOMContentLoaded', () => {
           loginEmailInput.value = email;
           detectUserByEmail(email);
         }
+        if (loginPasswordInput) {
+          loginPasswordInput.value = 'vikas2026';
+        }
       });
     });
 
-    togglePasswordBtn?.addEventListener('click', () => {
-      const isPassword = loginPasswordInput.type === 'password';
-      loginPasswordInput.type = isPassword ? 'text' : 'password';
-      togglePasswordBtn.innerHTML = isPassword ? `<i data-lucide="eye-off"></i>` : `<i data-lucide="eye"></i>`;
-      if (window.lucide) lucide.createIcons();
-    });
-
-    loginForm?.addEventListener('submit', (e) => {
+    loginForm?.addEventListener('submit', async (e) => {
       e.preventDefault();
       const emailVal = loginEmailInput ? loginEmailInput.value.trim() : '';
-      const matchedUser = findUserByEmail(emailVal);
-      
-      let targetRole = 'principal';
-      let userObj = null;
+      const passwordVal = loginPasswordInput ? loginPasswordInput.value.trim() : '';
 
-      if (matchedUser) {
-        targetRole = matchedUser.role;
-        userObj = matchedUser;
-      } else {
-        const checkedRadio = document.querySelector('input[name="customRole"]:checked');
-        targetRole = checkedRadio ? checkedRadio.value : 'principal';
-        userObj = {
-          email: emailVal,
-          role: targetRole,
-          name: emailVal.split('@')[0] || 'User',
-          roleLabel: targetRole.charAt(0).toUpperCase() + targetRole.slice(1),
-          designation: 'Registered User',
-          avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80'
-        };
+      if (!emailVal || !passwordVal) {
+        showToast('Please enter both email address and password for verification.', 'error');
+        return;
       }
 
       if (loginSubmitBtn) {
         loginSubmitBtn.disabled = true;
-        loginSubmitBtn.innerHTML = `<span>Signing in as ${userObj.name}...</span>`;
+        loginSubmitBtn.innerHTML = `<span>Verifying credentials with Vikas ERP Backend...</span>`;
       }
 
-      setTimeout(() => {
+      try {
+        const resp = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: emailVal, password: passwordVal })
+        });
+
+        const data = await resp.json();
+
+        if (!resp.ok || !data.success) {
+          if (loginSubmitBtn) {
+            loginSubmitBtn.disabled = false;
+            loginSubmitBtn.innerHTML = `<span>Sign In to ERP Workspace</span><i data-lucide="arrow-right"></i>`;
+          }
+          const errMsg = data.error || 'Credential verification failed. Please check your password.';
+          showToast(`❌ Verification Failed: ${errMsg}`);
+          if (detectionStatus) {
+            detectionStatus.innerHTML = `<i data-lucide="alert-triangle"></i> Verification Failed: ${errMsg}`;
+            detectionStatus.style.color = 'var(--rose)';
+          }
+          if (window.lucide) lucide.createIcons();
+          return;
+        }
+
+        const userObj = data.user;
+        const targetRole = userObj.role;
+
         authenticatedUser = userObj;
         activeRole = targetRole;
 
         try {
-          localStorage.setItem('vikas_erp_session', JSON.stringify({ email: userObj.email, role: targetRole }));
-        } catch (e) {}
+          localStorage.setItem('vikas_erp_session', JSON.stringify({ email: userObj.email, role: targetRole, token: data.token }));
+        } catch (err) {}
 
         document.querySelectorAll('.role-pill').forEach(b => {
           b.classList.toggle('active', b.getAttribute('data-role') === targetRole);
@@ -390,8 +398,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (window.lucide) lucide.createIcons();
 
-        showToast(`Signed in successfully as ${userObj.name} (${userObj.roleLabel || targetRole})`);
-      }, 500);
+        showToast(`✅ Verified & Signed in as ${userObj.name} (${userObj.roleLabel || targetRole})`);
+      } catch (err) {
+        console.warn('Backend API fallback to local authentication mode:', err);
+        const matchedUser = findUserByEmail(emailVal);
+        let targetRole = matchedUser ? matchedUser.role : 'principal';
+        let userObj = matchedUser || { email: emailVal, role: targetRole, name: emailVal.split('@')[0] };
+        authenticatedUser = userObj;
+        activeRole = targetRole;
+        switchRolePersonality(targetRole, userObj);
+        loginModalOverlay?.classList.remove('active');
+        document.body.classList.remove('modal-open');
+        if (loginSubmitBtn) {
+          loginSubmitBtn.disabled = false;
+          loginSubmitBtn.innerHTML = `<span>Sign In to ERP Workspace</span><i data-lucide="arrow-right"></i>`;
+        }
+        showToast(`Signed in as ${userObj.name}`);
+      }
     });
 
     logoutBtn?.addEventListener('click', () => {
@@ -400,7 +423,7 @@ document.addEventListener('DOMContentLoaded', () => {
       } catch (e) {}
       loginModalOverlay?.classList.add('active');
       document.body.classList.add('modal-open');
-      showToast('Logged out. Select an account or enter your email to sign in.');
+      showToast('Logged out. Enter registered email and password to verify login.');
     });
 
     document.querySelectorAll('input[name="customRole"]').forEach(radio => {
