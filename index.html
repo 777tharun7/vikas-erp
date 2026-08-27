@@ -128,13 +128,17 @@
             </div>
           </div>
 
-          <div class="user-pill" id="userProfilePill">
+          <div class="user-pill" id="userProfilePill" title="Logged in user profile">
             <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" alt="Avatar" class="user-avatar" id="userAvatar">
             <div class="user-info">
               <span class="user-name" id="userName">K. Rajesham</span>
               <span class="user-role" id="userRole">Headmaster</span>
             </div>
           </div>
+
+          <button class="icon-btn logout-btn" id="logoutBtn" title="Switch User / Sign Out">
+            <i data-lucide="log-out"></i>
+          </button>
         </div>
       </header>
 
@@ -183,6 +187,145 @@
       </div>
     </aside>
 
+  </div>
+
+  <!-- LOGIN & ROLE IDENTIFICATION PORTAL OVERLAY -->
+  <div class="login-modal-overlay active" id="loginModalOverlay">
+    <div class="login-modal-card">
+      
+      <!-- LEFT BRANDING BANNER -->
+      <div class="login-branding-panel">
+        <div class="login-brand-header">
+          <div class="login-brand-logo">
+            <i data-lucide="graduation-cap"></i>
+          </div>
+          <div>
+            <h2>Vikas ERP</h2>
+            <p>School Operating System</p>
+          </div>
+        </div>
+
+        <div class="login-hero-card">
+          <div class="school-tag">🏫 UDISE: 36182100637</div>
+          <h3>Vikas Grammar School HS Cherial</h3>
+          <p>Cheriyal, Siddipet District, Telangana — 506223</p>
+          
+          <div class="login-features-list">
+            <div class="feature-item">
+              <i data-lucide="shield-check"></i>
+              <span>Smart Role Detection by Registered Email</span>
+            </div>
+            <div class="feature-item">
+              <i data-lucide="users"></i>
+              <span>4 Role Workspaces: Principal, Teacher, Student & Parent</span>
+            </div>
+            <div class="feature-item">
+              <i data-lucide="sparkles"></i>
+              <span>Instant Dashboard Workspace Authorization</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="login-footer-info">
+          <span>Board of Secondary Education, Telangana (BSE)</span>
+        </div>
+      </div>
+
+      <!-- RIGHT FORM PANEL -->
+      <div class="login-form-panel">
+        <div class="login-form-header">
+          <h3>Welcome Back 👋</h3>
+          <p>Sign in to your Vikas Grammar School ERP Workspace</p>
+        </div>
+
+        <!-- QUICK DEMO ACCOUNTS SELECTOR -->
+        <div class="quick-demo-accounts">
+          <div class="quick-title"><i data-lucide="zap"></i> Quick Demo Accounts (Click to Autofill):</div>
+          <div class="demo-chips-grid">
+            <button type="button" class="demo-chip active" data-email="principal@vikas.edu.in">
+              <span class="chip-icon">👑</span>
+              <span class="chip-text">Principal</span>
+            </button>
+            <button type="button" class="demo-chip" data-email="teacher@vikas.edu.in">
+              <span class="chip-icon">👩‍🏫</span>
+              <span class="chip-text">Teacher</span>
+            </button>
+            <button type="button" class="demo-chip" data-email="student@vikas.edu.in">
+              <span class="chip-icon">🎓</span>
+              <span class="chip-text">Student</span>
+            </button>
+            <button type="button" class="demo-chip" data-email="parent@vikas.edu.in">
+              <span class="chip-icon">👨‍👩‍👧</span>
+              <span class="chip-text">Parent</span>
+            </button>
+          </div>
+        </div>
+
+        <form id="loginForm" class="login-form">
+          
+          <!-- EMAIL INPUT -->
+          <div class="form-group">
+            <label for="loginEmailInput">Registered Email Address</label>
+            <div class="input-with-icon">
+              <i data-lucide="mail"></i>
+              <input type="email" id="loginEmailInput" placeholder="e.g. principal@vikas.edu.in" value="principal@vikas.edu.in" required autocomplete="email">
+            </div>
+          </div>
+
+          <!-- REAL-TIME ROLE DETECTION & CONFIRMATION BOX -->
+          <div class="role-detection-box" id="roleDetectionBox">
+            <div class="detection-badge" id="detectionBadge">👑 Principal Command Center</div>
+            <div class="user-preview">
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" alt="Avatar" id="detectionAvatar">
+              <div class="user-details">
+                <div class="detected-name" id="detectionName">K. Rajesham</div>
+                <div class="detected-sub" id="detectionSub">Headmaster & School Administrator</div>
+              </div>
+            </div>
+            <div class="detection-status" id="detectionStatus">
+              <i data-lucide="check-circle-2"></i> Verified School Account • Auto-assigned to <strong>Principal</strong> workspace
+            </div>
+          </div>
+
+          <!-- UNREGISTERED CUSTOM ROLE SELECTOR (Hidden by default, shown if email not in database) -->
+          <div class="form-group custom-role-group" id="customRoleGroup" style="display:none;">
+            <label>Unregistered Email — Choose Role to Sign In:</label>
+            <div class="role-selector-radios">
+              <label class="radio-chip"><input type="radio" name="customRole" value="principal" checked> <span>👑 Principal</span></label>
+              <label class="radio-chip"><input type="radio" name="customRole" value="teacher"> <span>👩‍🏫 Teacher</span></label>
+              <label class="radio-chip"><input type="radio" name="customRole" value="student"> <span>🎓 Student</span></label>
+              <label class="radio-chip"><input type="radio" name="customRole" value="parent"> <span>👨‍👩‍👧 Parent</span></label>
+            </div>
+          </div>
+
+          <!-- PASSWORD INPUT -->
+          <div class="form-group">
+            <label for="loginPasswordInput">Password / Security PIN</label>
+            <div class="input-with-icon">
+              <i data-lucide="lock"></i>
+              <input type="password" id="loginPasswordInput" value="vikas2026" placeholder="Enter password" required>
+              <button type="button" class="toggle-password-btn" id="togglePasswordBtn"><i data-lucide="eye"></i></button>
+            </div>
+          </div>
+
+          <div class="form-options">
+            <label class="checkbox-label">
+              <input type="checkbox" checked id="rememberMeCheckbox">
+              <span>Remember this account</span>
+            </label>
+            <a href="#" class="forgot-link" onclick="event.preventDefault(); alert('Password reset guidance sent to your registered school email!');">Forgot Password?</a>
+          </div>
+
+          <!-- SUBMIT BUTTON -->
+          <button type="submit" class="login-submit-btn" id="loginSubmitBtn">
+            <span>Sign In to ERP Workspace</span>
+            <i data-lucide="arrow-right"></i>
+          </button>
+
+        </form>
+      </div>
+
+    </div>
   </div>
 
   <script src="js/data.js"></script>

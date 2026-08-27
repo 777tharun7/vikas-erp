@@ -6,6 +6,7 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   let activeRole = 'principal';
+  let authenticatedUser = null;
 
   const sidebar = document.getElementById('sidebar');
   const sidebarNavList = document.getElementById('sidebarNavList');
@@ -15,6 +16,23 @@ document.addEventListener('DOMContentLoaded', () => {
   const sidebarCollapseBtn = document.getElementById('sidebarCollapseBtn');
   const userName = document.getElementById('userName');
   const userRole = document.getElementById('userRole');
+  const userAvatar = document.getElementById('userAvatar');
+
+  // DOM Elements for Login Portal
+  const loginModalOverlay = document.getElementById('loginModalOverlay');
+  const loginForm = document.getElementById('loginForm');
+  const loginEmailInput = document.getElementById('loginEmailInput');
+  const loginPasswordInput = document.getElementById('loginPasswordInput');
+  const togglePasswordBtn = document.getElementById('togglePasswordBtn');
+  const roleDetectionBox = document.getElementById('roleDetectionBox');
+  const detectionBadge = document.getElementById('detectionBadge');
+  const detectionAvatar = document.getElementById('detectionAvatar');
+  const detectionName = document.getElementById('detectionName');
+  const detectionSub = document.getElementById('detectionSub');
+  const detectionStatus = document.getElementById('detectionStatus');
+  const customRoleGroup = document.getElementById('customRoleGroup');
+  const loginSubmitBtn = document.getElementById('loginSubmitBtn');
+  const logoutBtn = document.getElementById('logoutBtn');
 
   const aiDrawer = document.getElementById('aiDrawer');
   const aiDrawerOverlay = document.getElementById('aiDrawerOverlay');
@@ -28,7 +46,149 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function initApp() {
     setupEventListeners();
+    setupLoginSystem();
     switchRolePersonality('principal');
+  }
+
+  function setupLoginSystem() {
+    if (loginEmailInput) {
+      detectUserByEmail(loginEmailInput.value);
+      loginEmailInput.addEventListener('input', (e) => detectUserByEmail(e.target.value));
+    }
+
+    document.querySelectorAll('.demo-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('.demo-chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        const email = chip.getAttribute('data-email');
+        if (loginEmailInput) {
+          loginEmailInput.value = email;
+          detectUserByEmail(email);
+        }
+      });
+    });
+
+    togglePasswordBtn?.addEventListener('click', () => {
+      const isPassword = loginPasswordInput.type === 'password';
+      loginPasswordInput.type = isPassword ? 'text' : 'password';
+      togglePasswordBtn.innerHTML = isPassword ? `<i data-lucide="eye-off"></i>` : `<i data-lucide="eye"></i>`;
+      if (window.lucide) lucide.createIcons();
+    });
+
+    loginForm?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const emailVal = loginEmailInput ? loginEmailInput.value.trim() : '';
+      const matchedUser = findUserByEmail(emailVal);
+      
+      let targetRole = 'principal';
+      let userObj = null;
+
+      if (matchedUser) {
+        targetRole = matchedUser.role;
+        userObj = matchedUser;
+      } else {
+        const checkedRadio = document.querySelector('input[name="customRole"]:checked');
+        targetRole = checkedRadio ? checkedRadio.value : 'principal';
+        userObj = {
+          email: emailVal,
+          role: targetRole,
+          name: emailVal.split('@')[0] || 'User',
+          roleLabel: targetRole.charAt(0).toUpperCase() + targetRole.slice(1),
+          designation: 'Registered User',
+          avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80'
+        };
+      }
+
+      if (loginSubmitBtn) {
+        loginSubmitBtn.disabled = true;
+        loginSubmitBtn.innerHTML = `<span>Signing in as ${userObj.name}...</span>`;
+      }
+
+      setTimeout(() => {
+        authenticatedUser = userObj;
+        activeRole = targetRole;
+
+        document.querySelectorAll('.role-pill').forEach(b => {
+          b.classList.toggle('active', b.getAttribute('data-role') === targetRole);
+        });
+
+        switchRolePersonality(targetRole, userObj);
+
+        loginModalOverlay?.classList.remove('active');
+        if (loginSubmitBtn) {
+          loginSubmitBtn.disabled = false;
+          loginSubmitBtn.innerHTML = `<span>Sign In to ERP Workspace</span><i data-lucide="arrow-right"></i>`;
+        }
+        if (window.lucide) lucide.createIcons();
+
+        showToast(`Signed in successfully as ${userObj.name} (${userObj.roleLabel || targetRole})`);
+      }, 500);
+    });
+
+    logoutBtn?.addEventListener('click', () => {
+      loginModalOverlay?.classList.add('active');
+      showToast('Logged out. Select an account or enter your email to sign in.');
+    });
+
+    document.querySelectorAll('input[name="customRole"]').forEach(radio => {
+      radio.addEventListener('change', () => {
+        const emailVal = loginEmailInput ? loginEmailInput.value.trim() : '';
+        if (!findUserByEmail(emailVal)) {
+          updateUnregisteredDetectionCard(emailVal, radio.value);
+        }
+      });
+    });
+  }
+
+  function findUserByEmail(emailStr) {
+    if (!emailStr || !MOCK_DATA.registeredUsers) return null;
+    const clean = emailStr.trim().toLowerCase();
+    return MOCK_DATA.registeredUsers.find(u => 
+      u.email.toLowerCase() === clean || 
+      (u.altEmail && u.altEmail.toLowerCase() === clean) ||
+      u.role.toLowerCase() === clean ||
+      u.name.toLowerCase().includes(clean)
+    );
+  }
+
+  function detectUserByEmail(emailStr) {
+    const user = findUserByEmail(emailStr);
+    
+    document.querySelectorAll('.demo-chip').forEach(chip => {
+      chip.classList.toggle('active', chip.getAttribute('data-email').toLowerCase() === emailStr.trim().toLowerCase());
+    });
+
+    if (user) {
+      if (customRoleGroup) customRoleGroup.style.display = 'none';
+      if (roleDetectionBox) roleDetectionBox.style.display = 'block';
+      if (detectionBadge) detectionBadge.textContent = user.badge;
+      if (detectionAvatar) detectionAvatar.src = user.avatar;
+      if (detectionName) detectionName.textContent = user.name;
+      if (detectionSub) detectionSub.textContent = `${user.designation} (${user.details})`;
+      if (detectionStatus) {
+        detectionStatus.innerHTML = `<i data-lucide="check-circle-2"></i> Verified School Account • Auto-assigned to <strong>${user.roleLabel || user.role}</strong> workspace`;
+        detectionStatus.style.color = 'var(--emerald)';
+      }
+    } else {
+      const selectedRole = document.querySelector('input[name="customRole"]:checked')?.value || 'principal';
+      updateUnregisteredDetectionCard(emailStr, selectedRole);
+    }
+    if (window.lucide) lucide.createIcons();
+  }
+
+  function updateUnregisteredDetectionCard(emailStr, selectedRole) {
+    if (customRoleGroup) customRoleGroup.style.display = 'block';
+    if (roleDetectionBox) roleDetectionBox.style.display = 'block';
+    const roleTitle = selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1);
+    if (detectionBadge) detectionBadge.textContent = `❓ Custom Account — ${roleTitle} Workspace`;
+    if (detectionAvatar) detectionAvatar.src = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80';
+    if (detectionName) detectionName.textContent = emailStr ? emailStr.split('@')[0] : 'Unregistered User';
+    if (detectionSub) detectionSub.textContent = emailStr || 'Unregistered email address';
+    if (detectionStatus) {
+      detectionStatus.innerHTML = `<i data-lucide="info"></i> New user login • Will open <strong>${roleTitle}</strong> workspace`;
+      detectionStatus.style.color = 'var(--indigo)';
+    }
+    if (window.lucide) lucide.createIcons();
   }
 
   function setupEventListeners() {
@@ -177,25 +337,39 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
 
-  function switchRolePersonality(role) {
+  function switchRolePersonality(role, userObj) {
     document.body.className = `theme-light role-${role}`;
     renderRoleSidebarNav(role);
 
+    const currentUserObj = userObj || (MOCK_DATA.registeredUsers ? MOCK_DATA.registeredUsers.find(u => u.role === role) : null);
+
+    if (currentUserObj) {
+      if (userName) userName.textContent = currentUserObj.name;
+      if (userRole) userRole.textContent = currentUserObj.roleLabel || currentUserObj.designation;
+      if (userAvatar && currentUserObj.avatar) userAvatar.src = currentUserObj.avatar;
+    } else {
+      if (role === 'principal') {
+        if (userName) userName.textContent = 'K. Rajesham';
+        if (userRole) userRole.textContent = 'Headmaster';
+      } else if (role === 'teacher') {
+        if (userName) userName.textContent = 'Mrs. S. Radhika';
+        if (userRole) userRole.textContent = 'Class Teacher (VIII A)';
+      } else if (role === 'student') {
+        if (userName) userName.textContent = 'Rahul Reddy';
+        if (userRole) userRole.textContent = 'Student (Class VIII A)';
+      } else if (role === 'parent') {
+        if (userName) userName.textContent = 'Parent of Rahul Reddy';
+        if (userRole) userRole.textContent = 'Parent';
+      }
+    }
+
     if (role === 'principal') {
-      userName.textContent = 'K. Rajesham';
-      userRole.textContent = 'Headmaster';
       renderPrincipalDashboardScreen();
     } else if (role === 'teacher') {
-      userName.textContent = 'Mrs. S. Radhika';
-      userRole.textContent = 'Class Teacher (VIII A)';
       renderTeacherDashboardScreen();
     } else if (role === 'student') {
-      userName.textContent = 'Rahul Reddy';
-      userRole.textContent = 'Student (Class VIII A)';
       renderStudentDashboardScreen();
     } else if (role === 'parent') {
-      userName.textContent = 'Parent of Rahul Reddy';
-      userRole.textContent = 'Parent';
       renderParentDashboardScreen();
     }
   }

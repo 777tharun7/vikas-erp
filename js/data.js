@@ -17,6 +17,54 @@ const MOCK_DATA = {
     medium: 'English'
   },
 
+  // REGISTERED ACCOUNTS FOR EMAIL-BASED ROLE LOGIN
+  registeredUsers: [
+    {
+      email: 'principal@vikas.edu.in',
+      altEmail: 'rajesham@vikas.edu.in',
+      role: 'principal',
+      name: 'K. Rajesham',
+      roleLabel: 'Principal / Headmaster',
+      designation: 'Headmaster & School Administrator',
+      badge: '👑 Principal Command Center',
+      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80',
+      details: 'UDISE Admin • Vikas Grammar School HS Cherial'
+    },
+    {
+      email: 'teacher@vikas.edu.in',
+      altEmail: 'radhika@vikas.edu.in',
+      role: 'teacher',
+      name: 'Mrs. S. Radhika',
+      roleLabel: 'Class Teacher (VIII A)',
+      designation: 'Senior Mathematics Lead & Mentor',
+      badge: '👩‍🏫 Teacher Workspace',
+      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=120&q=80',
+      details: 'EMP-VG-002 • Mathematics Department'
+    },
+    {
+      email: 'student@vikas.edu.in',
+      altEmail: 'rahul@vikas.edu.in',
+      role: 'student',
+      name: 'Rahul Reddy',
+      roleLabel: 'Student (Class VIII A)',
+      designation: 'Class VIII Section A Student',
+      badge: '🎓 Gamified Student Portal',
+      avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=120&q=80',
+      details: 'Roll No: VIII-014 • PEN-36182100637-801'
+    },
+    {
+      email: 'parent@vikas.edu.in',
+      altEmail: 'vreddy@vikas.edu.in',
+      role: 'parent',
+      name: 'V. Reddy',
+      roleLabel: 'Parent of Rahul Reddy',
+      designation: 'Parent / Guardian',
+      badge: '👨‍👩‍👧 Parent Info-First Portal',
+      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80',
+      details: 'Parent ID: PRT-VG-101 • Contact: +91 98480 12345'
+    }
+  ],
+
   // 1. ADMISSIONS LEADS LIST
   admissionsLeadsList: [
     { id: 'adm_01', applicantName: 'S. Varun Tej', gradeApplied: 'Class VIII', parentName: 'S. Narsing Rao', phone: '+91 98481 11223', testScore: '92/100', status: 'Approved', statusClass: 'badge-success', date: 'Aug 20, 2026' },
