@@ -74,8 +74,162 @@ document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
     setupLoginSystem();
     setupProfileSystem();
-    switchRolePersonality('principal');
+    setupInteractiveModals();
+    restoreSavedSession();
   }
+
+  function restoreSavedSession() {
+    try {
+      const saved = localStorage.getItem('vikas_erp_session');
+      if (saved) {
+        const session = JSON.parse(saved);
+        const matchedUser = findUserByEmail(session.email) || findUserByRole(session.role);
+        if (matchedUser) {
+          authenticatedUser = matchedUser;
+          activeRole = matchedUser.role;
+          switchRolePersonality(matchedUser.role, matchedUser);
+          loginModalOverlay?.classList.remove('active');
+          document.body.classList.remove('modal-open');
+        }
+      }
+    } catch (e) {
+      console.warn('Session restore exception:', e);
+    }
+  }
+
+  function setupInteractiveModals() {
+    // Marksheet Modal
+    const marksheetModalOverlay = document.getElementById('marksheetModalOverlay');
+    const closeMarksheetBtn = document.getElementById('closeMarksheetBtn');
+    const cancelMarksheetBtn = document.getElementById('cancelMarksheetBtn');
+    closeMarksheetBtn?.addEventListener('click', () => { marksheetModalOverlay?.classList.remove('active'); document.body.classList.remove('modal-open'); });
+    cancelMarksheetBtn?.addEventListener('click', () => { marksheetModalOverlay?.classList.remove('active'); document.body.classList.remove('modal-open'); });
+
+    // Payment Modal
+    const paymentModalOverlay = document.getElementById('paymentModalOverlay');
+    const closePaymentBtn = document.getElementById('closePaymentBtn');
+    const paymentForm = document.getElementById('paymentForm');
+    closePaymentBtn?.addEventListener('click', () => { paymentModalOverlay?.classList.remove('active'); document.body.classList.remove('modal-open'); });
+    paymentForm?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const paySubmitBtn = document.getElementById('paySubmitBtn');
+      if (paySubmitBtn) {
+        paySubmitBtn.disabled = true;
+        paySubmitBtn.innerHTML = `<span>Processing Instant Payment...</span>`;
+      }
+      setTimeout(() => {
+        paymentModalOverlay?.classList.remove('active');
+        document.body.classList.remove('modal-open');
+        if (paySubmitBtn) {
+          paySubmitBtn.disabled = false;
+          paySubmitBtn.innerHTML = `<span>Confirm & Pay ₹ 3,500</span><i data-lucide="check-circle"></i>`;
+        }
+        // Update MOCK DATA Fee dues
+        if (MOCK_DATA.feeStructure) {
+          MOCK_DATA.feeStructure.paidAmount += MOCK_DATA.feeStructure.dueAmount;
+          MOCK_DATA.feeStructure.dueAmount = 0;
+        }
+        if (MOCK_DATA.feeLedgerFullList && MOCK_DATA.feeLedgerFullList[0]) {
+          MOCK_DATA.feeLedgerFullList[0].paidFee += MOCK_DATA.feeLedgerFullList[0].dueFee;
+          MOCK_DATA.feeLedgerFullList[0].dueFee = 0;
+          MOCK_DATA.feeLedgerFullList[0].status = 'Paid';
+        }
+        showToast('Payment of ₹3,500 successful! Receipt generated and fee ledger updated.');
+        if (activeRole === 'student') renderStudentDashboardScreen();
+        else if (activeRole === 'parent') renderParentDashboardScreen();
+      }, 600);
+    });
+
+    // Leave Modal
+    const leaveModalOverlay = document.getElementById('leaveModalOverlay');
+    const closeLeaveBtn = document.getElementById('closeLeaveBtn');
+    const leaveForm = document.getElementById('leaveForm');
+    closeLeaveBtn?.addEventListener('click', () => { leaveModalOverlay?.classList.remove('active'); document.body.classList.remove('modal-open'); });
+    leaveForm?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const type = document.getElementById('leaveTypeSelect')?.value || 'Medical Leave';
+      const from = document.getElementById('leaveFromDate')?.value || 'Sep 02, 2026';
+      const to = document.getElementById('leaveToDate')?.value || 'Sep 04, 2026';
+      const reason = document.getElementById('leaveReasonText')?.value || 'Leave application';
+
+      const newLeave = {
+        id: 'lve_' + Date.now(),
+        studentName: authenticatedUser ? authenticatedUser.name : 'Rahul Reddy',
+        rollNo: authenticatedUser ? (authenticatedUser.idNumber || 'VIII-014') : 'VIII-014',
+        grade: 'Class VIII Section A',
+        leaveType: type,
+        fromDate: from,
+        toDate: to,
+        days: 2,
+        reason: reason,
+        appliedBy: authenticatedUser ? authenticatedUser.name : 'Parent (V. Reddy)',
+        appliedDate: 'Today',
+        mentorStatus: 'Pending Mentor Review',
+        statusClass: 'badge-warning'
+      };
+
+      if (!MOCK_DATA.studentLeaveRequests) MOCK_DATA.studentLeaveRequests = [];
+      MOCK_DATA.studentLeaveRequests.unshift(newLeave);
+
+      leaveModalOverlay?.classList.remove('active');
+      document.body.classList.remove('modal-open');
+      showToast('Leave request submitted successfully for Mentor Teacher review!');
+    });
+  }
+
+  // Global Helpers attached to window
+  window.openMarksheetModal = function(studentName) {
+    const marksheetModalOverlay = document.getElementById('marksheetModalOverlay');
+    if (studentName) {
+      const el = document.getElementById('msStudentName');
+      if (el) el.textContent = studentName;
+    }
+    marksheetModalOverlay?.classList.add('active');
+    document.body.classList.add('modal-open');
+    if (window.lucide) lucide.createIcons();
+  };
+
+  window.openPaymentModal = function(amount, studentName) {
+    const paymentModalOverlay = document.getElementById('paymentModalOverlay');
+    if (amount) {
+      const el = document.getElementById('payAmountText');
+      if (el) el.textContent = `₹ ${amount}`;
+    }
+    if (studentName) {
+      const el = document.getElementById('payStudentText');
+      if (el) el.textContent = `Student: ${studentName}`;
+    }
+    paymentModalOverlay?.classList.add('active');
+    document.body.classList.add('modal-open');
+    if (window.lucide) lucide.createIcons();
+  };
+
+  window.openLeaveModal = function() {
+    const leaveModalOverlay = document.getElementById('leaveModalOverlay');
+    leaveModalOverlay?.classList.add('active');
+    document.body.classList.add('modal-open');
+    if (window.lucide) lucide.createIcons();
+  };
+
+  window.approveLeave = function(leaveId) {
+    const req = MOCK_DATA.studentLeaveRequests?.find(l => l.id === leaveId);
+    if (req) {
+      req.mentorStatus = 'Approved';
+      req.statusClass = 'badge-success';
+      showToast(`Leave request for ${req.studentName} approved!`);
+      renderTeacherDashboardScreen();
+    }
+  };
+
+  window.rejectLeave = function(leaveId) {
+    const req = MOCK_DATA.studentLeaveRequests?.find(l => l.id === leaveId);
+    if (req) {
+      req.mentorStatus = 'Rejected';
+      req.statusClass = 'badge-danger';
+      showToast(`Leave request for ${req.studentName} rejected.`);
+      renderTeacherDashboardScreen();
+    }
+  };
 
   function setupProfileSystem() {
     userProfilePill?.addEventListener('click', openProfileModal);
@@ -218,6 +372,10 @@ document.addEventListener('DOMContentLoaded', () => {
         authenticatedUser = userObj;
         activeRole = targetRole;
 
+        try {
+          localStorage.setItem('vikas_erp_session', JSON.stringify({ email: userObj.email, role: targetRole }));
+        } catch (e) {}
+
         document.querySelectorAll('.role-pill').forEach(b => {
           b.classList.toggle('active', b.getAttribute('data-role') === targetRole);
         });
@@ -237,6 +395,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     logoutBtn?.addEventListener('click', () => {
+      try {
+        localStorage.removeItem('vikas_erp_session');
+      } catch (e) {}
       loginModalOverlay?.classList.add('active');
       document.body.classList.add('modal-open');
       showToast('Logged out. Select an account or enter your email to sign in.');

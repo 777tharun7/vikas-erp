@@ -497,6 +497,165 @@
 
       </form>
 
+  <!-- MARKSHEET REPORT CARD MODAL OVERLAY -->
+  <div class="profile-modal-overlay" id="marksheetModalOverlay">
+    <div class="profile-modal-card" style="width: 820px;">
+      <div class="profile-cover-banner" style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);">
+        <button type="button" class="profile-close-btn" id="closeMarksheetBtn"><i data-lucide="x"></i></button>
+        <div class="profile-cover-badge">📜 BSE Telangana Official Grade Report</div>
+      </div>
+
+      <div class="marksheet-print-container" id="marksheetPrintContainer" style="padding: 24px 28px; background: var(--bg-card); overflow-y: auto;">
+        <div style="text-align: center; border-bottom: 2px solid var(--border-color); padding-bottom: 16px; margin-bottom: 20px;">
+          <div style="font-size: 0.8rem; font-weight: 800; color: var(--indigo); letter-spacing: 1px;">BOARD OF SECONDARY EDUCATION, TELANGANA</div>
+          <h2 style="font-family: 'Outfit', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--text-primary); margin: 4px 0;">VIKAS GRAMMAR SCHOOL HS CHERIAL</h2>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">UDISE Code: 36182100637 • Cheriyal, Siddipet District, Telangana — 506223</p>
+          <div style="display: inline-block; background: var(--accent-grad-soft); color: var(--indigo); font-weight: 800; font-size: 0.75rem; padding: 4px 14px; border-radius: 20px; margin-top: 10px;">
+            ANNUAL ACADEMIC MARKSHEET 2026-2027
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; background: var(--bg-card-sub); border: 1px solid var(--border-color); padding: 14px 16px; border-radius: 12px; margin-bottom: 20px; font-size: 0.82rem;">
+          <div><strong>Student Name:</strong> <span id="msStudentName">Rahul Reddy</span></div>
+          <div><strong>Roll Number:</strong> <span id="msRollNo">VIII-014</span></div>
+          <div><strong>Class & Section:</strong> <span id="msGradeSec">Class VIII Section A</span></div>
+          <div><strong>PEN ID:</strong> <span id="msPenId">PEN-36182100637-801</span></div>
+        </div>
+
+        <div class="table-responsive" style="margin-bottom: 20px;">
+          <table class="custom-table" style="width: 100%;">
+            <thead>
+              <tr>
+                <th>Subject Code</th>
+                <th>Curriculum Subject</th>
+                <th>Max Marks</th>
+                <th>Marks Obtained</th>
+                <th>Grade</th>
+                <th>Performance Status</th>
+              </tr>
+            </thead>
+            <tbody id="marksheetTableBody">
+              <tr><td>01T</td><td>Telugu (First Language)</td><td>100</td><td>92</td><td><span class="badge-success">A+</span></td><td>Outstanding</td></tr>
+              <tr><td>02E</td><td>English Literature & Grammar</td><td>100</td><td>88</td><td><span class="badge-success">A</span></td><td>Excellent</td></tr>
+              <tr><td>03M</td><td>Mathematics & Geometry</td><td>100</td><td>95</td><td><span class="badge-success">A+</span></td><td>Outstanding</td></tr>
+              <tr><td>04P</td><td>Physical Science</td><td>100</td><td>86</td><td><span class="badge-success">A</span></td><td>Very Good</td></tr>
+              <tr><td>05B</td><td>Biological Science</td><td>100</td><td>90</td><td><span class="badge-success">A+</span></td><td>Outstanding</td></tr>
+              <tr><td>06S</td><td>Social Studies & Telangana History</td><td>100</td><td>84</td><td><span class="badge-success">A</span></td><td>Very Good</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; background: var(--accent-grad-soft); border: 1px solid rgba(109,91,248,0.2); padding: 14px 18px; border-radius: 12px; margin-bottom: 24px;">
+          <div>
+            <div style="font-size: 0.76rem; color: var(--text-secondary); font-weight: 700;">TOTAL MARKS OBTAINED</div>
+            <div style="font-size: 1.3rem; font-weight: 800; color: var(--indigo);" id="msTotalMarks">535 / 600 (89.16%)</div>
+          </div>
+          <div>
+            <div style="font-size: 0.76rem; color: var(--text-secondary); font-weight: 700;">CUMULATIVE GPA GRADE</div>
+            <div style="font-size: 1.3rem; font-weight: 800; color: var(--emerald);" id="msGpaGrade">Grade A+ (9.2 CGPA)</div>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; padding-top: 20px; border-top: 1px dashed var(--border-color); font-size: 0.78rem; color: var(--text-secondary);">
+          <div>
+            <div><strong>Date of Issue:</strong> Aug 27, 2026</div>
+            <div><strong>Mentor Teacher:</strong> Mrs. S. Radhika</div>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-family: 'Outfit', sans-serif; font-weight: 800; color: var(--indigo); font-size: 0.95rem;">K. Rajesham</div>
+            <div>Headmaster & Administrator</div>
+            <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 2px;">Vikas Grammar School HS Cherial</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-modal-footer">
+        <button type="button" class="btn-cancel" id="cancelMarksheetBtn">Close</button>
+        <button type="button" class="btn-save-profile" onclick="window.print();">
+          <i data-lucide="printer"></i> Print / Save PDF Marksheet
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ONLINE FEE PAYMENT MODAL OVERLAY -->
+  <div class="profile-modal-overlay" id="paymentModalOverlay">
+    <div class="profile-modal-card" style="width: 520px;">
+      <div class="profile-cover-banner" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%);">
+        <button type="button" class="profile-close-btn" id="closePaymentBtn"><i data-lucide="x"></i></button>
+        <div class="profile-cover-badge">💳 Vikas School Instant Fee Payment</div>
+      </div>
+
+      <form id="paymentForm" style="padding: 24px; background: var(--bg-card);">
+        <div style="text-align: center; margin-bottom: 20px;">
+          <div style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600;">TERM 3 TUITION & ADMISSION DUES</div>
+          <div style="font-size: 2rem; font-weight: 800; color: var(--emerald);" id="payAmountText">₹ 3,500</div>
+          <div style="font-size: 0.8rem; color: var(--text-secondary); font-weight: 600;" id="payStudentText">Student: Rahul Reddy (Class VIII A)</div>
+        </div>
+
+        <div style="background: var(--bg-card-sub); border: 1px solid var(--border-color); border-radius: 14px; padding: 16px; text-align: center; margin-bottom: 20px;">
+          <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-primary); margin-bottom: 10px;">Scan & Pay via UPI (GPay / PhonePe / Paytm / BHIM)</div>
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=vikasschool@sbi&pn=Vikas%20Grammar%20School&am=3500&cu=INR" alt="UPI QR Code" style="width: 130px; height: 130px; border-radius: 8px; border: 2px solid var(--border-color);">
+          <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 8px;">UPI ID: <strong>vikasschool@sbi</strong></div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-secondary);">Select Payment Method</label>
+          <select id="payMethodSelect" style="width: 100%; height: 42px; padding: 0 12px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">
+            <option value="upi">Instant UPI Transfer (Auto-Verified)</option>
+            <option value="card">Debit / Credit Card</option>
+            <option value="netbanking">SBI / HDFC / ICICI Net Banking</option>
+          </select>
+        </div>
+
+        <button type="submit" class="login-submit-btn" id="paySubmitBtn" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); width: 100%;">
+          <span>Confirm & Pay ₹ 3,500</span>
+          <i data-lucide="check-circle"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- LEAVE REQUEST SUBMISSION MODAL OVERLAY -->
+  <div class="profile-modal-overlay" id="leaveModalOverlay">
+    <div class="profile-modal-card" style="width: 580px;">
+      <div class="profile-cover-banner" style="background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);">
+        <button type="button" class="profile-close-btn" id="closeLeaveBtn"><i data-lucide="x"></i></button>
+        <div class="profile-cover-badge">📝 Student Leave Application</div>
+      </div>
+
+      <form id="leaveForm" style="padding: 24px; background: var(--bg-card);">
+        <div class="form-group" style="margin-bottom: 14px;">
+          <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-secondary);">Leave Type</label>
+          <select id="leaveTypeSelect" style="width: 100%; height: 42px; padding: 0 12px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">
+            <option value="Medical Leave">Medical Leave (Doctor Rest / Illness)</option>
+            <option value="Family Function">Family Event / Function</option>
+            <option value="Religious Festival">Religious / Festival Holiday</option>
+            <option value="Personal Emergency">Personal / Family Emergency</option>
+          </select>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 14px;">
+          <div class="form-group">
+            <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-secondary);">From Date</label>
+            <input type="date" id="leaveFromDate" required style="width: 100%; height: 42px; padding: 0 12px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">
+          </div>
+          <div class="form-group">
+            <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-secondary);">To Date</label>
+            <input type="date" id="leaveToDate" required style="width: 100%; height: 42px; padding: 0 12px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 18px;">
+          <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-secondary);">Reason & Additional Details</label>
+          <textarea id="leaveReasonText" rows="3" required placeholder="Describe the reason for leave request..." style="width: 100%; padding: 10px 12px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 0.85rem; font-weight: 500; color: var(--text-primary); outline: none;"></textarea>
+        </div>
+
+        <button type="submit" class="login-submit-btn" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); width: 100%;">
+          <span>Submit Application for Mentor Review</span>
+          <i data-lucide="send"></i>
+        </button>
+      </form>
     </div>
   </div>
 
