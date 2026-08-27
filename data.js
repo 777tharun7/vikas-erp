@@ -26,7 +26,7 @@ const MOCK_DATA = {
       name: 'K. Rajesham',
       roleLabel: 'Principal / Headmaster',
       designation: 'Headmaster & School Administrator',
-      badge: '👑 Principal Command Center',
+      badge: 'Principal Command Center',
       avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80',
       details: 'UDISE Admin • Vikas Grammar School HS Cherial'
     },
@@ -37,7 +37,7 @@ const MOCK_DATA = {
       name: 'Mrs. S. Radhika',
       roleLabel: 'Class Teacher (VIII A)',
       designation: 'Senior Mathematics Lead & Mentor',
-      badge: '👩‍🏫 Teacher Workspace',
+      badge: 'Teacher Workspace',
       avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=120&q=80',
       details: 'EMP-VG-002 • Mathematics Department'
     },
@@ -48,7 +48,7 @@ const MOCK_DATA = {
       name: 'Rahul Reddy',
       roleLabel: 'Student (Class VIII A)',
       designation: 'Class VIII Section A Student',
-      badge: '🎓 Gamified Student Portal',
+      badge: 'Gamified Student Portal',
       avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=120&q=80',
       details: 'Roll No: VIII-014 • PEN-36182100637-801'
     },
@@ -59,7 +59,7 @@ const MOCK_DATA = {
       name: 'V. Reddy',
       roleLabel: 'Parent of Rahul Reddy',
       designation: 'Parent / Guardian',
-      badge: '👨‍👩‍👧 Parent Info-First Portal',
+      badge: 'Parent Info-First Portal',
       avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80',
       details: 'Parent ID: PRT-VG-101 • Contact: +91 98480 12345'
     }
