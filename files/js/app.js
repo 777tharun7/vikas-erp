@@ -117,11 +117,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (profileAvatarInput) profileAvatarInput.value = userObj.avatar || '';
 
     profileModalOverlay?.classList.add('active');
+    document.body.classList.add('modal-open');
     if (window.lucide) lucide.createIcons();
   }
 
   function closeProfileModal() {
     profileModalOverlay?.classList.remove('active');
+    document.body.classList.remove('modal-open');
   }
 
   function saveProfileChanges() {
@@ -155,6 +157,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function setupLoginSystem() {
+    if (loginModalOverlay?.classList.contains('active')) {
+      document.body.classList.add('modal-open');
+    }
+
     if (loginEmailInput) {
       detectUserByEmail(loginEmailInput.value);
       loginEmailInput.addEventListener('input', (e) => detectUserByEmail(e.target.value));
@@ -219,6 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
         switchRolePersonality(targetRole, userObj);
 
         loginModalOverlay?.classList.remove('active');
+        document.body.classList.remove('modal-open');
         if (loginSubmitBtn) {
           loginSubmitBtn.disabled = false;
           loginSubmitBtn.innerHTML = `<span>Sign In to ERP Workspace</span><i data-lucide="arrow-right"></i>`;
@@ -231,6 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     logoutBtn?.addEventListener('click', () => {
       loginModalOverlay?.classList.add('active');
+      document.body.classList.add('modal-open');
       showToast('Logged out. Select an account or enter your email to sign in.');
     });
 
