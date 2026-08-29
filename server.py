@@ -129,6 +129,23 @@ def init_db():
     )
     ''')
 
+    # 5. BROADCAST NOTICES TABLE
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS broadcasts (
+        id TEXT PRIMARY KEY,
+        title TEXT NOT NULL,
+        category TEXT,
+        channel TEXT,
+        audience TEXT,
+        recipient_count INTEGER,
+        date TEXT,
+        sender TEXT,
+        status TEXT,
+        content TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+    ''')
+
     # SEED INITIAL DEFAULT USERS (Password: vikas2026)
     default_users = [
         {
@@ -233,6 +250,8 @@ class VikasERPRequestHandler(SimpleHTTPRequestHandler):
         parsed_url = urlparse(self.path)
         if parsed_url.path == '/api/login':
             self.handle_login()
+        elif parsed_url.path == '/api/broadcast':
+            self.handle_broadcast()
         elif parsed_url.path == '/api/fees/pay':
             self.handle_fee_payment()
         elif parsed_url.path == '/api/leave/request':
@@ -253,6 +272,8 @@ class VikasERPRequestHandler(SimpleHTTPRequestHandler):
         parsed_url = urlparse(self.path)
         if parsed_url.path == '/api/me':
             self.handle_get_me()
+        elif parsed_url.path == '/api/broadcast':
+            self.handle_get_broadcasts()
         elif parsed_url.path.startswith('/api/'):
             self.send_json({'error': 'API endpoint not found'}, status=404)
         else:
@@ -400,15 +421,38 @@ class VikasERPRequestHandler(SimpleHTTPRequestHandler):
         body = self.get_json_body()
         return self.send_json({'success': True, 'message': 'Payment recorded in Vikas ERP SQLite Ledger'})
 
-    # 5. POST /api/leave/request
-    def handle_leave_request(self):
+    # 7. POST /api/broadcast
+    def handle_broadcast(self):
         body = self.get_json_body()
-        return self.send_json({'success': True, 'message': 'Leave application stored in SQLite Database'})
+        title = body.get('title', 'School Notice')
+        category = body.get('category', 'Broadcast')
+        channel = body.get('channel', 'WhatsApp + SMS')
+        audience = body.get('audience', 'All Parents')
+        recipient_count = body.get('recipientCount', 384)
+        sender = body.get('sender', 'Principal Office')
+        content = body.get('content', '')
+        b_id = 'bc_' + str(int(time.time() * 1000))
+        date_str = 'Just Now'
 
-    # 6. PUT /api/leave/approval
-    def handle_leave_approval(self):
-        body = self.get_json_body()
-        return self.send_json({'success': True, 'message': 'Leave approval status updated in SQLite Database'})
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute('''
+        INSERT INTO broadcasts (id, title, category, channel, audience, recipient_count, date, sender, status, content)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (b_id, title, category, channel, audience, recipient_count, date_str, sender, 'Delivered (100%)', content))
+        conn.commit()
+        conn.close()
+
+        return self.send_json({'success': True, 'message': 'Broadcast recorded in SQLite database', 'id': b_id})
+
+    # 8. GET /api/broadcast
+    def handle_get_broadcasts(self):
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM broadcasts ORDER BY created_at DESC LIMIT 50")
+        rows = [dict(r) for r in cursor.fetchall()]
+        conn.close()
+        return self.send_json({'success': True, 'broadcasts': rows})
 
 def run(server_class=HTTPServer, handler_class=VikasERPRequestHandler, port=3001):
     init_db()

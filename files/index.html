@@ -652,9 +652,78 @@
         </div>
 
         <button type="submit" class="login-submit-btn" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); width: 100%;">
-          <span>Submit Application for Mentor Review</span>
-          <i data-lucide="send"></i>
-        </button>
+  <!-- SMS & WHATSAPP BROADCAST MODAL OVERLAY -->
+  <div class="profile-modal-overlay" id="broadcastModalOverlay">
+    <div class="profile-modal-card" style="width: 680px;">
+      <div class="profile-cover-banner" style="background: linear-gradient(135deg, #059669 0%, #25D366 100%);">
+        <button type="button" class="profile-close-btn" id="closeBroadcastBtn"><i data-lucide="x"></i></button>
+        <div class="profile-cover-badge">📢 Vikas School Multi-Channel Broadcaster</div>
+      </div>
+
+      <form id="broadcastForm" style="padding: 24px; background: var(--bg-card);">
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 14px;">
+          <div class="form-group">
+            <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-secondary);">Message Template</label>
+            <select id="broadcastTemplateSelect" style="width: 100%; height: 42px; padding: 0 12px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">
+              <option value="custom">✏️ Custom Blank Message</option>
+              <option value="tmpl_fee">💳 Fee Due Reminder Alert</option>
+              <option value="tmpl_holiday">🌧️ Emergency Rain / Govt Holiday Notice</option>
+              <option value="tmpl_ptm">👨‍👩‍👧 Parent-Teacher Meeting (PTM) Invitation</option>
+              <option value="tmpl_exam">📝 Exam Timetable & Hall Ticket Notice</option>
+              <option value="tmpl_transport">🚌 Transport Bus Route Update</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-secondary);">Target Audience</label>
+            <select id="broadcastAudienceSelect" style="width: 100%; height: 42px; padding: 0 12px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">
+              <option value="All Parents (Classes 1–10)">👥 All Parents (Classes 1 to 10 - 384 Parents)</option>
+              <option value="Fee Defaulters Only">⚠️ Fee Defaulters Only (42 Pending Dues)</option>
+              <option value="Class VIII Section A">🎓 Class VIII Section A Parents (40 Parents)</option>
+              <option value="Class X Board Students">🎓 Class X Board Exam Candidates (65 Parents)</option>
+              <option value="Bus Transport Students">🚌 Transport & Bus Route Students (115 Parents)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 14px;">
+          <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-secondary);">Dispatch Channel</label>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 6px;">
+            <label style="display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: var(--bg-card-sub); border: 1px solid var(--border-color); border-radius: 10px; cursor: pointer; font-size: 0.82rem; font-weight: 700; color: var(--text-primary);">
+              <input type="radio" name="broadcastChannel" value="both" checked>
+              <span>🚀 WhatsApp + SMS</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: var(--bg-card-sub); border: 1px solid var(--border-color); border-radius: 10px; cursor: pointer; font-size: 0.82rem; font-weight: 700; color: #10b981;">
+              <input type="radio" name="broadcastChannel" value="whatsapp">
+              <span>💬 WhatsApp Only</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: var(--bg-card-sub); border: 1px solid var(--border-color); border-radius: 10px; cursor: pointer; font-size: 0.82rem; font-weight: 700; color: #6366f1;">
+              <input type="radio" name="broadcastChannel" value="sms">
+              <span>📱 SMS Only</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 14px;">
+          <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-secondary);">Announcement Title / Subject</label>
+          <input type="text" id="broadcastSubjectInput" placeholder="Enter circular subject..." required style="width: 100%; height: 42px; padding: 0 12px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">
+        </div>
+
+        <div class="form-group" style="margin-bottom: 18px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-secondary);">Message Content</label>
+            <span style="font-size: 0.72rem; color: var(--text-muted);" id="broadcastCharCount">0 characters</span>
+          </div>
+          <textarea id="broadcastMessageText" rows="4" required placeholder="Type SMS & WhatsApp announcement message here..." style="width: 100%; padding: 12px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 0.85rem; font-weight: 500; color: var(--text-primary); outline: none;"></textarea>
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+          <button type="button" class="btn-cancel" id="cancelBroadcastBtn" style="flex: 1;">Cancel</button>
+          <button type="submit" class="login-submit-btn" id="broadcastSubmitBtn" style="flex: 2; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+            <span>🚀 Dispatch Broadcast Alert</span>
+            <i data-lucide="send"></i>
+          </button>
+        </div>
       </form>
     </div>
   </div>

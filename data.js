@@ -269,6 +269,96 @@ const MOCK_DATA = {
     { id: 'nt_2', title: 'Q2 Fee Installment Due Alert', message: '42 parents have pending Term 3 fee dues. Reminders dispatched.', time: '1 hour ago', type: 'fees', unread: true, actionView: 'fees' },
     { id: 'nt_3', title: 'BSE Board Hall Tickets Released', message: 'Class X Board Examination hall tickets for March 2027 generated.', time: '3 hours ago', type: 'academic', unread: true, actionView: 'academics' },
     { id: 'nt_4', title: 'Bus #1 Live GPS Status Update', message: 'Bus #1 (TG 12 Z 4091) arrived safely at School Gate from Cherial.', time: '5 hours ago', type: 'transport', unread: true, actionView: 'transport' }
+  ],
+
+  // 11. SMS & WHATSAPP BROADCAST TEMPLATES & DISPATCH HISTORY
+  messageTemplates: [
+    {
+      id: 'tmpl_fee',
+      name: '💳 Fee Due Reminder Alert',
+      category: 'fees',
+      defaultChannel: 'both',
+      subject: 'Vikas Grammar School — Term 3 Fee Payment Reminder',
+      text: 'Dear Parent, this is an official reminder from Vikas Grammar School HS Cherial. The Term 3 tuition fee of ₹{amount} for your ward {student_name} ({class_sec}) is due by {due_date}. Kindly pay online via UPI (vikasschool@sbi) or visit school fee counter. Reg: 36182100637.'
+    },
+    {
+      id: 'tmpl_holiday',
+      name: '🌧️ Emergency Rain / Govt Holiday Circular',
+      category: 'announcement',
+      defaultChannel: 'both',
+      subject: 'Urgent Notice: School Holiday Declared for {date}',
+      text: 'Dear Parents, as per official orders from Siddipet District Collectorate / Telangana Education Dept, Vikas Grammar School HS Cherial will remain CLOSED on {date} due to heavy rainfall alerts. Online classes / homework will resume via ERP portal. Headmaster, Vikas Grammar School.'
+    },
+    {
+      id: 'tmpl_ptm',
+      name: '👨‍👩‍👧 Parent-Teacher Meeting (PTM) Invitation',
+      category: 'announcement',
+      defaultChannel: 'whatsapp',
+      subject: 'Invitation for Term 1 Parent-Teacher Meeting (PTM)',
+      text: 'Dear Parent of {student_name}, you are cordially invited to attend the PTM on Saturday, 30th August 2026 between 10:00 AM to 01:30 PM at Vikas Grammar School Campus. Please meet the class mentor to review academic progress & BSE marks. Regards, Mrs. S. Radhika, Class Mentor.'
+    },
+    {
+      id: 'tmpl_exam',
+      name: '📝 Quarterly & Board Exam Timetable Release',
+      category: 'announcement',
+      defaultChannel: 'both',
+      subject: 'Quarterly Examination Schedule 2026-27 Announced',
+      text: 'Dear Parent, the Quarterly Examination schedule for Classes 1 to 10 has been published on the ERP portal. Exams commence from Sep 18, 2026. Hall tickets & syllabus are available in the Student & Parent ERP dashboards.'
+    },
+    {
+      id: 'tmpl_transport',
+      name: '🚌 School Bus Route & Timing Update',
+      category: 'transport',
+      defaultChannel: 'sms',
+      subject: 'Vikas School Transport Fleet Route Status',
+      text: 'Dear Parent, Bus #{bus_no} ({route_name}) has departed school campus on schedule. Live GPS tracking is active on your Vikas Parent ERP mobile portal. For queries call driver: {driver_phone}.'
+    }
+  ],
+
+  broadcastMessages: [
+    {
+      id: 'bc_01',
+      title: 'Term 3 Fee Due Reminder to 42 Defaulters',
+      category: 'Fee Reminder',
+      channel: 'WhatsApp + SMS',
+      channelIcon: 'messages-square',
+      audience: 'Fee Defaulters (Classes 1–10)',
+      recipientCount: 42,
+      date: 'Today, 11:30 AM',
+      sender: 'K. Rajesham (Headmaster)',
+      status: 'Delivered (100%)',
+      statusClass: 'badge-success',
+      content: 'Dear Parent, this is an official reminder from Vikas Grammar School. Term 3 tuition fee is due. Kindly clear dues via UPI or counter.'
+    },
+    {
+      id: 'bc_02',
+      title: 'Parent-Teacher Meeting (PTM) Circular',
+      category: 'Announcement',
+      channel: 'WhatsApp Broadcast',
+      channelIcon: 'message-circle',
+      audience: 'All Parents (Classes 1 to 10)',
+      recipientCount: 384,
+      date: 'Yesterday, 04:15 PM',
+      sender: 'Mrs. S. Radhika (Mentor Lead)',
+      status: 'Delivered (98.4%)',
+      statusClass: 'badge-success',
+      content: 'Dear Parents, PTM scheduled for Saturday, 30th August 2026 from 10:00 AM to 01:30 PM. Please visit school campus to discuss ward progress.'
+    },
+    {
+      id: 'bc_03',
+      title: 'Heavy Rain Alert & Special Assembly Notice',
+      category: 'Emergency Notice',
+      channel: 'SMS Gateway',
+      channelIcon: 'smartphone',
+      audience: 'All Parents & Staff',
+      recipientCount: 410,
+      date: '24 Aug 2026',
+      sender: 'Principal Office',
+      status: 'Delivered (100%)',
+      statusClass: 'badge-success',
+      content: 'Heavy rainfall advisory issued by Siddipet district administration. School timings will conclude at 03:30 PM today with prompt bus service.'
+    }
   ]
 };
+
 

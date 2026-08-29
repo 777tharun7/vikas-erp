@@ -175,9 +175,176 @@ document.addEventListener('DOMContentLoaded', () => {
       document.body.classList.remove('modal-open');
       showToast('Leave request submitted successfully for Mentor Teacher review!');
     });
+
+    // SMS & WhatsApp Broadcaster Modal
+    const broadcastModalOverlay = document.getElementById('broadcastModalOverlay');
+    const closeBroadcastBtn = document.getElementById('closeBroadcastBtn');
+    const cancelBroadcastBtn = document.getElementById('cancelBroadcastBtn');
+    const broadcastForm = document.getElementById('broadcastForm');
+    const broadcastTemplateSelect = document.getElementById('broadcastTemplateSelect');
+    const broadcastSubjectInput = document.getElementById('broadcastSubjectInput');
+    const broadcastMessageText = document.getElementById('broadcastMessageText');
+    const broadcastCharCount = document.getElementById('broadcastCharCount');
+
+    closeBroadcastBtn?.addEventListener('click', () => { broadcastModalOverlay?.classList.remove('active'); document.body.classList.remove('modal-open'); });
+    cancelBroadcastBtn?.addEventListener('click', () => { broadcastModalOverlay?.classList.remove('active'); document.body.classList.remove('modal-open'); });
+
+    broadcastTemplateSelect?.addEventListener('change', (e) => {
+      const val = e.target.value;
+      if (val === 'custom') {
+        if (broadcastSubjectInput) broadcastSubjectInput.value = '';
+        if (broadcastMessageText) broadcastMessageText.value = '';
+      } else {
+        const tmpl = MOCK_DATA.messageTemplates?.find(t => t.id === val);
+        if (tmpl) {
+          if (broadcastSubjectInput) broadcastSubjectInput.value = tmpl.subject;
+          if (broadcastMessageText) broadcastMessageText.value = tmpl.text;
+        }
+      }
+      if (broadcastCharCount && broadcastMessageText) {
+        broadcastCharCount.textContent = `${broadcastMessageText.value.length} characters`;
+      }
+    });
+
+    broadcastMessageText?.addEventListener('input', (e) => {
+      if (broadcastCharCount) {
+        broadcastCharCount.textContent = `${e.target.value.length} characters`;
+      }
+    });
+
+    broadcastForm?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const subject = broadcastSubjectInput ? broadcastSubjectInput.value.trim() : 'Official School Notice';
+      const text = broadcastMessageText ? broadcastMessageText.value.trim() : '';
+      const audience = document.getElementById('broadcastAudienceSelect')?.value || 'All Parents';
+      const channel = document.querySelector('input[name="broadcastChannel"]:checked')?.value || 'both';
+
+      const channelLabel = channel === 'whatsapp' ? 'WhatsApp Broadcast' : channel === 'sms' ? 'SMS Gateway' : 'WhatsApp + SMS';
+      const channelIcon = channel === 'whatsapp' ? 'message-circle' : channel === 'sms' ? 'smartphone' : 'messages-square';
+
+      const newBroadcast = {
+        id: 'bc_' + Date.now(),
+        title: subject,
+        category: 'Official Broadcast',
+        channel: channelLabel,
+        channelIcon: channelIcon,
+        audience: audience,
+        recipientCount: audience.includes('384') ? 384 : audience.includes('42') ? 42 : 120,
+        date: 'Just Now',
+        sender: authenticatedUser ? authenticatedUser.name : 'Principal Office',
+        status: 'Delivered (100%)',
+        statusClass: 'badge-success',
+        content: text
+      };
+
+      if (!MOCK_DATA.broadcastMessages) MOCK_DATA.broadcastMessages = [];
+      MOCK_DATA.broadcastMessages.unshift(newBroadcast);
+
+      broadcastModalOverlay?.classList.remove('active');
+      document.body.classList.remove('modal-open');
+
+      showToast(`🚀 Dispatched "${subject}" to ${audience} via ${channelLabel}!`);
+
+      if (channel === 'whatsapp' || channel === 'both') {
+        const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(subject + '\n\n' + text)}`;
+        window.open(waUrl, '_blank');
+      }
+
+      // Re-render if on broadcast screen
+      renderBroadcastScreen();
+    });
   }
 
   // Global Helpers attached to window
+  window.openBroadcastModal = function(templateId, audience) {
+    const overlay = document.getElementById('broadcastModalOverlay');
+    const select = document.getElementById('broadcastTemplateSelect');
+    const audSelect = document.getElementById('broadcastAudienceSelect');
+    const subjInput = document.getElementById('broadcastSubjectInput');
+    const msgText = document.getElementById('broadcastMessageText');
+    const charCount = document.getElementById('broadcastCharCount');
+
+    if (templateId && select) {
+      select.value = templateId;
+      const tmpl = MOCK_DATA.messageTemplates?.find(t => t.id === templateId);
+      if (tmpl) {
+        if (subjInput) subjInput.value = tmpl.subject;
+        if (msgText) msgText.value = tmpl.text;
+      }
+    } else {
+      if (select) select.value = 'custom';
+      if (subjInput) subjInput.value = '';
+      if (msgText) msgText.value = '';
+    }
+
+    if (audience && audSelect) {
+      audSelect.value = audience;
+    }
+
+    if (charCount && msgText) {
+      charCount.textContent = `${msgText.value.length} characters`;
+    }
+
+    overlay?.classList.add('active');
+    document.body.classList.add('modal-open');
+    if (window.lucide) lucide.createIcons();
+  };
+
+  window.sendWhatsAppFeeReminder = function(studentName, dueAmount, gradeSec, phone) {
+    const cleanPhone = phone ? phone.replace(/[^0-9]/g, '') : '919848012345';
+    const text = `Dear Parent, this is an official reminder from Vikas Grammar School HS Cherial (UDISE: 36182100637). The Term 3 tuition fee of Rs. ${dueAmount} for your ward ${studentName} (${gradeSec}) is pending. Please pay online via UPI (vikasschool@sbi) or visit school counter.`;
+    const waUrl = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent(text)}`;
+    
+    const newLog = {
+      id: 'bc_' + Date.now(),
+      title: `Fee Due WhatsApp Reminder — ${studentName}`,
+      category: 'Fee Reminder',
+      channel: 'WhatsApp Direct',
+      channelIcon: 'message-circle',
+      audience: `${studentName} Parent (${cleanPhone})`,
+      recipientCount: 1,
+      date: 'Just Now',
+      sender: authenticatedUser ? authenticatedUser.name : 'Principal Office',
+      status: 'Delivered (WhatsApp)',
+      statusClass: 'badge-success',
+      content: text
+    };
+    if (!MOCK_DATA.broadcastMessages) MOCK_DATA.broadcastMessages = [];
+    MOCK_DATA.broadcastMessages.unshift(newLog);
+
+    window.open(waUrl, '_blank');
+    showToast(`🟢 WhatsApp fee reminder opened for ${studentName} (+${cleanPhone})!`);
+  };
+
+  window.sendSmsFeeReminder = function(studentName, dueAmount, gradeSec) {
+    const text = `Vikas Grammar School Alert: Fee of Rs. ${dueAmount} is due for ${studentName} (${gradeSec}). Kindly pay before due date. UDISE: 36182100637.`;
+    const newLog = {
+      id: 'bc_' + Date.now(),
+      title: `Fee Due SMS Reminder — ${studentName}`,
+      category: 'Fee Reminder',
+      channel: 'SMS Gateway',
+      channelIcon: 'smartphone',
+      audience: `${studentName} Parent`,
+      recipientCount: 1,
+      date: 'Just Now',
+      sender: authenticatedUser ? authenticatedUser.name : 'Principal Office',
+      status: 'Delivered (SMS)',
+      statusClass: 'badge-success',
+      content: text
+    };
+    if (!MOCK_DATA.broadcastMessages) MOCK_DATA.broadcastMessages = [];
+    MOCK_DATA.broadcastMessages.unshift(newLog);
+
+    showToast(`📱 Automated Fee Reminder SMS dispatched to parent of ${studentName}!`);
+  };
+
+  window.resendBroadcast = function(broadcastId) {
+    const b = MOCK_DATA.broadcastMessages?.find(x => x.id === broadcastId);
+    if (b) {
+      showToast(`🚀 Re-dispatched "${b.title}" to ${b.audience} via ${b.channel}!`);
+    }
+  };
+
   window.openMarksheetModal = function(studentName) {
     const marksheetModalOverlay = document.getElementById('marksheetModalOverlay');
     if (studentName) {
@@ -711,6 +878,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'admissions', label: 'Admissions & Enquiries', icon: 'user-plus' },
         { id: 'students', label: 'Students Roster (Classes 1–10)', icon: 'users' },
         { id: 'academics', label: 'Academics & Board', icon: 'book-open' },
+        { id: 'sms_broadcast', label: '📢 SMS & WhatsApp Broadcaster', icon: 'send' },
         { id: 'staff_payroll', label: 'Staff & HR Payroll', icon: 'user-check' },
         { id: 'timetable', label: 'Master Timetables Matrix', icon: 'calendar' },
         { id: 'fees', label: 'Fee Collection Ledger', icon: 'indian-rupee' },
@@ -725,6 +893,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'my_students', label: 'My Class Students (360°)', icon: 'users' },
         { id: 'teacher_attendance', label: 'My Teacher Attendance', icon: 'check-circle' },
         { id: 'homework', label: 'Homework & Assignments', icon: 'book-open' },
+        { id: 'sms_broadcast', label: '📢 Class SMS & WhatsApp Alerts', icon: 'send' },
         { id: 'timetable', label: 'My Teaching Schedule', icon: 'clock' },
         { id: 'student_leave_approvals', label: 'Student Leave Approvals', icon: 'file-text' },
         { id: 'teacher_salary', label: 'My Salary & Payslips', icon: 'indian-rupee' },
@@ -747,6 +916,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'dashboard', label: 'Child Overview', icon: 'layout-grid' },
         { id: 'child_attendance', label: 'Child Attendance & Performance', icon: 'user-check' },
         { id: 'child_homework', label: 'Child Homework', icon: 'book-open' },
+        { id: 'parent_broadcasts', label: '📢 WhatsApp & SMS Alerts', icon: 'bell' },
         { id: 'parent_apply_leave', label: 'Apply Child Leave', icon: 'file-text' },
         { id: 'pay_fee', label: 'Pay School Fee', icon: 'indian-rupee' },
         { id: 'bus_tracking', label: 'Child Bus Tracking', icon: 'bus' },
@@ -797,6 +967,8 @@ document.addEventListener('DOMContentLoaded', () => {
       else if (activeRole === 'teacher') renderTeacherDashboardScreen();
       else if (activeRole === 'student') renderStudentDashboardScreen();
       else if (activeRole === 'parent') renderParentDashboardScreen();
+    } else if (viewId === 'sms_broadcast' || viewId === 'parent_broadcasts' || viewId === 'broadcasts') {
+      renderBroadcastScreen();
     } else if (viewId === 'admissions' || viewId === 'admissions_enquiries' || viewId === 'admissions_forms' || viewId === 'admissions_tests') {
       renderAdmissionsScreen();
     } else if (viewId === 'students' || viewId === 'student_directory' || viewId === 'my_students' || viewId === 'student_lifecycle' || viewId === 'student_documents') {
@@ -1501,9 +1673,11 @@ document.addEventListener('DOMContentLoaded', () => {
             <h2><i data-lucide="indian-rupee" style="color:var(--emerald);"></i> Fee Collection & Financial Ledger</h2>
             <p style="color:var(--text-secondary); margin-top:4px;">Q2 Academic Year 2026-2027 • Vikas Grammar School Cherial (UDISE: 36182100637)</p>
           </div>
-          <button class="btn-primary" onclick="showToast('Dispatched Fee Reminder SMS to Defaulters!')" style="padding:8px 16px; background:var(--emerald); color:white; border-radius:10px; font-weight:700;">
-            <i data-lucide="send"></i> Send Fee Reminder SMS
-          </button>
+          <div style="display:flex; gap:10px;">
+            <button class="btn-primary" onclick="window.openBroadcastModal('tmpl_fee', 'Fee Defaulters Only')" style="padding:8px 16px; background:#25D366; color:white; border-radius:10px; font-weight:700; display:flex; align-items:center; gap:6px; border:none; cursor:pointer;">
+              <i data-lucide="message-circle"></i> WhatsApp & SMS Defaulter Blast
+            </button>
+          </div>
         </div>
       </div>
 
@@ -1534,24 +1708,24 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="panel-header">
           <h3 class="panel-title">Student Fee Accounts & Installment Status</h3>
         </div>
-        <div class="table-container">
-          <table class="data-table" style="width:100%; border-collapse:collapse; text-align:left; font-size:0.88rem;">
+        <div class="table-responsive">
+          <table class="custom-table" style="width:100%;">
             <thead>
-              <tr style="color:var(--text-muted); font-size:0.78rem; text-transform:uppercase; background:var(--bg-card-sub);">
-                <th style="padding:12px;">Student Name</th>
+              <tr>
+                <th>Student Name</th>
                 <th>Class & Section</th>
                 <th>Total Annual Fee</th>
                 <th>Amount Paid</th>
                 <th>Balance Due</th>
                 <th>Payment Status</th>
                 <th>Last Receipt</th>
-                <th>Action</th>
+                <th>Direct Reminders & Actions</th>
               </tr>
             </thead>
             <tbody>
               ${list.map(f => `
-                <tr style="border-bottom:1px solid var(--border-color);">
-                  <td style="padding:12px;"><strong>${f.name}</strong></td>
+                <tr>
+                  <td><strong>${f.name}</strong></td>
                   <td><span class="badge badge-indigo">${f.gradeSec}</span></td>
                   <td>₹${f.totalFee.toLocaleString()}</td>
                   <td style="color:#047857; font-weight:700;">₹${f.paidFee.toLocaleString()}</td>
@@ -1559,8 +1733,137 @@ document.addEventListener('DOMContentLoaded', () => {
                   <td><span class="badge ${f.status === 'Paid' ? 'badge-success' : f.status === 'Partial' ? 'badge-warning' : 'badge-danger'}">${f.status}</span></td>
                   <td><code>${f.receiptNo}</code></td>
                   <td>
-                    <button onclick="showToast('Generated Fee Receipt PDF for ${f.name}!')" style="padding:4px 10px; font-size:0.75rem; background:var(--indigo); color:white; border-radius:6px; font-weight:700;">
-                      Receipt PDF
+                    <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                      ${f.dueFee > 0 ? `
+                        <button onclick="window.sendWhatsAppFeeReminder('${f.name}', ${f.dueFee}, '${f.gradeSec}', '+91 98480 12345')" title="Send WhatsApp Message to Parent" style="padding:4px 8px; font-size:0.75rem; background:#25D366; color:white; border:none; border-radius:6px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:4px;">
+                          <i data-lucide="message-circle" style="width:12px; height:12px;"></i> WhatsApp
+                        </button>
+                        <button onclick="window.sendSmsFeeReminder('${f.name}', ${f.dueFee}, '${f.gradeSec}')" title="Send SMS Alert to Parent" style="padding:4px 8px; font-size:0.75rem; background:#6366f1; color:white; border:none; border-radius:6px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:4px;">
+                          <i data-lucide="smartphone" style="width:12px; height:12px;"></i> SMS
+                        </button>
+                      ` : `
+                        <span style="font-size:0.72rem; color:var(--emerald); font-weight:700;">✅ Fully Cleared</span>
+                      `}
+                      <button onclick="showToast('Generated Fee Receipt PDF for ${f.name}!')" style="padding:4px 8px; font-size:0.75rem; background:var(--bg-card-sub); border:1px solid var(--border-color); color:var(--text-primary); border-radius:6px; font-weight:700; cursor:pointer;">
+                        PDF
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+    refreshLucideIcons();
+  }
+
+  /* 11. SMS & WHATSAPP BROADCAST HUB */
+  function renderBroadcastScreen() {
+    const broadcasts = MOCK_DATA.broadcastMessages || [];
+    const templates = MOCK_DATA.messageTemplates || [];
+
+    contentViewport.innerHTML = `
+      <div class="panel-card" style="background: linear-gradient(135deg, #065f46 0%, #047857 50%, #059669 100%); color: white; border: none; margin-bottom: 20px; border-radius: 16px; padding: 24px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="font-size: 1.6rem;">📢</span>
+              <h2 style="font-family: 'Outfit', sans-serif; font-size: 1.5rem; font-weight: 800; color: white; margin: 0;">SMS & WhatsApp Communication Broadcaster</h2>
+            </div>
+            <p style="color: #a7f3d0; margin-top: 6px; font-size: 0.85rem;">
+              Broadcast urgent fee dues, rain holidays, PTM invites, and exam circulars directly to parents' mobile numbers via Official WhatsApp & SMS Gateway.
+            </p>
+          </div>
+          <button class="btn-primary" onclick="window.openBroadcastModal()" style="background: #10b981; color: white; font-weight: 800; padding: 10px 20px; border-radius: 12px; display: flex; align-items: center; gap: 8px; border: none; cursor: pointer; box-shadow: 0 4px 14px rgba(16,185,129,0.4);">
+            <i data-lucide="plus-circle"></i> Create New Broadcast
+          </button>
+        </div>
+      </div>
+
+      <!-- BROADCAST QUICK STATS -->
+      <div class="stats-grid-4" style="margin-bottom: 20px;">
+        <div class="stat-card">
+          <div class="stat-title">Total Messages Sent (Aug)</div>
+          <div class="stat-value">1,248</div>
+          <span class="trend-badge trend-up-green">100% Gateway Uptime</span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">WhatsApp Delivery Rate</div>
+          <div class="stat-value" style="color: #10b981;">99.2%</div>
+          <span class="trend-badge trend-up-green">Direct Parent Phones</span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">SMS Delivery Rate</div>
+          <div class="stat-value" style="color: #6366f1;">98.8%</div>
+          <span class="trend-badge trend-indigo">Telangana DLT Verified</span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">Fee Reminders Dispatched</div>
+          <div class="stat-value" style="color: #f59e0b;">42 Defaulters</div>
+          <span class="trend-badge trend-orange">₹1.25 L Recovered</span>
+        </div>
+      </div>
+
+      <!-- READY-TO-SEND TEMPLATES -->
+      <div class="panel-card" style="margin-bottom: 20px;">
+        <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
+          <h3 class="panel-title">⚡ Quick Broadcast Templates</h3>
+          <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">One-click prefilled official circulars</span>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin-top: 14px;">
+          ${templates.map(t => `
+            <div style="background: var(--bg-card-sub); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div style="font-weight: 800; font-size: 0.9rem; color: var(--text-primary); margin-bottom: 6px;">${t.name}</div>
+                <p style="font-size: 0.78rem; color: var(--text-secondary); line-height: 1.4; margin-bottom: 12px;">${t.text.substring(0, 100)}...</p>
+              </div>
+              <div style="display: flex; gap: 8px; margin-top: 10px;">
+                <button class="btn-sm" onclick="window.openBroadcastModal('${t.id}')" style="flex: 1; background: var(--indigo); color: white; border: none; border-radius: 8px; padding: 6px 10px; font-weight: 700; font-size: 0.75rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                  <i data-lucide="send" style="width: 12px; height: 12px;"></i> Use Template
+                </button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <!-- DISPATCHED LOGS -->
+      <div class="panel-card">
+        <div class="panel-header">
+          <h3 class="panel-title">📜 Recent Multi-Channel Broadcast History</h3>
+        </div>
+        <div class="table-responsive">
+          <table class="custom-table" style="width: 100%;">
+            <thead>
+              <tr>
+                <th>Circular Subject</th>
+                <th>Category</th>
+                <th>Channel</th>
+                <th>Audience</th>
+                <th>Recipients</th>
+                <th>Dispatched At</th>
+                <th>Delivery Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${broadcasts.map(b => `
+                <tr>
+                  <td>
+                    <div style="font-weight: 700; color: var(--text-primary);">${b.title}</div>
+                    <div style="font-size: 0.72rem; color: var(--text-muted);">${b.content.substring(0, 60)}...</div>
+                  </td>
+                  <td><span class="badge-indigo">${b.category}</span></td>
+                  <td><strong>${b.channel}</strong></td>
+                  <td>${b.audience}</td>
+                  <td><strong>${b.recipientCount} Parents</strong></td>
+                  <td>${b.date}</td>
+                  <td><span class="${b.statusClass}">${b.status}</span></td>
+                  <td>
+                    <button class="btn-sm" onclick="window.resendBroadcast('${b.id}')" style="background: var(--bg-card-sub); border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 6px; padding: 4px 8px; font-size: 0.72rem; cursor: pointer; display: flex; align-items: center; gap: 2px;">
+                      <i data-lucide="refresh-cw" style="width: 12px; height: 12px;"></i> Resend
                     </button>
                   </td>
                 </tr>
@@ -1570,6 +1873,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       </div>
     `;
+
     refreshLucideIcons();
   }
 
@@ -2024,10 +2328,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* 21. CHILD ATTENDANCE & PERFORMANCE (PARENT) */
   function renderChildAttendanceScreen() {
+    const feeDue = MOCK_DATA.feeStructure ? MOCK_DATA.feeStructure.dueAmount : 3500;
+    const broadcasts = MOCK_DATA.broadcastMessages || [];
+
     contentViewport.innerHTML = `
-      <div class="panel-card" style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border-color: #bfdbfe; margin-bottom:20px;">
-        <h2><i data-lucide="user-check" style="color:var(--indigo);"></i> Child Academic & Attendance Profile — Rahul Reddy</h2>
-        <p style="color:var(--text-secondary); margin-top:4px;">Monitoring Rahul Reddy (Class VIII Section A) • Vikas Grammar School HS Cherial</p>
+      <div class="panel-card" style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border-color: #bfdbfe; margin-bottom:20px; border-radius: 16px; padding: 22px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="font-size: 1.5rem;">👨‍👩‍👧</span>
+              <h2 style="margin: 0; color: #1e1b4b; font-family: 'Outfit', sans-serif;"><i data-lucide="user-check" style="color:var(--indigo);"></i> Child Academic & Attendance Portal — Rahul Reddy</h2>
+            </div>
+            <p style="color:var(--text-secondary); margin-top:4px; font-size: 0.85rem;">Ward of V. Reddy • Class VIII Section A • Vikas Grammar School HS Cherial (UDISE: 36182100637)</p>
+          </div>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <button class="btn-primary" onclick="window.openPaymentModal(${feeDue}, 'Rahul Reddy (Class VIII A)')" style="background: #10b981; color: white; padding: 8px 16px; border-radius: 10px; font-weight: 700; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+              <i data-lucide="indian-rupee"></i> Pay Fee Dues (₹${feeDue.toLocaleString()})
+            </button>
+            <button class="btn-primary" onclick="window.openMarksheetModal('Rahul Reddy')" style="background: var(--indigo); color: white; padding: 8px 16px; border-radius: 10px; font-weight: 700; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+              <i data-lucide="file-text"></i> BSE Marksheet
+            </button>
+            <button class="btn-primary" onclick="window.openLeaveModal()" style="background: #f59e0b; color: white; padding: 8px 16px; border-radius: 10px; font-weight: 700; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+              <i data-lucide="calendar"></i> Apply Leave
+            </button>
+          </div>
+        </div>
       </div>
 
       <div class="stats-grid-4" style="margin-bottom:20px;">
@@ -2037,19 +2362,46 @@ document.addEventListener('DOMContentLoaded', () => {
           <span class="trend-badge trend-up-green">142/150 Days Present</span>
         </div>
         <div class="stat-card">
-          <div class="stat-title">Academic Score Average</div>
-          <div class="stat-value" style="color:#3b82f6;">86%</div>
-          <span class="trend-badge trend-up-blue">Rank #3 in Class VIII A</span>
+          <div class="stat-title">Cumulative GPA Grade</div>
+          <div class="stat-value" style="color:#3b82f6;">89.1%</div>
+          <span class="trend-badge trend-up-blue">Grade A+ (9.2 CGPA)</span>
         </div>
         <div class="stat-card">
           <div class="stat-title">Pending Homeworks</div>
-          <div class="stat-value" style="color:#f59e0b;">2</div>
-          <span class="trend-badge trend-orange">Due Tomorrow</span>
+          <div class="stat-value" style="color:#f59e0b;">1 Assignment</div>
+          <span class="trend-badge trend-orange">Due Sep 02</span>
         </div>
         <div class="stat-card">
           <div class="stat-title">Fee Balance Due</div>
-          <div class="stat-value" style="color:#ef4444;">₹3,500</div>
-          <span class="trend-badge trend-purple">Term 3 Dues</span>
+          <div class="stat-value" style="color:${feeDue > 0 ? '#ef4444' : '#10b981'};">₹${feeDue.toLocaleString()}</div>
+          <span class="trend-badge ${feeDue > 0 ? 'trend-purple' : 'trend-up-green'}">${feeDue > 0 ? 'Term 3 Dues' : 'Cleared ✅'}</span>
+        </div>
+      </div>
+
+      <!-- RECEIVED WHATSAPP & SMS CIRCULARS FOR PARENTS -->
+      <div class="panel-card" style="margin-bottom: 20px;">
+        <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
+          <h3 class="panel-title">📱 Official School WhatsApp & SMS Alerts Received</h3>
+          <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Broadcast Feed for Parent Contact (+91 98480 12345)</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 14px;">
+          ${broadcasts.map(b => `
+            <div style="background: var(--bg-card-sub); border: 1px solid var(--border-color); border-left: 4px solid #10b981; border-radius: 12px; padding: 14px 18px; display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; flex-wrap: wrap;">
+              <div style="flex: 1; min-width: 260px;">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                  <span class="badge-indigo" style="font-size: 0.72rem;">${b.category}</span>
+                  <span style="font-size: 0.72rem; color: #10b981; font-weight: 700;">via ${b.channel}</span>
+                  <span style="font-size: 0.72rem; color: var(--text-muted);">${b.date}</span>
+                </div>
+                <div style="font-weight: 800; font-size: 0.92rem; color: var(--text-primary); margin-bottom: 4px;">${b.title}</div>
+                <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.4; margin: 0;">${b.content}</p>
+              </div>
+              <div style="text-align: right; flex-shrink: 0;">
+                <div style="font-size: 0.75rem; font-weight: 700; color: var(--indigo);">${b.sender}</div>
+                <div style="font-size: 0.7rem; color: var(--text-muted);">Vikas Grammar School</div>
+              </div>
+            </div>
+          `).join('')}
         </div>
       </div>
     `;
