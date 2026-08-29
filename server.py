@@ -198,14 +198,14 @@ def init_db():
             'badge': 'Gamified Student Portal',
             'avatar': 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=120&q=80',
             'details': 'Roll No: VIII-014 • PEN-36182100637-801',
-            'phone': '+91 98480 12345',
+            'phone': '+91 79958 70172',
             'id_number': 'VIII-014',
             'pen_id': 'PEN-36182100637-801',
             'address': 'H.No. 5-12/A, Near Bus Station, Cheriyal, Siddipet Dist, Telangana — 506223',
             'class_sec': 'Class VIII Section A',
             'blood_group': 'A+',
             'dob': '14 Nov 2012',
-            'emergency_contact': 'V. Reddy (Father) (+91 98480 12345)',
+            'emergency_contact': 'V. Reddy (Father) (+91 79958 70172)',
             'joined_date': '05 June 2018'
         },
         {
@@ -217,15 +217,15 @@ def init_db():
             'designation': 'Parent / Guardian',
             'badge': 'Parent Info-First Portal',
             'avatar': 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80',
-            'details': 'Parent ID: PRT-VG-101 • Contact: +91 98480 12345',
-            'phone': '+91 98480 12345',
+            'details': 'Parent ID: PRT-VG-101 • Contact: +91 79958 70172',
+            'phone': '+91 79958 70172',
             'id_number': 'PRT-VG-101',
             'pen_id': 'PRT-REF-Rahul-Reddy-VIII014',
             'address': 'H.No. 5-12/A, Near Bus Station, Cheriyal, Siddipet Dist, Telangana — 506223',
             'class_sec': 'Parent of Rahul Reddy (Class VIII A)',
             'blood_group': 'O+',
             'dob': '08 Apr 1980',
-            'emergency_contact': 'V. Laxmi (Spouse) (+91 98480 12346)',
+            'emergency_contact': 'V. Laxmi (Spouse) (+91 79958 70172)',
             'joined_date': '05 June 2018'
         }
     ]

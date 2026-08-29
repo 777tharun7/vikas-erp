@@ -69,14 +69,14 @@ const MOCK_DATA = {
       badge: 'Gamified Student Portal',
       avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=120&q=80',
       details: 'Roll No: VIII-014 • PEN-36182100637-801',
-      phone: '+91 98480 12345',
+      phone: '+91 79958 70172',
       idNumber: 'VIII-014',
       penId: 'PEN-36182100637-801',
       address: 'H.No. 5-12/A, Near Bus Station, Cheriyal, Siddipet Dist, Telangana — 506223',
       classSec: 'Class VIII Section A',
       bloodGroup: 'A+',
       dob: '14 Nov 2012',
-      emergencyContact: 'V. Reddy (Father) (+91 98480 12345)',
+      emergencyContact: 'V. Reddy (Father) (+91 79958 70172)',
       joinedDate: '05 June 2018'
     },
     {
@@ -88,15 +88,15 @@ const MOCK_DATA = {
       designation: 'Parent / Guardian',
       badge: 'Parent Info-First Portal',
       avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80',
-      details: 'Parent ID: PRT-VG-101 • Contact: +91 98480 12345',
-      phone: '+91 98480 12345',
+      details: 'Parent ID: PRT-VG-101 • Contact: +91 79958 70172',
+      phone: '+91 79958 70172',
       idNumber: 'PRT-VG-101',
       penId: 'PRT-REF-Rahul-Reddy-VIII014',
       address: 'H.No. 5-12/A, Near Bus Station, Cheriyal, Siddipet Dist, Telangana — 506223',
       classSec: 'Parent of Rahul Reddy (Class VIII A)',
       bloodGroup: 'O+',
       dob: '08 Apr 1980',
-      emergencyContact: 'V. Laxmi (Spouse) (+91 98480 12346)',
+      emergencyContact: 'V. Laxmi (Spouse) (+91 79958 70172)',
       joinedDate: '05 June 2018'
     }
   ],
@@ -122,7 +122,7 @@ const MOCK_DATA = {
 
   // 2. STUDENT DIRECTORY (CLASSES 1 TO 10)
   studentDirectoryList: [
-    { id: 'std_101', name: 'Rahul Reddy', grade: 'Class VIII', section: 'Section A', rollNo: 'VIII-014', penId: 'PEN-36182100637-801', parentName: 'V. Reddy', parentContact: '+91 98480 12345', attendancePct: 94.5, gpaPct: 88, gradeLetter: 'Grade A', feeStatus: 'Partial', feeDue: 3500, avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=120&q=80' },
+    { id: 'std_101', name: 'Rahul Reddy', grade: 'Class VIII', section: 'Section A', rollNo: 'VIII-014', penId: 'PEN-36182100637-801', parentName: 'V. Reddy', parentContact: '+91 79958 70172', attendancePct: 94.5, gpaPct: 88, gradeLetter: 'Grade A', feeStatus: 'Partial', feeDue: 3500, avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=120&q=80' },
     { id: 'std_102', name: 'Pooja Sharma', grade: 'Class VIII', section: 'Section A', rollNo: 'VIII-015', penId: 'PEN-36182100637-802', parentName: 'K. Sharma', parentContact: '+91 98480 67890', attendancePct: 96.8, gpaPct: 94, gradeLetter: 'Grade A+', feeStatus: 'Paid', feeDue: 0, avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=120&q=80' },
     { id: 'std_103', name: 'V. Sai Kumar', grade: 'Class X', section: 'Section A', rollNo: 'X-001', penId: 'PEN-36182100637-1001', parentName: 'V. Srinivas', parentContact: '+91 98480 11223', attendancePct: 98.2, gpaPct: 96, gradeLetter: 'Grade A+', feeStatus: 'Paid', feeDue: 0, avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=120&q=80' },
     { id: 'std_104', name: 'K. Ananya', grade: 'Class X', section: 'Section B', rollNo: 'X-022', penId: 'PEN-36182100637-1022', parentName: 'K. Ramesh', parentContact: '+91 98480 44556', attendancePct: 91.0, gpaPct: 82, gradeLetter: 'Grade B+', feeStatus: 'Partial', feeDue: 2500, avatar: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=120&q=80' },

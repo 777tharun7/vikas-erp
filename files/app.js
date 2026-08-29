@@ -291,7 +291,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   window.sendWhatsAppFeeReminder = function(studentName, dueAmount, gradeSec, phone) {
-    const cleanPhone = phone ? phone.replace(/[^0-9]/g, '') : '919848012345';
+    const cleanPhone = phone ? phone.replace(/[^0-9]/g, '') : '917995870172';
     const text = `Dear Parent, this is an official reminder from Vikas Grammar School HS Cherial (UDISE: 36182100637). The Term 3 tuition fee of Rs. ${dueAmount} for your ward ${studentName} (${gradeSec}) is pending. Please pay online via UPI (vikasschool@sbi) or visit school counter.`;
     const waUrl = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent(text)}`;
     
@@ -1735,7 +1735,7 @@ document.addEventListener('DOMContentLoaded', () => {
                   <td>
                     <div style="display:flex; gap:6px; flex-wrap:wrap;">
                       ${f.dueFee > 0 ? `
-                        <button onclick="window.sendWhatsAppFeeReminder('${f.name}', ${f.dueFee}, '${f.gradeSec}', '+91 98480 12345')" title="Send WhatsApp Message to Parent" style="padding:4px 8px; font-size:0.75rem; background:#25D366; color:white; border:none; border-radius:6px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:4px;">
+                        <button onclick="window.sendWhatsAppFeeReminder('${f.name}', ${f.dueFee}, '${f.gradeSec}', '+91 79958 70172')" title="Send WhatsApp Message to Parent" style="padding:4px 8px; font-size:0.75rem; background:#25D366; color:white; border:none; border-radius:6px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:4px;">
                           <i data-lucide="message-circle" style="width:12px; height:12px;"></i> WhatsApp
                         </button>
                         <button onclick="window.sendSmsFeeReminder('${f.name}', ${f.dueFee}, '${f.gradeSec}')" title="Send SMS Alert to Parent" style="padding:4px 8px; font-size:0.75rem; background:#6366f1; color:white; border:none; border-radius:6px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:4px;">
@@ -2382,7 +2382,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="panel-card" style="margin-bottom: 20px;">
         <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
           <h3 class="panel-title">📱 Official School WhatsApp & SMS Alerts Received</h3>
-          <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Broadcast Feed for Parent Contact (+91 98480 12345)</span>
+          <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Broadcast Feed for Parent Contact (+91 79958 70172)</span>
         </div>
         <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 14px;">
           ${broadcasts.map(b => `
