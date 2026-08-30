@@ -1587,9 +1587,9 @@ code {
 }
 
 .demo-chip.active {
-  background: var(--accent-grad-soft);
-  border-color: var(--indigo);
-  box-shadow: 0 0 0 1px var(--indigo);
+  background: #eef2ff;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 1.5px #4f46e5;
 }
 
 .chip-icon {
