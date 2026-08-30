@@ -345,6 +345,91 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+  window.toggleSelectAllFee = function(isChecked) {
+    const checkboxes = document.querySelectorAll('.fee-row-checkbox:not(:disabled)');
+    checkboxes.forEach(cb => cb.checked = isChecked);
+    window.updateFeeSelectedCount();
+  };
+
+  window.selectAllDefaultersOnly = function() {
+    const selectAllCb = document.getElementById('selectAllFeeCheckbox');
+    const checkboxes = document.querySelectorAll('.fee-row-checkbox');
+    checkboxes.forEach(cb => {
+      if (!cb.disabled) {
+        cb.checked = true;
+      } else {
+        cb.checked = false;
+      }
+    });
+    if (selectAllCb) selectAllCb.checked = true;
+    window.updateFeeSelectedCount();
+    showToast('Selected all fee defaulters with pending dues!');
+  };
+
+  window.updateFeeSelectedCount = function() {
+    const checked = document.querySelectorAll('.fee-row-checkbox:checked');
+    const countSpan = document.getElementById('selectedDefaulterCount');
+    const batchBtn = document.getElementById('batchSendBtn');
+    if (countSpan) countSpan.textContent = checked.length;
+    if (batchBtn) {
+      if (checked.length > 0) {
+        batchBtn.style.opacity = '1';
+        batchBtn.style.pointerEvents = 'auto';
+      } else {
+        batchBtn.style.opacity = '0.6';
+        batchBtn.style.pointerEvents = 'none';
+      }
+    }
+  };
+
+  window.sendBatchFeeReminders = function() {
+    const checked = document.querySelectorAll('.fee-row-checkbox:checked');
+    if (checked.length === 0) {
+      showToast('⚠️ Please select at least one student to send fee reminder.');
+      return;
+    }
+
+    const students = [];
+    checked.forEach(cb => {
+      students.push({
+        name: cb.getAttribute('data-name'),
+        due: cb.getAttribute('data-due'),
+        grade: cb.getAttribute('data-grade'),
+        phone: cb.getAttribute('data-phone') || '7995870172'
+      });
+    });
+
+    const newLog = {
+      id: 'bc_' + Date.now(),
+      title: `Batch Multi-Channel Fee Notice (${students.length} Defaulters)`,
+      category: 'Fee Blast',
+      channel: 'WhatsApp + SMS',
+      channelIcon: 'messages-square',
+      audience: `${students.length} Selected Parents (${students.map(s => s.name).slice(0, 3).join(', ')}${students.length > 3 ? '...' : ''})`,
+      recipientCount: students.length,
+      date: 'Just Now',
+      sender: authenticatedUser ? authenticatedUser.name : 'Principal Office',
+      status: 'Delivered (100%)',
+      statusClass: 'badge-success',
+      content: `Official Vikas Grammar School Fee Alert dispatched to ${students.length} selected student parents via automated WhatsApp & SMS Gateway.`
+    };
+    if (!MOCK_DATA.broadcastMessages) MOCK_DATA.broadcastMessages = [];
+    MOCK_DATA.broadcastMessages.unshift(newLog);
+
+    fetch('/api/broadcast', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newLog)
+    }).catch(() => {});
+
+    showToast(`🚀 Dispatched automated SMS & WhatsApp fee alerts to ${students.length} selected students!`);
+
+    const firstStudent = students[0];
+    const waText = `Dear Parents, this is an official fee reminder from Vikas Grammar School HS Cherial (UDISE: 36182100637). Term 3 tuition fee balance is pending. Please clear online via UPI (vikasschool@sbi) or visit school counter.`;
+    const waUrl = `https://api.whatsapp.com/send?phone=${firstStudent.phone}&text=${encodeURIComponent(waText)}`;
+    window.open(waUrl, '_blank');
+  };
+
   window.openMarksheetModal = function(studentName) {
     const marksheetModalOverlay = document.getElementById('marksheetModalOverlay');
     if (studentName) {
@@ -981,8 +1066,14 @@ document.addEventListener('DOMContentLoaded', () => {
       if (activeRole === 'principal') renderMasterScheduleMatrixScreen('Class VIII A');
       else if (activeRole === 'teacher') renderTeacherTimetableScreen();
       else renderStudentTimetableScreen();
-    } else if (viewId === 'fees' || viewId === 'my_fees' || viewId === 'pay_fee' || viewId === 'fees_ledger' || viewId === 'fees_defaulters') {
-      renderFeeLedgerScreen();
+    } else if (viewId === 'fees' || viewId === 'fees_ledger' || viewId === 'fees_defaulters') {
+      if (activeRole === 'principal') {
+        renderFeeLedgerScreen();
+      } else {
+        renderStudentFeeBreakdownScreen();
+      }
+    } else if (viewId === 'my_fees' || viewId === 'pay_fee') {
+      renderStudentFeeBreakdownScreen();
     } else if (viewId === 'transport' || viewId === 'bus_info' || viewId === 'bus_tracking') {
       renderTransportFleetScreen();
     } else if (viewId === 'library') {
@@ -1663,19 +1754,28 @@ document.addEventListener('DOMContentLoaded', () => {
     refreshLucideIcons();
   }
 
-  /* 10. FEE COLLECTION LEDGER */
+  /* 10. FEE COLLECTION & FINANCIAL LEDGER (PRINCIPAL ONLY) */
   function renderFeeLedgerScreen() {
     const list = MOCK_DATA.feeLedgerFullList;
     contentViewport.innerHTML = `
-      <div class="panel-card" style="background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border-color: #a7f3d0; margin-bottom:20px;">
+      <div class="panel-card" style="background: #ffffff; border: 1px solid var(--border-color); margin-bottom:20px; border-radius: 16px; padding: 22px;">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
           <div>
-            <h2><i data-lucide="indian-rupee" style="color:var(--emerald);"></i> Fee Collection & Financial Ledger</h2>
-            <p style="color:var(--text-secondary); margin-top:4px;">Q2 Academic Year 2026-2027 • Vikas Grammar School Cherial (UDISE: 36182100637)</p>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 1.5rem;">👑</span>
+              <h2 style="margin: 0; color: var(--text-primary);"><i data-lucide="indian-rupee" style="color:var(--emerald);"></i> Fee Collection & Financial Ledger</h2>
+            </div>
+            <p style="color:var(--text-secondary); margin-top:4px; font-size: 0.85rem;">Principal Financial Command Center • Q2 Academic Year 2026-2027 • Vikas Grammar School HS Cherial (UDISE: 36182100637)</p>
           </div>
-          <div style="display:flex; gap:10px;">
-            <button class="btn-primary" onclick="window.openBroadcastModal('tmpl_fee', 'Fee Defaulters Only')" style="padding:8px 16px; background:#25D366; color:white; border-radius:10px; font-weight:700; display:flex; align-items:center; gap:6px; border:none; cursor:pointer;">
-              <i data-lucide="message-circle"></i> WhatsApp & SMS Defaulter Blast
+          <div style="display:flex; gap:10px; flex-wrap: wrap;">
+            <button class="btn-primary" onclick="window.selectAllDefaultersOnly()" style="padding:8px 14px; background:#eff6ff; color:#3b82f6; border:1px solid #bfdbfe; border-radius:10px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:6px;">
+              <i data-lucide="check-square"></i> Select All Defaulters (42)
+            </button>
+            <button class="btn-primary" id="batchSendBtn" onclick="window.sendBatchFeeReminders()" style="padding:8px 16px; background:#25D366; color:white; border-radius:10px; font-weight:700; display:flex; align-items:center; gap:6px; border:none; cursor:pointer; box-shadow: 0 4px 12px rgba(37,211,102,0.3); opacity: 0.6; pointer-events: none;">
+              <i data-lucide="send"></i> ⚡ Multi-Channel Blast to Selected (<span id="selectedDefaulterCount">0</span>)
+            </button>
+            <button class="btn-primary" onclick="window.openBroadcastModal('tmpl_fee', 'Fee Defaulters Only')" style="padding:8px 14px; background:var(--indigo); color:white; border-radius:10px; font-weight:700; display:flex; align-items:center; gap:6px; border:none; cursor:pointer;">
+              <i data-lucide="message-circle"></i> Custom Blast
             </button>
           </div>
         </div>
@@ -1705,13 +1805,17 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
 
       <div class="panel-card">
-        <div class="panel-header">
+        <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
           <h3 class="panel-title">Student Fee Accounts & Installment Status</h3>
+          <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Select multiple students to dispatch automated multi-channel fee reminders in 1 click</span>
         </div>
         <div class="table-responsive">
           <table class="custom-table" style="width:100%;">
             <thead>
               <tr>
+                <th style="width:36px; text-align:center;">
+                  <input type="checkbox" id="selectAllFeeCheckbox" onchange="window.toggleSelectAllFee(this.checked)" title="Select all defaulter students" style="cursor: pointer; width: 16px; height: 16px;">
+                </th>
                 <th>Student Name</th>
                 <th>Class & Section</th>
                 <th>Total Annual Fee</th>
@@ -1725,6 +1829,9 @@ document.addEventListener('DOMContentLoaded', () => {
             <tbody>
               ${list.map(f => `
                 <tr>
+                  <td style="text-align:center;">
+                    <input type="checkbox" class="fee-row-checkbox" data-id="${f.id}" data-name="${f.name}" data-due="${f.dueFee}" data-grade="${f.gradeSec}" data-phone="${f.phone || '7995870172'}" onchange="window.updateFeeSelectedCount()" ${f.dueFee > 0 ? 'style="cursor: pointer; width: 16px; height: 16px;"' : 'disabled style="opacity:0.25; cursor:not-allowed; width: 16px; height: 16px;"'}>
+                  </td>
                   <td><strong>${f.name}</strong></td>
                   <td><span class="badge badge-indigo">${f.gradeSec}</span></td>
                   <td>₹${f.totalFee.toLocaleString()}</td>
@@ -1756,6 +1863,141 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       </div>
     `;
+    refreshLucideIcons();
+  }
+
+  /* 10B. INDIVIDUAL STUDENT FEE BREAKDOWN (STUDENT & PARENT PORTAL) */
+  function renderStudentFeeBreakdownScreen() {
+    const studentUser = authenticatedUser || findUserByRole('student');
+    const studentName = studentUser ? studentUser.name : 'Rahul Reddy';
+    const studentGrade = studentUser && studentUser.classSec ? studentUser.classSec : 'Class VIII Section A';
+    const feeInfo = MOCK_DATA.feeStructure || {
+      totalAmount: 15000,
+      paidAmount: 11500,
+      dueAmount: 3500,
+      dueDate: 'Sep 05, 2026',
+      receiptNo: 'REC-VG-2026-081'
+    };
+
+    contentViewport.innerHTML = `
+      <!-- TOP BANNER -->
+      <div class="panel-card" style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 1px solid #bbf7d0; margin-bottom: 20px; border-radius: 16px; padding: 22px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="font-size: 1.6rem;">💳</span>
+              <div>
+                <h2 style="color: #166534; font-size: 1.35rem; font-weight: 800; margin: 0;">My Student Fee Account & Installment Breakdown</h2>
+                <p style="color: #15803d; font-size: 0.85rem; margin-top: 3px; font-weight: 600;">
+                  ${studentName} • ${studentGrade} • Vikas Grammar School HS Cherial (UDISE: 36182100637)
+                </p>
+              </div>
+            </div>
+          </div>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            ${feeInfo.dueAmount > 0 ? `
+              <button class="btn-primary" onclick="window.openPaymentModal(${feeInfo.dueAmount}, '${studentName} (${studentGrade})')" style="background: #10b981; color: white; padding: 9px 18px; border-radius: 10px; font-weight: 700; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(16,185,129,0.3);">
+                <i data-lucide="indian-rupee"></i> Pay Due Fee (₹${feeInfo.dueAmount.toLocaleString()})
+              </button>
+            ` : `
+              <span class="badge badge-success" style="padding: 8px 14px; font-size: 0.85rem;">✅ All Fees Cleared</span>
+            `}
+            <button onclick="showToast('Downloaded Official Fee Statement PDF for ${studentName}!')" style="background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px 14px; border-radius: 10px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+              <i data-lucide="download"></i> Fee Statement PDF
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4 STAT METRICS FOR STUDENT -->
+      <div class="stats-grid-4" style="margin-bottom: 20px;">
+        <div class="stat-card">
+          <div class="stat-title">Total Annual Tuition Fee</div>
+          <div class="stat-value">₹${feeInfo.totalAmount.toLocaleString()}</div>
+          <span class="trend-badge trend-up-blue">Academic Year 2026–27</span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">Total Amount Paid</div>
+          <div class="stat-value" style="color: #10b981;">₹${feeInfo.paidAmount.toLocaleString()}</div>
+          <span class="trend-badge trend-up-green">76.7% Cleared</span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">Current Outstanding Dues</div>
+          <div class="stat-value" style="color: ${feeInfo.dueAmount > 0 ? '#ef4444' : '#10b981'};">₹${feeInfo.dueAmount.toLocaleString()}</div>
+          <span class="trend-badge ${feeInfo.dueAmount > 0 ? 'trend-orange' : 'trend-up-green'}">${feeInfo.dueAmount > 0 ? 'Due by ' + feeInfo.dueDate : 'Fully Cleared ✅'}</span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">Last Payment Receipt</div>
+          <div class="stat-value" style="font-size: 1.15rem; color: var(--indigo); font-family: monospace;">${feeInfo.receiptNo}</div>
+          <span class="trend-badge trend-purple">Verified On Bank Record</span>
+        </div>
+      </div>
+
+      <!-- INSTALLMENTS BREAKDOWN TABLE -->
+      <div class="panel-card" style="margin-bottom: 20px;">
+        <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
+          <h3 class="panel-title">📜 2026–2027 Term-Wise Fee Installments</h3>
+          <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Telangana State Board Curriculum Fee Structure</span>
+        </div>
+        <div class="table-responsive">
+          <table class="custom-table" style="width: 100%;">
+            <thead>
+              <tr>
+                <th>Installment Term</th>
+                <th>Covered Period</th>
+                <th>Term Fee</th>
+                <th>Due Date</th>
+                <th>Payment Status</th>
+                <th>Receipt / Transaction Reference</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Term 1 (Admission & Tuition)</strong></td>
+                <td>April 2026 – July 2026</td>
+                <td><strong>₹5,000</strong></td>
+                <td>Jun 10, 2026</td>
+                <td><span class="badge badge-success">Paid in Full</span></td>
+                <td><code>REC-VG-2026-012</code></td>
+                <td>
+                  <button onclick="showToast('Downloaded Term 1 Receipt PDF!')" style="padding: 4px 10px; font-size: 0.75rem; background: var(--bg-card-sub); border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 6px; font-weight: 700; cursor: pointer;">
+                    Download PDF
+                  </button>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Term 2 (Mid-Term & Lab)</strong></td>
+                <td>August 2026 – November 2026</td>
+                <td><strong>₹6,500</strong></td>
+                <td>Aug 10, 2026</td>
+                <td><span class="badge badge-success">Paid in Full</span></td>
+                <td><code>REC-VG-2026-081</code></td>
+                <td>
+                  <button onclick="showToast('Downloaded Term 2 Receipt PDF!')" style="padding: 4px 10px; font-size: 0.75rem; background: var(--bg-card-sub); border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 6px; font-weight: 700; cursor: pointer;">
+                    Download PDF
+                  </button>
+                </td>
+              </tr>
+              <tr style="background: #fffbeb;">
+                <td><strong>Term 3 (Final Term & Exam)</strong></td>
+                <td>December 2026 – March 2027</td>
+                <td style="color: #dc2626; font-weight: 800;">₹3,500</td>
+                <td><strong>Sep 05, 2026</strong></td>
+                <td><span class="badge badge-danger">Pending Due</span></td>
+                <td><em>Awaiting Payment</em></td>
+                <td>
+                  <button onclick="window.openPaymentModal(3500, '${studentName} (${studentGrade})')" style="padding: 5px 12px; font-size: 0.75rem; background: #10b981; color: white; border: none; border-radius: 6px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                    <i data-lucide="credit-card" style="width: 12px; height: 12px;"></i> Pay ₹3,500
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+
     refreshLucideIcons();
   }
 
