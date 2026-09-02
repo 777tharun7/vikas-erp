@@ -748,6 +748,44 @@ const MOCK_DATA = {
   campusFacilitiesData: {
     lastHygieneAudit: 'Sep 02, 2026 (08:30 AM by Health Committee)',
     overallCampusHygieneScore: 95.8, // %
+    weeklyHygieneRatings: [
+      {
+        week: 'Week 1',
+        dateRange: 'Aug 10 – Aug 16, 2026',
+        score: 94.2,
+        ratingStars: '4.7 / 5',
+        status: 'Audit Certified',
+        auditor: 'Health & Sanitation Committee',
+        highlights: 'RO Plant TDS checked (98 PPM). Restrooms sanitized 3x daily. Zero drainage blockages.'
+      },
+      {
+        week: 'Week 2',
+        dateRange: 'Aug 17 – Aug 23, 2026',
+        score: 95.0,
+        ratingStars: '4.8 / 5',
+        status: 'Audit Certified',
+        auditor: 'Mrs. S. Radhika & Caretaker Mallesh',
+        highlights: 'Deep floor scrubbing in junior wing corridors. Handwash liquid soaps replenished across all floors.'
+      },
+      {
+        week: 'Week 3',
+        dateRange: 'Aug 24 – Aug 30, 2026',
+        score: 96.2,
+        ratingStars: '4.9 / 5',
+        status: 'Audit Certified',
+        auditor: 'Headmaster K. Rajesham & Health Squad',
+        highlights: 'Water testing passed neutral pH (7.2). Electric sanitary incinerator calibrated and verified.'
+      },
+      {
+        week: 'Week 4 (Current)',
+        dateRange: 'Aug 31 – Sep 02, 2026',
+        score: 95.8,
+        ratingStars: '4.8 / 5',
+        status: 'Active Current Week Score',
+        auditor: 'Campus Health Committee & Duty Faculty',
+        highlights: 'All 6 facility nodes operational. Restroom Dettol dispensers 100% full. Clean surroundings verified.'
+      }
+    ],
     facilityNodes: [
       {
         id: 'fac_01',

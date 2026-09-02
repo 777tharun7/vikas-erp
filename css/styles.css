@@ -2293,5 +2293,66 @@ body.theme-dark .vault-badge {
   font-size: 1.1rem;
 }
 
+/* Weekly Hygiene Ratings Grid & Cards */
+.weekly-ratings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.weekly-rating-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 8px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.weekly-rating-card:hover {
+  transform: translateY(-2px);
+  border-color: #10b981;
+}
+
+.weekly-rating-card.current {
+  border: 2px solid #10b981;
+  background: rgba(16, 185, 129, 0.04);
+}
+
+.week-score-badge {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #047857;
+  background: #d1fae5;
+  padding: 3px 10px;
+  border-radius: 12px;
+  display: inline-block;
+}
+
+body.theme-dark .week-score-badge {
+  background: rgba(16, 185, 129, 0.2);
+  color: #6ee7b7;
+}
+
+.weekly-bar-track {
+  height: 6px;
+  background: var(--border-color);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.weekly-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981, #059669);
+  border-radius: 4px;
+}
+
+
 
 

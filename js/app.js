@@ -161,6 +161,22 @@ document.addEventListener('DOMContentLoaded', () => {
     window.printCceCard = function() {
       window.print();
     };
+    window.logWeeklyHygieneRating = function(score, weekName, notes) {
+      const parsedScore = parseFloat(score) || 96.0;
+      MOCK_DATA.campusFacilitiesData.overallCampusHygieneScore = parsedScore;
+      MOCK_DATA.campusFacilitiesData.weeklyHygieneRatings.push({
+        week: weekName || `Week ${MOCK_DATA.campusFacilitiesData.weeklyHygieneRatings.length + 1}`,
+        dateRange: 'Sep 03 – Sep 09, 2026',
+        score: parsedScore,
+        ratingStars: `${(parsedScore / 20).toFixed(1)} / 5`,
+        status: 'Audit Certified',
+        auditor: 'Health Committee & Duty Inspector',
+        highlights: notes || 'Weekly campus sanitization and drinking water audit completed.'
+      });
+      MOCK_DATA.campusFacilitiesData.lastHygieneAudit = `Just now (Score: ${parsedScore}%)`;
+      showToast(`Logged weekly hygiene rating: ${parsedScore}%! Overall score updated.`);
+      renderFacilitiesIncidentsScreen(activeRole);
+    };
 
     // Role Pills Switcher in Top Navbar
     document.querySelectorAll('.role-pill').forEach(btn => {
@@ -3654,17 +3670,85 @@ document.addEventListener('DOMContentLoaded', () => {
       ${activeFacilitiesTab === 'facilities' ? `
         <!-- TAB 5: FACILITIES -->
         <div style="margin-bottom:30px;">
-          <!-- AUDIT STATUS -->
+          <!-- AUDIT STATUS & WEEKLY HYGIENE RATINGS -->
           <div class="panel-card" style="margin-bottom:20px; background:linear-gradient(135deg, rgba(16,185,129,0.08) 0%, rgba(6,182,212,0.08) 100%); border:1px solid #a7f3d0;">
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
               <div>
-                <span class="badge badge-success">Hygiene Audit Verified</span>
-                <h3 style="font-size:1.15rem; font-weight:800; color:#065f46; margin:4px 0;">Campus Hygiene & Amenities Score: ${fac.overallCampusHygieneScore}%</h3>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span class="badge badge-success">Hygiene Audit Verified</span>
+                  <span style="font-size:0.75rem; font-weight:800; background:#d1fae5; color:#065f46; padding:2px 8px; border-radius:10px;">★ Weekly Inspection Cycle</span>
+                </div>
+                <h3 style="font-size:1.2rem; font-weight:800; color:#065f46; margin:6px 0 2px 0;">Campus Hygiene & Amenities Score: ${fac.overallCampusHygieneScore}%</h3>
                 <span style="font-size:0.8rem; color:#047857;">Last Certified: ${fac.lastHygieneAudit}</span>
               </div>
-              <button type="button" onclick="showToast('Recorded new hygiene sweep audit!')" class="btn-primary" style="padding:8px 16px; border-radius:8px; background:#10b981; color:white; border:none; font-weight:700; font-size:0.82rem; cursor:pointer;">
-                + Log Routine Cleaning Audit
-              </button>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button type="button" onclick="document.getElementById('weeklyRatingEntryBox').style.display = document.getElementById('weeklyRatingEntryBox').style.display === 'none' ? 'block' : 'none'" class="btn-primary" style="padding:8px 16px; border-radius:8px; background:#10b981; color:white; border:none; font-weight:700; font-size:0.82rem; cursor:pointer;">
+                  + Log / Update Weekly Rating
+                </button>
+              </div>
+            </div>
+
+            <!-- WEEKLY RATING ENTRY FORM (ACCORDION) -->
+            <div id="weeklyRatingEntryBox" style="display:none; margin-top:16px; background:#ffffff; border:1px solid #a7f3d0; border-radius:10px; padding:16px; box-shadow:var(--shadow-sm);">
+              <h4 style="font-size:0.95rem; font-weight:800; color:#065f46; margin-bottom:8px;">📝 Record New Weekly Hygiene & Amenities Audit</h4>
+              <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:10px; margin-bottom:10px;">
+                <div>
+                  <label style="font-size:0.75rem; font-weight:700; color:#475569; display:block; margin-bottom:4px;">Audit Week Label</label>
+                  <input type="text" id="newWeekLabelInput" value="Week 5 (Sep 03 – Sep 09)" style="width:100%; padding:8px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:0.82rem;">
+                </div>
+                <div>
+                  <label style="font-size:0.75rem; font-weight:700; color:#475569; display:block; margin-bottom:4px;">Hygiene Score (%)</label>
+                  <input type="number" id="newWeekScoreInput" min="50" max="100" step="0.1" value="96.5" style="width:100%; padding:8px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:0.82rem;">
+                </div>
+                <div>
+                  <label style="font-size:0.75rem; font-weight:700; color:#475569; display:block; margin-bottom:4px;">Inspector / Auditor</label>
+                  <input type="text" id="newWeekAuditorInput" value="Health Committee & Caretaker" style="width:100%; padding:8px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:0.82rem;">
+                </div>
+              </div>
+              <div style="margin-bottom:10px;">
+                <label style="font-size:0.75rem; font-weight:700; color:#475569; display:block; margin-bottom:4px;">Audit Checklist & Notes</label>
+                <input type="text" id="newWeekNotesInput" value="RO Plant TDS 94 PPM, neutral pH 7.2, restrooms sanitized with phenyl 3x daily." style="width:100%; padding:8px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:0.82rem;">
+              </div>
+              <div style="display:flex; justify-content:flex-end; gap:8px;">
+                <button type="button" onclick="document.getElementById('weeklyRatingEntryBox').style.display='none'" style="padding:6px 14px; border-radius:6px; border:1px solid #cbd5e1; background:#f8fafc; font-size:0.8rem; cursor:pointer;">Cancel</button>
+                <button type="button" onclick="const sc=document.getElementById('newWeekScoreInput').value; const wk=document.getElementById('newWeekLabelInput').value; const nt=document.getElementById('newWeekNotesInput').value; window.logWeeklyHygieneRating(sc, wk, nt);" class="btn-primary" style="padding:6px 16px; border-radius:6px; background:#059669; color:white; border:none; font-weight:700; font-size:0.8rem; cursor:pointer;">
+                  ✓ Save & Publish Weekly Audit
+                </button>
+              </div>
+            </div>
+
+            <!-- WEEKLY RATING TREND CARDS -->
+            <div style="margin-top:16px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                <h4 style="font-size:0.9rem; font-weight:800; color:#065f46; text-transform:uppercase; letter-spacing:0.5px;">Weekly Audit Ratings & Trend</h4>
+                <span style="font-size:0.75rem; color:#047857; font-weight:700;">Average 4-Week Compliance: 95.3%</span>
+              </div>
+              <div class="weekly-ratings-grid">
+                ${(fac.weeklyHygieneRatings || []).map(wr => `
+                  <div class="weekly-rating-card ${wr.week.includes('Current') ? 'current' : ''}">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                      <div>
+                        <strong style="font-size:0.88rem; color:var(--text-primary); display:block;">${wr.week}</strong>
+                        <span style="font-size:0.72rem; color:var(--text-muted);">${wr.dateRange}</span>
+                      </div>
+                      <span class="week-score-badge">${wr.score}%</span>
+                    </div>
+
+                    <div class="weekly-bar-track">
+                      <div class="weekly-bar-fill" style="width:${wr.score}%;"></div>
+                    </div>
+
+                    <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.75rem; margin-top:2px;">
+                      <span style="color:#f59e0b; font-weight:700;">★ ${wr.ratingStars}</span>
+                      <span style="color:#047857; font-weight:700;">${wr.status}</span>
+                    </div>
+
+                    <div style="font-size:0.75rem; color:var(--text-secondary); border-top:1px dashed var(--border-color); padding-top:6px; margin-top:2px; line-height:1.35;">
+                      ${wr.highlights}
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
             </div>
           </div>
 
