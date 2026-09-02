@@ -1,35 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vikas ERP — Vikas Grammar School HS Cherial</title>
-
+  
   <!-- Modern Fonts: Outfit for Headings + Plus Jakarta Sans for UI -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
-    rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
-
+  
   <!-- Custom Application Stylesheet -->
   <link rel="stylesheet" href="css/styles.css">
 </head>
-
 <body class="theme-light role-principal">
 
   <div class="app-container">
 
-    <!-- MOBILE SIDEBAR BACKDROP OVERLAY -->
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
-
-    <!-- LEFT SIDEBAR -->
+    <!-- LEFT SIDEBAR (DARK THEME ACCORDING TO MOCKUP) -->
     <aside class="sidebar" id="sidebar">
-
+      
       <!-- BRAND LOGO HEADER -->
       <div class="sidebar-header">
         <div class="brand">
@@ -47,7 +40,7 @@
 
       <!-- SCHOOL PROFILE MINI CARD -->
       <div class="sidebar-school-card">
-        <div style="display:flex; align-items:center; gap:10px; position:relative;">
+        <div style="display:flex; align-items:center; gap:10px;">
           <div class="school-avatar-icon">🏫</div>
           <div>
             <div class="school-card-title">Vikas Grammar School</div>
@@ -90,32 +83,23 @@
           <button id="sidebarCollapseBtn" class="icon-btn" title="Toggle Menu">
             <i data-lucide="menu"></i>
           </button>
-
+          
           <div class="search-bar">
             <i data-lucide="search" class="search-icon"></i>
-            <input type="text" id="globalSearchInput" placeholder="Search students, staff, classes, enquiries..."
-              autocomplete="off">
+            <input type="text" id="globalSearchInput" placeholder="Search students, staff, classes, enquiries..." autocomplete="off">
             <kbd class="kbd-badge">⌘K</kbd>
           </div>
         </div>
 
-        <!-- CENTER OFFICIAL LOGGED-IN ACCOUNT SESSION BANNER -->
-        <div class="active-session-banner" id="activeSessionBanner">
-          <div class="session-role-badge" id="sessionRoleBadge">
-            <span id="sessionRoleIcon">👑</span>
-            <span id="sessionRoleTitle">Principal Command Center</span>
-          </div>
-          <div class="session-email-tag" id="sessionEmailTag">
-            <i data-lucide="mail"></i>
-            <span id="sessionEmailText">principal@vikas.edu.in</span>
-          </div>
+        <!-- CENTER ROLE PERSONALITY SWITCHER -->
+        <div class="role-personality-pills">
+          <button class="role-pill active" data-role="principal"><i data-lucide="user-check"></i> Principal</button>
+          <button class="role-pill" data-role="teacher"><i data-lucide="presentation"></i> Teacher</button>
+          <button class="role-pill" data-role="student"><i data-lucide="gamepad-2"></i> Student</button>
+          <button class="role-pill" data-role="parent"><i data-lucide="heart"></i> Parent</button>
         </div>
 
         <div class="nav-right">
-          <button class="icon-btn" id="openAiDrawerBtn" title="Ask AI Assistant">
-            <i data-lucide="bot"></i>
-          </button>
-
           <div style="position:relative;">
             <button class="icon-btn notif-btn" id="notifBtn" title="Notifications">
               <i data-lucide="bell"></i>
@@ -124,39 +108,33 @@
 
             <!-- NOTIFICATION DROPDOWN MENU -->
             <div class="notif-dropdown" id="notifDropdown">
-              <div class="notif-header"
-                style="padding:14px 16px; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center; background:var(--bg-card-sub);">
+              <div class="notif-header" style="padding:14px 16px; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center; background:var(--bg-card-sub);">
                 <div style="display:flex; align-items:center; gap:8px;">
                   <i data-lucide="bell" style="color:var(--indigo); width:16px; height:16px;"></i>
                   <h4 style="font-size:0.9rem; font-weight:800; margin:0;">Notifications</h4>
                 </div>
-                <button id="markAllReadBtn"
-                  style="font-size:0.75rem; color:var(--indigo); font-weight:700; background:none; border:none; cursor:pointer;">Mark
-                  all read</button>
+                <button id="markAllReadBtn" style="font-size:0.75rem; color:var(--indigo); font-weight:700; background:none; border:none; cursor:pointer;">Mark all read</button>
               </div>
               <div class="notif-body" id="notifList" style="max-height:360px; overflow-y:auto; padding:8px 0;">
                 <!-- Populated dynamically by JS -->
               </div>
-              <div
-                style="padding:10px 16px; text-align:center; border-top:1px solid var(--border-color); background:var(--bg-card-sub);">
-                <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">Vikas Grammar School Live
-                  Feed</span>
+              <div style="padding:10px 16px; text-align:center; border-top:1px solid var(--border-color); background:var(--bg-card-sub);">
+                <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">Vikas Grammar School Live Feed</span>
               </div>
             </div>
           </div>
 
-          <div class="user-pill" id="userProfilePill" title="Logged in user profile">
-            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80"
-              alt="Avatar" class="user-avatar" id="userAvatar">
+          <button class="icon-btn ai-toggle-btn" id="openAiDrawerBtn" title="Vikas AI Copilot" style="background:rgba(99,102,241,0.1); color:var(--indigo);">
+            <i data-lucide="bot"></i>
+          </button>
+
+          <div class="user-pill" id="userProfilePill">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" alt="Avatar" class="user-avatar" id="userAvatar">
             <div class="user-info">
               <span class="user-name" id="userName">K. Rajesham</span>
               <span class="user-role" id="userRole">Headmaster</span>
             </div>
           </div>
-
-          <button class="icon-btn logout-btn" id="logoutBtn" title="Switch User / Sign Out">
-            <i data-lucide="log-out"></i>
-          </button>
         </div>
       </header>
 
@@ -193,15 +171,13 @@
 
       <div class="ai-drawer-body" id="aiChatBody">
         <div class="ai-message assistant">
-          <p>Namaste Headmaster K. Rajesham! How can I assist you with Vikas Grammar School Cherial operations today?
-          </p>
+          <p>Namaste Headmaster K. Rajesham! How can I assist you with Vikas Grammar School Cherial operations today?</p>
         </div>
       </div>
 
       <div class="ai-drawer-footer">
         <form id="aiPromptForm" class="ai-form">
-          <input type="text" id="aiPromptInput" placeholder="Ask AI about student records or attendance..."
-            autocomplete="off">
+          <input type="text" id="aiPromptInput" placeholder="Ask AI about student records or attendance..." autocomplete="off">
           <button type="submit" class="ai-send-btn"><i data-lucide="send"></i></button>
         </form>
       </div>
@@ -209,82 +185,144 @@
 
   </div>
 
-  <!-- LOGIN & AUTHENTICATION PORTAL (CLEAN STANDARD WEBSITE STYLE) -->
-  <div class="login-modal-overlay active" id="loginModalOverlay">
-    <div class="login-modal-card single-panel" style="width: 440px; max-width: 95vw; background: #ffffff; border-radius: 20px; box-shadow: 0 20px 50px -10px rgba(15, 23, 42, 0.25); border: 1px solid #e2e8f0; margin: auto;">
-      <div class="login-form-panel" style="width: 100%; padding: 32px 28px; background: #ffffff;">
-        
-        <!-- BRAND LOGO & HEADER -->
-        <div style="text-align: center; margin-bottom: 24px;">
-          <div style="width: 52px; height: 52px; border-radius: 14px; background: #4f46e5; color: white; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(79,70,229,0.3); margin-bottom: 12px;">
-            <i data-lucide="graduation-cap" style="width: 28px; height: 28px;"></i>
+  <!-- LOGIN & ROLE IDENTIFICATION PORTAL OVERLAY -->
+  <div class="login-modal-overlay" id="loginModalOverlay">
+    <div class="login-modal-card">
+
+      <!-- LEFT BRANDING BANNER -->
+      <div class="login-branding-panel">
+        <div class="login-brand-header">
+          <div class="login-brand-logo">
+            <i data-lucide="graduation-cap"></i>
           </div>
-          <h2 style="font-family: 'Outfit', sans-serif; font-size: 1.45rem; font-weight: 800; color: #0f172a; margin-bottom: 4px;">Vikas Grammar School</h2>
-          <p style="font-size: 0.82rem; color: #64748b; margin: 0;">HS Cherial (UDISE: 36182100637) • School ERP Portal</p>
+          <div>
+            <h2>Vikas ERP</h2>
+            <p>School Operating System</p>
+          </div>
+        </div>
+
+        <div class="login-hero-card">
+          <div class="school-tag">🏫 UDISE: 36182100637</div>
+          <h3>Vikas Grammar School HS Cherial</h3>
+          <p>Cheriyal, Siddipet District, Telangana — 506223</p>
+
+          <div class="login-features-list">
+            <div class="feature-item">
+              <i data-lucide="shield-check"></i>
+              <span>Smart Role Detection by Registered Email</span>
+            </div>
+            <div class="feature-item">
+              <i data-lucide="users"></i>
+              <span>4 Role Workspaces: Principal, Teacher, Student & Parent</span>
+            </div>
+            <div class="feature-item">
+              <i data-lucide="sparkles"></i>
+              <span>Instant Dashboard Workspace Authorization</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="login-footer-info">
+          <span>Board of Secondary Education, Telangana (BSE)</span>
+        </div>
+      </div>
+
+      <!-- RIGHT FORM PANEL -->
+      <div class="login-form-panel">
+        <div class="login-form-header">
+          <h3>Welcome Back 👋</h3>
+          <p>Sign in to your Vikas Grammar School ERP Workspace</p>
+        </div>
+
+        <!-- QUICK DEMO ACCOUNTS SELECTOR -->
+        <div class="quick-demo-accounts">
+          <div class="quick-title"><i data-lucide="zap"></i> Quick Demo Accounts (Click to Autofill):</div>
+          <div class="demo-chips-grid">
+            <button type="button" class="demo-chip active" data-email="principal@vikas.edu.in">
+              <span class="chip-icon">👑</span>
+              <span class="chip-text">Principal</span>
+            </button>
+            <button type="button" class="demo-chip" data-email="teacher@vikas.edu.in">
+              <span class="chip-icon">👩‍🏫</span>
+              <span class="chip-text">Teacher</span>
+            </button>
+            <button type="button" class="demo-chip" data-email="student@vikas.edu.in">
+              <span class="chip-icon">🎓</span>
+              <span class="chip-text">Student</span>
+            </button>
+            <button type="button" class="demo-chip" data-email="parent@vikas.edu.in">
+              <span class="chip-icon">👨‍👩‍👧</span>
+              <span class="chip-text">Parent</span>
+            </button>
+          </div>
         </div>
 
         <form id="loginForm" class="login-form">
 
           <!-- EMAIL INPUT -->
-          <div class="form-group" style="margin-bottom: 16px;">
-            <label for="loginEmailInput" style="display: block; font-size: 0.8rem; font-weight: 700; color: #0f172a; margin-bottom: 6px;">Email Address</label>
+          <div class="form-group">
+            <label for="loginEmailInput">Registered Email Address</label>
             <div class="input-with-icon">
               <i data-lucide="mail"></i>
-              <input type="email" id="loginEmailInput" placeholder="name@vikas.edu.in" value="principal@vikas.edu.in" required autocomplete="email" style="width: 100%; height: 44px; padding: 0 14px 0 42px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 0.88rem; color: #0f172a; outline: none;">
+              <input type="email" id="loginEmailInput" placeholder="e.g. principal@vikas.edu.in"
+                value="principal@vikas.edu.in" required autocomplete="email">
+            </div>
+          </div>
+
+          <!-- REAL-TIME ROLE DETECTION & CONFIRMATION BOX -->
+          <div class="role-detection-box" id="roleDetectionBox">
+            <div class="detection-badge" id="detectionBadge">👑 Principal Command Center</div>
+            <div class="user-preview">
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80"
+                alt="Avatar" id="detectionAvatar">
+              <div class="user-details">
+                <div class="detected-name" id="detectionName">K. Rajesham</div>
+                <div class="detected-sub" id="detectionSub">Headmaster & School Administrator</div>
+              </div>
+            </div>
+            <div class="detection-status" id="detectionStatus">
+              <i data-lucide="check-circle-2"></i> Verified School Account • Auto-assigned to <strong>Principal</strong> workspace
+            </div>
+          </div>
+
+          <!-- UNREGISTERED CUSTOM ROLE SELECTOR -->
+          <div class="form-group custom-role-group" id="customRoleGroup" style="display:none;">
+            <label>Unregistered Email — Choose Role to Sign In:</label>
+            <div class="role-selector-radios">
+              <label class="radio-chip"><input type="radio" name="customRole" value="principal" checked> <span>👑 Principal</span></label>
+              <label class="radio-chip"><input type="radio" name="customRole" value="teacher"> <span>👩‍🏫 Teacher</span></label>
+              <label class="radio-chip"><input type="radio" name="customRole" value="student"> <span>🎓 Student</span></label>
+              <label class="radio-chip"><input type="radio" name="customRole" value="parent"> <span>👨‍👩‍👧 Parent</span></label>
             </div>
           </div>
 
           <!-- PASSWORD INPUT -->
-          <div class="form-group" style="margin-bottom: 16px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-              <label for="loginPasswordInput" style="font-size: 0.8rem; font-weight: 700; color: #0f172a; margin: 0;">Password</label>
-              <a href="#" class="forgot-link" onclick="event.preventDefault(); alert('Password reset link sent to your registered email address!');" style="font-size: 0.76rem; color: #4f46e5; font-weight: 700; text-decoration: none;">Forgot Password?</a>
-            </div>
+          <div class="form-group">
+            <label for="loginPasswordInput">Password / Security PIN</label>
             <div class="input-with-icon">
               <i data-lucide="lock"></i>
-              <input type="password" id="loginPasswordInput" value="vikas2026" placeholder="••••••••" required style="width: 100%; height: 44px; padding: 0 42px 0 42px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 0.88rem; color: #0f172a; outline: none;">
+              <input type="password" id="loginPasswordInput" value="vikas2026" placeholder="Enter password" required>
               <button type="button" class="toggle-password-btn" id="togglePasswordBtn"><i data-lucide="eye"></i></button>
             </div>
           </div>
 
-          <div class="form-options" style="margin-bottom: 20px; display: flex; align-items: center;">
-            <label class="checkbox-label" style="font-size: 0.8rem; color: #475569; display: flex; align-items: center; gap: 8px; cursor: pointer;">
-              <input type="checkbox" checked id="rememberMeCheckbox" style="accent-color: #4f46e5; width: 16px; height: 16px; cursor: pointer;">
-              <span>Keep me signed in</span>
+          <div class="form-options">
+            <label class="checkbox-label">
+              <input type="checkbox" checked id="rememberMeCheckbox">
+              <span>Remember this account</span>
             </label>
+            <a href="#" class="forgot-link" onclick="event.preventDefault(); showToast('Password reset guidance sent to registered email!');">Forgot Password?</a>
           </div>
 
           <!-- SUBMIT BUTTON -->
-          <button type="submit" class="login-submit-btn" id="loginSubmitBtn" style="width: 100%; height: 46px; background: #4f46e5; color: white; border: none; border-radius: 10px; font-weight: 700; font-size: 0.92rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 14px rgba(79,70,229,0.35);">
-            <span>Sign In</span>
+          <button type="submit" class="login-submit-btn" id="loginSubmitBtn">
+            <span>Sign In to ERP Workspace</span>
             <i data-lucide="arrow-right"></i>
           </button>
 
-          <!-- DISCREET ROLE QUICK LOGIN SELECTOR -->
-          <div style="margin-top: 22px; padding-top: 16px; border-top: 1px solid #e2e8f0; text-align: center;">
-            <div style="font-size: 0.72rem; font-weight: 700; color: #64748b; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Quick Role Sign In</div>
-            <div class="demo-chips-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;">
-              <button type="button" class="demo-chip active" data-email="principal@vikas.edu.in" style="padding: 6px 4px; border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc; cursor: pointer; font-size: 0.73rem; font-weight: 700; color: #0f172a; display: flex; flex-direction: column; align-items: center; gap: 2px;">
-                <span class="chip-icon">👑</span>
-                <span class="chip-text">Principal</span>
-              </button>
-              <button type="button" class="demo-chip" data-email="teacher@vikas.edu.in" style="padding: 6px 4px; border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc; cursor: pointer; font-size: 0.73rem; font-weight: 700; color: #0f172a; display: flex; flex-direction: column; align-items: center; gap: 2px;">
-                <span class="chip-icon">👩‍🏫</span>
-                <span class="chip-text">Teacher</span>
-              </button>
-              <button type="button" class="demo-chip" data-email="student@vikas.edu.in" style="padding: 6px 4px; border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc; cursor: pointer; font-size: 0.73rem; font-weight: 700; color: #0f172a; display: flex; flex-direction: column; align-items: center; gap: 2px;">
-                <span class="chip-icon">🎓</span>
-                <span class="chip-text">Student</span>
-              </button>
-              <button type="button" class="demo-chip" data-email="parent@vikas.edu.in" style="padding: 6px 4px; border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc; cursor: pointer; font-size: 0.73rem; font-weight: 700; color: #0f172a; display: flex; flex-direction: column; align-items: center; gap: 2px;">
-                <span class="chip-icon">👨‍👩‍👧</span>
-                <span class="chip-text">Parent</span>
-              </button>
-            </div>
-          </div>
-
         </form>
       </div>
+
     </div>
   </div>
 
@@ -325,7 +363,6 @@
         
         <div class="profile-form-grid">
           
-          <!-- FULL NAME -->
           <div class="profile-form-group">
             <label for="profileNameInput">Full Name</label>
             <div class="input-with-icon">
@@ -334,7 +371,6 @@
             </div>
           </div>
 
-          <!-- EMAIL ADDRESS -->
           <div class="profile-form-group">
             <label for="profileEmailInput">Official Email Address</label>
             <div class="input-with-icon">
@@ -343,7 +379,6 @@
             </div>
           </div>
 
-          <!-- PHONE NUMBER -->
           <div class="profile-form-group">
             <label for="profilePhoneInput">Contact Phone Number</label>
             <div class="input-with-icon">
@@ -352,7 +387,6 @@
             </div>
           </div>
 
-          <!-- ID / ROLL NUMBER -->
           <div class="profile-form-group">
             <label for="profileIdInput" id="profileIdLabel">Roll Number / Employee ID</label>
             <div class="input-with-icon">
@@ -361,7 +395,6 @@
             </div>
           </div>
 
-          <!-- PEN ID / UDISE REF -->
           <div class="profile-form-group">
             <label for="profilePenInput">PEN ID / State Reg. Reference</label>
             <div class="input-with-icon">
@@ -370,7 +403,6 @@
             </div>
           </div>
 
-          <!-- CLASS / DEPARTMENT -->
           <div class="profile-form-group">
             <label for="profileClassInput">Class / Department / Workspace</label>
             <div class="input-with-icon">
@@ -379,7 +411,6 @@
             </div>
           </div>
 
-          <!-- BLOOD GROUP -->
           <div class="profile-form-group">
             <label for="profileBloodGroupInput">Blood Group</label>
             <div class="input-with-icon">
@@ -388,7 +419,6 @@
             </div>
           </div>
 
-          <!-- EMERGENCY CONTACT -->
           <div class="profile-form-group">
             <label for="profileEmergencyInput">Emergency Contact Details</label>
             <div class="input-with-icon">
@@ -397,7 +427,6 @@
             </div>
           </div>
 
-          <!-- RESIDENTIAL ADDRESS -->
           <div class="profile-form-group full-width">
             <label for="profileAddressInput">Residential Address</label>
             <div class="input-with-icon">
@@ -406,7 +435,6 @@
             </div>
           </div>
 
-          <!-- AVATAR IMAGE URL -->
           <div class="profile-form-group full-width">
             <label for="profileAvatarInput">Profile Picture Image URL</label>
             <div class="input-with-icon">
@@ -417,7 +445,6 @@
 
         </div>
 
-        <!-- FOOTER ACTIONS -->
         <div class="profile-modal-footer">
           <button type="button" class="btn-cancel" id="cancelProfileBtn">Cancel</button>
           <button type="submit" class="btn-save-profile" id="saveProfileBtn">
@@ -426,249 +453,12 @@
         </div>
 
       </form>
-    </div>
-  </div>
 
-  <!-- MARKSHEET REPORT CARD MODAL OVERLAY -->
-  <div class="profile-modal-overlay" id="marksheetModalOverlay">
-    <div class="profile-modal-card" style="width: 820px;">
-      <div class="profile-cover-banner" style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);">
-        <button type="button" class="profile-close-btn" id="closeMarksheetBtn"><i data-lucide="x"></i></button>
-        <div class="profile-cover-badge">📜 BSE Telangana Official Grade Report</div>
-      </div>
-
-      <div class="marksheet-print-container" id="marksheetPrintContainer" style="padding: 24px 28px; background: var(--bg-card); overflow-y: auto;">
-        <div style="text-align: center; border-bottom: 2px solid var(--border-color); padding-bottom: 16px; margin-bottom: 20px;">
-          <div style="font-size: 0.8rem; font-weight: 800; color: var(--indigo); letter-spacing: 1px;">BOARD OF SECONDARY EDUCATION, TELANGANA</div>
-          <h2 style="font-family: 'Outfit', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--text-primary); margin: 4px 0;">VIKAS GRAMMAR SCHOOL HS CHERIAL</h2>
-          <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">UDISE Code: 36182100637 • Cheriyal, Siddipet District, Telangana — 506223</p>
-          <div style="display: inline-block; background: var(--accent-grad-soft); color: var(--indigo); font-weight: 800; font-size: 0.75rem; padding: 4px 14px; border-radius: 20px; margin-top: 10px;">
-            ANNUAL ACADEMIC MARKSHEET 2026-2027
-          </div>
-        </div>
-
-        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; background: var(--bg-card-sub); border: 1px solid var(--border-color); padding: 14px 16px; border-radius: 12px; margin-bottom: 20px; font-size: 0.82rem;">
-          <div><strong>Student Name:</strong> <span id="msStudentName">Rahul Reddy</span></div>
-          <div><strong>Roll Number:</strong> <span id="msRollNo">VIII-014</span></div>
-          <div><strong>Class & Section:</strong> <span id="msGradeSec">Class VIII Section A</span></div>
-          <div><strong>PEN ID:</strong> <span id="msPenId">PEN-36182100637-801</span></div>
-        </div>
-
-        <div class="table-responsive" style="margin-bottom: 20px;">
-          <table class="custom-table" style="width: 100%;">
-            <thead>
-              <tr>
-                <th>Subject Code</th>
-                <th>Curriculum Subject</th>
-                <th>Max Marks</th>
-                <th>Marks Obtained</th>
-                <th>Grade</th>
-                <th>Performance Status</th>
-              </tr>
-            </thead>
-            <tbody id="marksheetTableBody">
-              <tr><td>01T</td><td>Telugu (First Language)</td><td>100</td><td>92</td><td><span class="badge-success">A+</span></td><td>Outstanding</td></tr>
-              <tr><td>02E</td><td>English Literature & Grammar</td><td>100</td><td>88</td><td><span class="badge-success">A</span></td><td>Excellent</td></tr>
-              <tr><td>03M</td><td>Mathematics & Geometry</td><td>100</td><td>95</td><td><span class="badge-success">A+</span></td><td>Outstanding</td></tr>
-              <tr><td>04P</td><td>Physical Science</td><td>100</td><td>86</td><td><span class="badge-success">A</span></td><td>Very Good</td></tr>
-              <tr><td>05B</td><td>Biological Science</td><td>100</td><td>90</td><td><span class="badge-success">A+</span></td><td>Outstanding</td></tr>
-              <tr><td>06S</td><td>Social Studies & Telangana History</td><td>100</td><td>84</td><td><span class="badge-success">A</span></td><td>Very Good</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div style="display: flex; justify-content: space-between; align-items: center; background: var(--accent-grad-soft); border: 1px solid rgba(109,91,248,0.2); padding: 14px 18px; border-radius: 12px; margin-bottom: 24px;">
-          <div>
-            <div style="font-size: 0.76rem; color: var(--text-secondary); font-weight: 700;">TOTAL MARKS OBTAINED</div>
-            <div style="font-size: 1.3rem; font-weight: 800; color: var(--indigo);" id="msTotalMarks">535 / 600 (89.16%)</div>
-          </div>
-          <div>
-            <div style="font-size: 0.76rem; color: var(--text-secondary); font-weight: 700;">CUMULATIVE GPA GRADE</div>
-            <div style="font-size: 1.3rem; font-weight: 800; color: var(--emerald);" id="msGpaGrade">Grade A+ (9.2 CGPA)</div>
-          </div>
-        </div>
-
-        <div style="display: flex; justify-content: space-between; align-items: flex-end; padding-top: 20px; border-top: 1px dashed var(--border-color); font-size: 0.78rem; color: var(--text-secondary);">
-          <div>
-            <div><strong>Date of Issue:</strong> Aug 27, 2026</div>
-            <div><strong>Mentor Teacher:</strong> Mrs. S. Radhika</div>
-          </div>
-          <div style="text-align: right;">
-            <div style="font-family: 'Outfit', sans-serif; font-weight: 800; color: var(--indigo); font-size: 0.95rem;">K. Rajesham</div>
-            <div>Headmaster & Administrator</div>
-            <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 2px;">Vikas Grammar School HS Cherial</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="profile-modal-footer">
-        <button type="button" class="btn-cancel" id="cancelMarksheetBtn">Close</button>
-        <button type="button" class="btn-save-profile" onclick="window.print();">
-          <i data-lucide="printer"></i> Print / Save PDF Marksheet
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ONLINE FEE PAYMENT MODAL OVERLAY -->
-  <div class="profile-modal-overlay" id="paymentModalOverlay">
-    <div class="profile-modal-card" style="width: 520px;">
-      <div class="profile-cover-banner" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%);">
-        <button type="button" class="profile-close-btn" id="closePaymentBtn"><i data-lucide="x"></i></button>
-        <div class="profile-cover-badge">💳 Vikas School Instant Fee Payment</div>
-      </div>
-
-      <form id="paymentForm" style="padding: 24px; background: var(--bg-card);">
-        <div style="text-align: center; margin-bottom: 20px;">
-          <div style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600;">TERM 3 TUITION & ADMISSION DUES</div>
-          <div style="font-size: 2rem; font-weight: 800; color: var(--emerald);" id="payAmountText">₹ 3,500</div>
-          <div style="font-size: 0.8rem; color: var(--text-secondary); font-weight: 600;" id="payStudentText">Student: Rahul Reddy (Class VIII A)</div>
-        </div>
-
-        <div style="background: var(--bg-card-sub); border: 1px solid var(--border-color); border-radius: 14px; padding: 16px; text-align: center; margin-bottom: 20px;">
-          <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-primary); margin-bottom: 10px;">Scan & Pay via UPI (GPay / PhonePe / Paytm / BHIM)</div>
-          <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=vikasschool@sbi&pn=Vikas%20Grammar%20School&am=3500&cu=INR" alt="UPI QR Code" style="width: 130px; height: 130px; border-radius: 8px; border: 2px solid var(--border-color);">
-          <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 8px;">UPI ID: <strong>vikasschool@sbi</strong></div>
-        </div>
-
-        <div class="form-group" style="margin-bottom: 16px;">
-          <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-secondary);">Select Payment Method</label>
-          <select id="payMethodSelect" style="width: 100%; height: 42px; padding: 0 12px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">
-            <option value="upi">Instant UPI Transfer (Auto-Verified)</option>
-            <option value="card">Debit / Credit Card</option>
-            <option value="netbanking">SBI / HDFC / ICICI Net Banking</option>
-          </select>
-        </div>
-
-        <button type="submit" class="login-submit-btn" id="paySubmitBtn" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); width: 100%;">
-          <span>Confirm & Pay ₹ 3,500</span>
-          <i data-lucide="check-circle"></i>
-        </button>
-      </form>
-    </div>
-  </div>
-
-  <!-- LEAVE REQUEST SUBMISSION MODAL OVERLAY -->
-  <div class="profile-modal-overlay" id="leaveModalOverlay">
-    <div class="profile-modal-card" style="width: 580px;">
-      <div class="profile-cover-banner" style="background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);">
-        <button type="button" class="profile-close-btn" id="closeLeaveBtn"><i data-lucide="x"></i></button>
-        <div class="profile-cover-badge">📝 Student Leave Application</div>
-      </div>
-
-      <form id="leaveForm" style="padding: 24px; background: var(--bg-card);">
-        <div class="form-group" style="margin-bottom: 14px;">
-          <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-secondary);">Leave Type</label>
-          <select id="leaveTypeSelect" style="width: 100%; height: 42px; padding: 0 12px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">
-            <option value="Medical Leave">Medical Leave (Doctor Rest / Illness)</option>
-            <option value="Family Function">Family Event / Function</option>
-            <option value="Religious Festival">Religious / Festival Holiday</option>
-            <option value="Personal Emergency">Personal / Family Emergency</option>
-          </select>
-        </div>
-
-        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 14px;">
-          <div class="form-group">
-            <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-secondary);">From Date</label>
-            <input type="date" id="leaveFromDate" required style="width: 100%; height: 42px; padding: 0 12px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">
-          </div>
-          <div class="form-group">
-            <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-secondary);">To Date</label>
-            <input type="date" id="leaveToDate" required style="width: 100%; height: 42px; padding: 0 12px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">
-          </div>
-        </div>
-
-        <div class="form-group" style="margin-bottom: 18px;">
-          <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-secondary);">Reason & Additional Details</label>
-          <textarea id="leaveReasonText" rows="3" required placeholder="Describe the reason for leave request..." style="width: 100%; padding: 10px 12px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 0.85rem; font-weight: 500; color: var(--text-primary); outline: none;"></textarea>
-        </div>
-
-        <button type="submit" class="login-submit-btn" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); width: 100%;">
-          <span>Submit Application for Mentor Review</span>
-          <i data-lucide="send"></i>
-        </button>
-      </form>
-    </div>
-  </div>
-
-  <!-- SMS & WHATSAPP BROADCAST MODAL OVERLAY -->
-  <div class="profile-modal-overlay" id="broadcastModalOverlay">
-    <div class="profile-modal-card" style="width: 680px;">
-      <div class="profile-cover-banner" style="background: linear-gradient(135deg, #059669 0%, #25D366 100%);">
-        <button type="button" class="profile-close-btn" id="closeBroadcastBtn"><i data-lucide="x"></i></button>
-        <div class="profile-cover-badge">📢 Vikas School Multi-Channel Broadcaster</div>
-      </div>
-
-      <form id="broadcastForm" style="padding: 24px; background: var(--bg-card);">
-        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 14px;">
-          <div class="form-group">
-            <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-secondary);">Message Template</label>
-            <select id="broadcastTemplateSelect" style="width: 100%; height: 42px; padding: 0 12px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">
-              <option value="custom">✏️ Custom Blank Message</option>
-              <option value="tmpl_fee">💳 Fee Due Reminder Alert</option>
-              <option value="tmpl_holiday">🌧️ Emergency Rain / Govt Holiday Notice</option>
-              <option value="tmpl_ptm">👨‍👩‍👧 Parent-Teacher Meeting (PTM) Invitation</option>
-              <option value="tmpl_exam">📝 Exam Timetable & Hall Ticket Notice</option>
-              <option value="tmpl_transport">🚌 Transport Bus Route Update</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-secondary);">Target Audience</label>
-            <select id="broadcastAudienceSelect" style="width: 100%; height: 42px; padding: 0 12px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">
-              <option value="All Parents (Classes 1–10)">👥 All Parents (Classes 1 to 10 - 384 Parents)</option>
-              <option value="Fee Defaulters Only">⚠️ Fee Defaulters Only (42 Pending Dues)</option>
-              <option value="Class VIII Section A">🎓 Class VIII Section A Parents (40 Parents)</option>
-              <option value="Class X Board Students">🎓 Class X Board Exam Candidates (65 Parents)</option>
-              <option value="Bus Transport Students">🚌 Transport & Bus Route Students (115 Parents)</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="form-group" style="margin-bottom: 14px;">
-          <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-secondary);">Dispatch Channel</label>
-          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 6px;">
-            <label style="display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: var(--bg-card-sub); border: 1px solid var(--border-color); border-radius: 10px; cursor: pointer; font-size: 0.82rem; font-weight: 700; color: var(--text-primary);">
-              <input type="radio" name="broadcastChannel" value="both" checked>
-              <span>🚀 WhatsApp + SMS</span>
-            </label>
-            <label style="display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: var(--bg-card-sub); border: 1px solid var(--border-color); border-radius: 10px; cursor: pointer; font-size: 0.82rem; font-weight: 700; color: #10b981;">
-              <input type="radio" name="broadcastChannel" value="whatsapp">
-              <span>💬 WhatsApp Only</span>
-            </label>
-            <label style="display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: var(--bg-card-sub); border: 1px solid var(--border-color); border-radius: 10px; cursor: pointer; font-size: 0.82rem; font-weight: 700; color: #6366f1;">
-              <input type="radio" name="broadcastChannel" value="sms">
-              <span>📱 SMS Only</span>
-            </label>
-          </div>
-        </div>
-
-        <div class="form-group" style="margin-bottom: 14px;">
-          <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-secondary);">Announcement Title / Subject</label>
-          <input type="text" id="broadcastSubjectInput" placeholder="Enter circular subject..." required style="width: 100%; height: 42px; padding: 0 12px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">
-        </div>
-
-        <div class="form-group" style="margin-bottom: 18px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-            <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-secondary);">Message Content</label>
-            <span style="font-size: 0.72rem; color: var(--text-muted);" id="broadcastCharCount">0 characters</span>
-          </div>
-          <textarea id="broadcastMessageText" rows="4" required placeholder="Type SMS & WhatsApp announcement message here..." style="width: 100%; padding: 12px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 0.85rem; font-weight: 500; color: var(--text-primary); outline: none;"></textarea>
-        </div>
-
-        <div style="display: flex; gap: 10px;">
-          <button type="button" class="btn-cancel" id="cancelBroadcastBtn" style="flex: 1;">Cancel</button>
-          <button type="submit" class="login-submit-btn" id="broadcastSubmitBtn" style="flex: 2; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
-            <span>🚀 Dispatch Broadcast Alert</span>
-            <i data-lucide="send"></i>
-          </button>
-        </div>
-      </form>
     </div>
   </div>
 
   <script src="js/data.js"></script>
   <script src="js/app.js"></script>
 </body>
-
 </html>
+

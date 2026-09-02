@@ -6,7 +6,6 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   let activeRole = 'principal';
-  let authenticatedUser = null;
 
   const sidebar = document.getElementById('sidebar');
   const sidebarNavList = document.getElementById('sidebarNavList');
@@ -16,730 +15,85 @@ document.addEventListener('DOMContentLoaded', () => {
   const sidebarCollapseBtn = document.getElementById('sidebarCollapseBtn');
   const userName = document.getElementById('userName');
   const userRole = document.getElementById('userRole');
-  const userAvatar = document.getElementById('userAvatar');
-
-  // DOM Elements for Login Portal
-  const loginModalOverlay = document.getElementById('loginModalOverlay');
-  const loginForm = document.getElementById('loginForm');
-  const loginEmailInput = document.getElementById('loginEmailInput');
-  const loginPasswordInput = document.getElementById('loginPasswordInput');
-  const togglePasswordBtn = document.getElementById('togglePasswordBtn');
-  const roleDetectionBox = document.getElementById('roleDetectionBox');
-  const detectionBadge = document.getElementById('detectionBadge');
-  const detectionAvatar = document.getElementById('detectionAvatar');
-  const detectionName = document.getElementById('detectionName');
-  const detectionSub = document.getElementById('detectionSub');
-  const detectionStatus = document.getElementById('detectionStatus');
-  const customRoleGroup = document.getElementById('customRoleGroup');
-  const loginSubmitBtn = document.getElementById('loginSubmitBtn');
-  const logoutBtn = document.getElementById('logoutBtn');
 
   const aiDrawer = document.getElementById('aiDrawer');
   const aiDrawerOverlay = document.getElementById('aiDrawerOverlay');
   const closeAiDrawerBtn = document.getElementById('closeAiDrawerBtn');
-  const openAiDrawerBtn = document.getElementById('openAiDrawerBtn');
-  const aiPromptForm = document.getElementById('aiPromptForm');
-  const aiPromptInput = document.getElementById('aiPromptInput');
-  const aiChatBody = document.getElementById('aiChatBody');
-
-  // DOM Elements for Profile Modal
-  const userProfilePill = document.getElementById('userProfilePill');
-  const profileModalOverlay = document.getElementById('profileModalOverlay');
-  const closeProfileModalBtn = document.getElementById('closeProfileModalBtn');
-  const cancelProfileBtn = document.getElementById('cancelProfileBtn');
-  const profileForm = document.getElementById('profileForm');
-
-  const modalProfileAvatar = document.getElementById('modalProfileAvatar');
-  const modalProfileName = document.getElementById('modalProfileName');
-  const modalProfileRoleBadge = document.getElementById('modalProfileRoleBadge');
-  const modalProfileDesignation = document.getElementById('modalProfileDesignation');
-  const modalProfileEmailTag = document.getElementById('modalProfileEmailTag');
-  const modalProfilePhoneTag = document.getElementById('modalProfilePhoneTag');
-  const modalProfileIdTag = document.getElementById('modalProfileIdTag');
-
-  const profileNameInput = document.getElementById('profileNameInput');
-  const profileEmailInput = document.getElementById('profileEmailInput');
-  const profilePhoneInput = document.getElementById('profilePhoneInput');
-  const profileIdInput = document.getElementById('profileIdInput');
-  const profilePenInput = document.getElementById('profilePenInput');
-  const profileClassInput = document.getElementById('profileClassInput');
-  const profileBloodGroupInput = document.getElementById('profileBloodGroupInput');
-  const profileEmergencyInput = document.getElementById('profileEmergencyInput');
-  const profileAddressInput = document.getElementById('profileAddressInput');
-  const profileAvatarInput = document.getElementById('profileAvatarInput');
 
   initApp();
 
   function initApp() {
     setupEventListeners();
-    setupLoginSystem();
-    setupProfileSystem();
-    setupInteractiveModals();
-    restoreSavedSession();
-  }
-
-  function restoreSavedSession() {
-    try {
-      const saved = localStorage.getItem('vikas_erp_session');
-      if (saved) {
-        const session = JSON.parse(saved);
-        const matchedUser = findUserByEmail(session.email) || findUserByRole(session.role);
-        if (matchedUser) {
-          authenticatedUser = matchedUser;
-          activeRole = matchedUser.role;
-          switchRolePersonality(matchedUser.role, matchedUser);
-          loginModalOverlay?.classList.remove('active');
-          document.body.classList.remove('modal-open');
-        }
-      }
-    } catch (e) {
-      console.warn('Session restore exception:', e);
-    }
-  }
-
-  function setupInteractiveModals() {
-    // Marksheet Modal
-    const marksheetModalOverlay = document.getElementById('marksheetModalOverlay');
-    const closeMarksheetBtn = document.getElementById('closeMarksheetBtn');
-    const cancelMarksheetBtn = document.getElementById('cancelMarksheetBtn');
-    closeMarksheetBtn?.addEventListener('click', () => { marksheetModalOverlay?.classList.remove('active'); document.body.classList.remove('modal-open'); });
-    cancelMarksheetBtn?.addEventListener('click', () => { marksheetModalOverlay?.classList.remove('active'); document.body.classList.remove('modal-open'); });
-
-    // Payment Modal
-    const paymentModalOverlay = document.getElementById('paymentModalOverlay');
-    const closePaymentBtn = document.getElementById('closePaymentBtn');
-    const paymentForm = document.getElementById('paymentForm');
-    closePaymentBtn?.addEventListener('click', () => { paymentModalOverlay?.classList.remove('active'); document.body.classList.remove('modal-open'); });
-    paymentForm?.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const paySubmitBtn = document.getElementById('paySubmitBtn');
-      if (paySubmitBtn) {
-        paySubmitBtn.disabled = true;
-        paySubmitBtn.innerHTML = `<span>Processing Instant Payment...</span>`;
-      }
-      setTimeout(() => {
-        paymentModalOverlay?.classList.remove('active');
-        document.body.classList.remove('modal-open');
-        if (paySubmitBtn) {
-          paySubmitBtn.disabled = false;
-          paySubmitBtn.innerHTML = `<span>Confirm & Pay ₹ 3,500</span><i data-lucide="check-circle"></i>`;
-        }
-        // Update MOCK DATA Fee dues
-        if (MOCK_DATA.feeStructure) {
-          MOCK_DATA.feeStructure.paidAmount += MOCK_DATA.feeStructure.dueAmount;
-          MOCK_DATA.feeStructure.dueAmount = 0;
-        }
-        if (MOCK_DATA.feeLedgerFullList && MOCK_DATA.feeLedgerFullList[0]) {
-          MOCK_DATA.feeLedgerFullList[0].paidFee += MOCK_DATA.feeLedgerFullList[0].dueFee;
-          MOCK_DATA.feeLedgerFullList[0].dueFee = 0;
-          MOCK_DATA.feeLedgerFullList[0].status = 'Paid';
-        }
-        showToast('Payment of ₹3,500 successful! Receipt generated and fee ledger updated.');
-        if (activeRole === 'student') renderStudentDashboardScreen();
-        else if (activeRole === 'parent') renderParentDashboardScreen();
-      }, 600);
-    });
-
-    // Leave Modal
-    const leaveModalOverlay = document.getElementById('leaveModalOverlay');
-    const closeLeaveBtn = document.getElementById('closeLeaveBtn');
-    const leaveForm = document.getElementById('leaveForm');
-    closeLeaveBtn?.addEventListener('click', () => { leaveModalOverlay?.classList.remove('active'); document.body.classList.remove('modal-open'); });
-    leaveForm?.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const type = document.getElementById('leaveTypeSelect')?.value || 'Medical Leave';
-      const from = document.getElementById('leaveFromDate')?.value || 'Sep 02, 2026';
-      const to = document.getElementById('leaveToDate')?.value || 'Sep 04, 2026';
-      const reason = document.getElementById('leaveReasonText')?.value || 'Leave application';
-
-      const newLeave = {
-        id: 'lve_' + Date.now(),
-        studentName: authenticatedUser ? authenticatedUser.name : 'Rahul Reddy',
-        rollNo: authenticatedUser ? (authenticatedUser.idNumber || 'VIII-014') : 'VIII-014',
-        grade: 'Class VIII Section A',
-        leaveType: type,
-        fromDate: from,
-        toDate: to,
-        days: 2,
-        reason: reason,
-        appliedBy: authenticatedUser ? authenticatedUser.name : 'Parent (V. Reddy)',
-        appliedDate: 'Today',
-        mentorStatus: 'Pending Mentor Review',
-        statusClass: 'badge-warning'
-      };
-
-      if (!MOCK_DATA.studentLeaveRequests) MOCK_DATA.studentLeaveRequests = [];
-      MOCK_DATA.studentLeaveRequests.unshift(newLeave);
-
-      leaveModalOverlay?.classList.remove('active');
-      document.body.classList.remove('modal-open');
-      showToast('Leave request submitted successfully for Mentor Teacher review!');
-    });
-
-    // SMS & WhatsApp Broadcaster Modal
-    const broadcastModalOverlay = document.getElementById('broadcastModalOverlay');
-    const closeBroadcastBtn = document.getElementById('closeBroadcastBtn');
-    const cancelBroadcastBtn = document.getElementById('cancelBroadcastBtn');
-    const broadcastForm = document.getElementById('broadcastForm');
-    const broadcastTemplateSelect = document.getElementById('broadcastTemplateSelect');
-    const broadcastSubjectInput = document.getElementById('broadcastSubjectInput');
-    const broadcastMessageText = document.getElementById('broadcastMessageText');
-    const broadcastCharCount = document.getElementById('broadcastCharCount');
-
-    closeBroadcastBtn?.addEventListener('click', () => { broadcastModalOverlay?.classList.remove('active'); document.body.classList.remove('modal-open'); });
-    cancelBroadcastBtn?.addEventListener('click', () => { broadcastModalOverlay?.classList.remove('active'); document.body.classList.remove('modal-open'); });
-
-    broadcastTemplateSelect?.addEventListener('change', (e) => {
-      const val = e.target.value;
-      if (val === 'custom') {
-        if (broadcastSubjectInput) broadcastSubjectInput.value = '';
-        if (broadcastMessageText) broadcastMessageText.value = '';
-      } else {
-        const tmpl = MOCK_DATA.messageTemplates?.find(t => t.id === val);
-        if (tmpl) {
-          if (broadcastSubjectInput) broadcastSubjectInput.value = tmpl.subject;
-          if (broadcastMessageText) broadcastMessageText.value = tmpl.text;
-        }
-      }
-      if (broadcastCharCount && broadcastMessageText) {
-        broadcastCharCount.textContent = `${broadcastMessageText.value.length} characters`;
-      }
-    });
-
-    broadcastMessageText?.addEventListener('input', (e) => {
-      if (broadcastCharCount) {
-        broadcastCharCount.textContent = `${e.target.value.length} characters`;
-      }
-    });
-
-    broadcastForm?.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const subject = broadcastSubjectInput ? broadcastSubjectInput.value.trim() : 'Official School Notice';
-      const text = broadcastMessageText ? broadcastMessageText.value.trim() : '';
-      const audience = document.getElementById('broadcastAudienceSelect')?.value || 'All Parents';
-      const channel = document.querySelector('input[name="broadcastChannel"]:checked')?.value || 'both';
-
-      const channelLabel = channel === 'whatsapp' ? 'WhatsApp Broadcast' : channel === 'sms' ? 'SMS Gateway' : 'WhatsApp + SMS';
-      const channelIcon = channel === 'whatsapp' ? 'message-circle' : channel === 'sms' ? 'smartphone' : 'messages-square';
-
-      const newBroadcast = {
-        id: 'bc_' + Date.now(),
-        title: subject,
-        category: 'Official Broadcast',
-        channel: channelLabel,
-        channelIcon: channelIcon,
-        audience: audience,
-        recipientCount: audience.includes('384') ? 384 : audience.includes('42') ? 42 : 120,
-        date: 'Just Now',
-        sender: authenticatedUser ? authenticatedUser.name : 'Principal Office',
-        status: 'Delivered (100%)',
-        statusClass: 'badge-success',
-        content: text
-      };
-
-      if (!MOCK_DATA.broadcastMessages) MOCK_DATA.broadcastMessages = [];
-      MOCK_DATA.broadcastMessages.unshift(newBroadcast);
-
-      broadcastModalOverlay?.classList.remove('active');
-      document.body.classList.remove('modal-open');
-
-      showToast(`🚀 Dispatched "${subject}" to ${audience} via ${channelLabel}!`);
-
-      if (channel === 'whatsapp' || channel === 'both') {
-        const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(subject + '\n\n' + text)}`;
-        window.open(waUrl, '_blank');
-      }
-
-      // Re-render if on broadcast screen
-      renderBroadcastScreen();
-    });
-  }
-
-  // Global Helpers attached to window
-  window.openBroadcastModal = function(templateId, audience) {
-    const overlay = document.getElementById('broadcastModalOverlay');
-    const select = document.getElementById('broadcastTemplateSelect');
-    const audSelect = document.getElementById('broadcastAudienceSelect');
-    const subjInput = document.getElementById('broadcastSubjectInput');
-    const msgText = document.getElementById('broadcastMessageText');
-    const charCount = document.getElementById('broadcastCharCount');
-
-    if (templateId && select) {
-      select.value = templateId;
-      const tmpl = MOCK_DATA.messageTemplates?.find(t => t.id === templateId);
-      if (tmpl) {
-        if (subjInput) subjInput.value = tmpl.subject;
-        if (msgText) msgText.value = tmpl.text;
-      }
-    } else {
-      if (select) select.value = 'custom';
-      if (subjInput) subjInput.value = '';
-      if (msgText) msgText.value = '';
-    }
-
-    if (audience && audSelect) {
-      audSelect.value = audience;
-    }
-
-    if (charCount && msgText) {
-      charCount.textContent = `${msgText.value.length} characters`;
-    }
-
-    overlay?.classList.add('active');
-    document.body.classList.add('modal-open');
-    if (window.lucide) lucide.createIcons();
-  };
-
-  window.sendWhatsAppFeeReminder = function(studentName, dueAmount, gradeSec, phone) {
-    const cleanPhone = phone ? phone.replace(/[^0-9]/g, '') : '917995870172';
-    const text = `Dear Parent, this is an official reminder from Vikas Grammar School HS Cherial (UDISE: 36182100637). The Term 3 tuition fee of Rs. ${dueAmount} for your ward ${studentName} (${gradeSec}) is pending. Please pay online via UPI (vikasschool@sbi) or visit school counter.`;
-    const waUrl = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent(text)}`;
-    
-    const newLog = {
-      id: 'bc_' + Date.now(),
-      title: `Fee Due WhatsApp Reminder — ${studentName}`,
-      category: 'Fee Reminder',
-      channel: 'WhatsApp Direct',
-      channelIcon: 'message-circle',
-      audience: `${studentName} Parent (${cleanPhone})`,
-      recipientCount: 1,
-      date: 'Just Now',
-      sender: authenticatedUser ? authenticatedUser.name : 'Principal Office',
-      status: 'Delivered (WhatsApp)',
-      statusClass: 'badge-success',
-      content: text
-    };
-    if (!MOCK_DATA.broadcastMessages) MOCK_DATA.broadcastMessages = [];
-    MOCK_DATA.broadcastMessages.unshift(newLog);
-
-    window.open(waUrl, '_blank');
-    showToast(`🟢 WhatsApp fee reminder opened for ${studentName} (+${cleanPhone})!`);
-  };
-
-  window.sendSmsFeeReminder = function(studentName, dueAmount, gradeSec) {
-    const text = `Vikas Grammar School Alert: Fee of Rs. ${dueAmount} is due for ${studentName} (${gradeSec}). Kindly pay before due date. UDISE: 36182100637.`;
-    const newLog = {
-      id: 'bc_' + Date.now(),
-      title: `Fee Due SMS Reminder — ${studentName}`,
-      category: 'Fee Reminder',
-      channel: 'SMS Gateway',
-      channelIcon: 'smartphone',
-      audience: `${studentName} Parent`,
-      recipientCount: 1,
-      date: 'Just Now',
-      sender: authenticatedUser ? authenticatedUser.name : 'Principal Office',
-      status: 'Delivered (SMS)',
-      statusClass: 'badge-success',
-      content: text
-    };
-    if (!MOCK_DATA.broadcastMessages) MOCK_DATA.broadcastMessages = [];
-    MOCK_DATA.broadcastMessages.unshift(newLog);
-
-    showToast(`📱 Automated Fee Reminder SMS dispatched to parent of ${studentName}!`);
-  };
-
-  window.resendBroadcast = function(broadcastId) {
-    const b = MOCK_DATA.broadcastMessages?.find(x => x.id === broadcastId);
-    if (b) {
-      showToast(`🚀 Re-dispatched "${b.title}" to ${b.audience} via ${b.channel}!`);
-    }
-  };
-
-  window.toggleSelectAllFee = function(isChecked) {
-    const checkboxes = document.querySelectorAll('.fee-row-checkbox:not(:disabled)');
-    checkboxes.forEach(cb => cb.checked = isChecked);
-    window.updateFeeSelectedCount();
-  };
-
-  window.selectAllDefaultersOnly = function() {
-    const selectAllCb = document.getElementById('selectAllFeeCheckbox');
-    const checkboxes = document.querySelectorAll('.fee-row-checkbox');
-    checkboxes.forEach(cb => {
-      if (!cb.disabled) {
-        cb.checked = true;
-      } else {
-        cb.checked = false;
-      }
-    });
-    if (selectAllCb) selectAllCb.checked = true;
-    window.updateFeeSelectedCount();
-    showToast('Selected all fee defaulters with pending dues!');
-  };
-
-  window.updateFeeSelectedCount = function() {
-    const checked = document.querySelectorAll('.fee-row-checkbox:checked');
-    const countSpan = document.getElementById('selectedDefaulterCount');
-    const batchBtn = document.getElementById('batchSendBtn');
-    if (countSpan) countSpan.textContent = checked.length;
-    if (batchBtn) {
-      if (checked.length > 0) {
-        batchBtn.style.opacity = '1';
-        batchBtn.style.pointerEvents = 'auto';
-      } else {
-        batchBtn.style.opacity = '0.6';
-        batchBtn.style.pointerEvents = 'none';
-      }
-    }
-  };
-
-  window.sendBatchFeeReminders = function() {
-    const checked = document.querySelectorAll('.fee-row-checkbox:checked');
-    if (checked.length === 0) {
-      showToast('⚠️ Please select at least one student to send fee reminder.');
-      return;
-    }
-
-    const students = [];
-    checked.forEach(cb => {
-      students.push({
-        name: cb.getAttribute('data-name'),
-        due: cb.getAttribute('data-due'),
-        grade: cb.getAttribute('data-grade'),
-        phone: cb.getAttribute('data-phone') || '7995870172'
-      });
-    });
-
-    const newLog = {
-      id: 'bc_' + Date.now(),
-      title: `Batch Multi-Channel Fee Notice (${students.length} Defaulters)`,
-      category: 'Fee Blast',
-      channel: 'WhatsApp + SMS',
-      channelIcon: 'messages-square',
-      audience: `${students.length} Selected Parents (${students.map(s => s.name).slice(0, 3).join(', ')}${students.length > 3 ? '...' : ''})`,
-      recipientCount: students.length,
-      date: 'Just Now',
-      sender: authenticatedUser ? authenticatedUser.name : 'Principal Office',
-      status: 'Delivered (100%)',
-      statusClass: 'badge-success',
-      content: `Official Vikas Grammar School Fee Alert dispatched to ${students.length} selected student parents via automated WhatsApp & SMS Gateway.`
-    };
-    if (!MOCK_DATA.broadcastMessages) MOCK_DATA.broadcastMessages = [];
-    MOCK_DATA.broadcastMessages.unshift(newLog);
-
-    fetch('/api/broadcast', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newLog)
-    }).catch(() => {});
-
-    showToast(`🚀 Dispatched automated SMS & WhatsApp fee alerts to ${students.length} selected students!`);
-
-    const firstStudent = students[0];
-    const waText = `Dear Parents, this is an official fee reminder from Vikas Grammar School HS Cherial (UDISE: 36182100637). Term 3 tuition fee balance is pending. Please clear online via UPI (vikasschool@sbi) or visit school counter.`;
-    const waUrl = `https://api.whatsapp.com/send?phone=${firstStudent.phone}&text=${encodeURIComponent(waText)}`;
-    window.open(waUrl, '_blank');
-  };
-
-  window.openMarksheetModal = function(studentName) {
-    const marksheetModalOverlay = document.getElementById('marksheetModalOverlay');
-    if (studentName) {
-      const el = document.getElementById('msStudentName');
-      if (el) el.textContent = studentName;
-    }
-    marksheetModalOverlay?.classList.add('active');
-    document.body.classList.add('modal-open');
-    if (window.lucide) lucide.createIcons();
-  };
-
-  window.openPaymentModal = function(amount, studentName) {
-    const paymentModalOverlay = document.getElementById('paymentModalOverlay');
-    if (amount) {
-      const el = document.getElementById('payAmountText');
-      if (el) el.textContent = `₹ ${amount}`;
-    }
-    if (studentName) {
-      const el = document.getElementById('payStudentText');
-      if (el) el.textContent = `Student: ${studentName}`;
-    }
-    paymentModalOverlay?.classList.add('active');
-    document.body.classList.add('modal-open');
-    if (window.lucide) lucide.createIcons();
-  };
-
-  window.openLeaveModal = function() {
-    const leaveModalOverlay = document.getElementById('leaveModalOverlay');
-    leaveModalOverlay?.classList.add('active');
-    document.body.classList.add('modal-open');
-    if (window.lucide) lucide.createIcons();
-  };
-
-  window.approveLeave = function(leaveId) {
-    const req = MOCK_DATA.studentLeaveRequests?.find(l => l.id === leaveId);
-    if (req) {
-      req.mentorStatus = 'Approved';
-      req.statusClass = 'badge-success';
-      showToast(`Leave request for ${req.studentName} approved!`);
-      renderTeacherDashboardScreen();
-    }
-  };
-
-  window.rejectLeave = function(leaveId) {
-    const req = MOCK_DATA.studentLeaveRequests?.find(l => l.id === leaveId);
-    if (req) {
-      req.mentorStatus = 'Rejected';
-      req.statusClass = 'badge-danger';
-      showToast(`Leave request for ${req.studentName} rejected.`);
-      renderTeacherDashboardScreen();
-    }
-  };
-
-  function setupProfileSystem() {
-    userProfilePill?.addEventListener('click', openProfileModal);
-    closeProfileModalBtn?.addEventListener('click', closeProfileModal);
-    cancelProfileBtn?.addEventListener('click', closeProfileModal);
-    profileModalOverlay?.addEventListener('click', (e) => {
-      if (e.target === profileModalOverlay) closeProfileModal();
-    });
-
-    profileForm?.addEventListener('submit', (e) => {
-      e.preventDefault();
-      saveProfileChanges();
-    });
-  }
-
-  function openProfileModal() {
-    const userObj = authenticatedUser || findUserByRole(activeRole);
-    if (!userObj) return;
-
-    if (modalProfileAvatar) modalProfileAvatar.src = userObj.avatar;
-    if (modalProfileName) modalProfileName.textContent = userObj.name;
-    const roleIcon = userObj.role === 'principal' ? '👑' : userObj.role === 'teacher' ? '👩‍🏫' : userObj.role === 'student' ? '🎓' : '👨‍👩‍👧';
-    if (modalProfileRoleBadge) modalProfileRoleBadge.textContent = `${roleIcon} ${userObj.roleLabel || userObj.role}`;
-    if (modalProfileDesignation) modalProfileDesignation.textContent = userObj.designation || userObj.roleLabel;
-    
-    if (modalProfileEmailTag) modalProfileEmailTag.innerHTML = `<i data-lucide="mail"></i> ${userObj.email || '-'}`;
-    if (modalProfilePhoneTag) modalProfilePhoneTag.innerHTML = `<i data-lucide="phone"></i> ${userObj.phone || '-'}`;
-    if (modalProfileIdTag) modalProfileIdTag.innerHTML = `<i data-lucide="id-card"></i> ID: ${userObj.idNumber || '-'}`;
-
-    if (profileNameInput) profileNameInput.value = userObj.name || '';
-    if (profileEmailInput) profileEmailInput.value = userObj.email || '';
-    if (profilePhoneInput) profilePhoneInput.value = userObj.phone || '';
-    if (profileIdInput) profileIdInput.value = userObj.idNumber || '';
-    if (profilePenInput) profilePenInput.value = userObj.penId || '';
-    if (profileClassInput) profileClassInput.value = userObj.classSec || '';
-    if (profileBloodGroupInput) profileBloodGroupInput.value = userObj.bloodGroup || '';
-    if (profileEmergencyInput) profileEmergencyInput.value = userObj.emergencyContact || '';
-    if (profileAddressInput) profileAddressInput.value = userObj.address || '';
-    if (profileAvatarInput) profileAvatarInput.value = userObj.avatar || '';
-
-    profileModalOverlay?.classList.add('active');
-    document.body.classList.add('modal-open');
-    if (window.lucide) lucide.createIcons();
-  }
-
-  function closeProfileModal() {
-    profileModalOverlay?.classList.remove('active');
-    document.body.classList.remove('modal-open');
-  }
-
-  function saveProfileChanges() {
-    let userObj = authenticatedUser || findUserByRole(activeRole);
-    if (!userObj) return;
-
-    userObj.name = profileNameInput ? profileNameInput.value.trim() : userObj.name;
-    userObj.email = profileEmailInput ? profileEmailInput.value.trim() : userObj.email;
-    userObj.phone = profilePhoneInput ? profilePhoneInput.value.trim() : userObj.phone;
-    userObj.idNumber = profileIdInput ? profileIdInput.value.trim() : userObj.idNumber;
-    userObj.penId = profilePenInput ? profilePenInput.value.trim() : userObj.penId;
-    userObj.classSec = profileClassInput ? profileClassInput.value.trim() : userObj.classSec;
-    userObj.bloodGroup = profileBloodGroupInput ? profileBloodGroupInput.value.trim() : userObj.bloodGroup;
-    userObj.emergencyContact = profileEmergencyInput ? profileEmergencyInput.value.trim() : userObj.emergencyContact;
-    userObj.address = profileAddressInput ? profileAddressInput.value.trim() : userObj.address;
-    if (profileAvatarInput && profileAvatarInput.value.trim()) {
-      userObj.avatar = profileAvatarInput.value.trim();
-    }
-
-    if (MOCK_DATA.registeredUsers) {
-      const idx = MOCK_DATA.registeredUsers.findIndex(u => u.role === userObj.role || u.email === userObj.email);
-      if (idx !== -1) {
-        MOCK_DATA.registeredUsers[idx] = { ...MOCK_DATA.registeredUsers[idx], ...userObj };
-      }
-    }
-
-    authenticatedUser = userObj;
-    switchRolePersonality(userObj.role, userObj);
-    closeProfileModal();
-    showToast(`Profile details for ${userObj.name} updated successfully!`);
-  }
-
-  function setupLoginSystem() {
-    if (loginModalOverlay?.classList.contains('active')) {
-      document.body.classList.add('modal-open');
-    }
-
-    if (loginEmailInput) {
-      detectUserByEmail(loginEmailInput.value);
-      loginEmailInput.addEventListener('input', (e) => detectUserByEmail(e.target.value));
-    }
-
-    document.querySelectorAll('.demo-chip').forEach(chip => {
-      chip.addEventListener('click', () => {
-        document.querySelectorAll('.demo-chip').forEach(c => c.classList.remove('active'));
-        chip.classList.add('active');
-        const email = chip.getAttribute('data-email');
-        if (loginEmailInput) {
-          loginEmailInput.value = email;
-          detectUserByEmail(email);
-        }
-        if (loginPasswordInput) {
-          loginPasswordInput.value = 'vikas2026';
-        }
-      });
-    });
-
-    loginForm?.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const emailVal = loginEmailInput ? loginEmailInput.value.trim() : '';
-      const passwordVal = loginPasswordInput ? loginPasswordInput.value.trim() : '';
-
-      if (!emailVal || !passwordVal) {
-        showToast('Please enter both email address and password for verification.', 'error');
-        return;
-      }
-
-      if (loginSubmitBtn) {
-        loginSubmitBtn.disabled = true;
-        loginSubmitBtn.innerHTML = `<span>Verifying credentials with Vikas ERP Backend...</span>`;
-      }
-
-      try {
-        const resp = await fetch('/api/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: emailVal, password: passwordVal })
-        });
-
-        const data = await resp.json();
-
-        if (!resp.ok || !data.success) {
-          if (loginSubmitBtn) {
-            loginSubmitBtn.disabled = false;
-            loginSubmitBtn.innerHTML = `<span>Sign In to ERP Workspace</span><i data-lucide="arrow-right"></i>`;
-          }
-          const errMsg = data.error || 'Credential verification failed. Please check your password.';
-          showToast(`❌ Verification Failed: ${errMsg}`);
-          if (detectionStatus) {
-            detectionStatus.innerHTML = `<i data-lucide="alert-triangle"></i> Verification Failed: ${errMsg}`;
-            detectionStatus.style.color = 'var(--rose)';
-          }
-          if (window.lucide) lucide.createIcons();
-          return;
-        }
-
-        const userObj = data.user;
-        const targetRole = userObj.role;
-
-        authenticatedUser = userObj;
-        activeRole = targetRole;
-
-        try {
-          localStorage.setItem('vikas_erp_session', JSON.stringify({ email: userObj.email, role: targetRole, token: data.token }));
-        } catch (err) {}
-
-        document.querySelectorAll('.role-pill').forEach(b => {
-          b.classList.toggle('active', b.getAttribute('data-role') === targetRole);
-        });
-
-        switchRolePersonality(targetRole, userObj);
-
-        loginModalOverlay?.classList.remove('active');
-        document.body.classList.remove('modal-open');
-        if (loginSubmitBtn) {
-          loginSubmitBtn.disabled = false;
-          loginSubmitBtn.innerHTML = `<span>Sign In to ERP Workspace</span><i data-lucide="arrow-right"></i>`;
-        }
-        if (window.lucide) lucide.createIcons();
-
-        showToast(`✅ Verified & Signed in as ${userObj.name} (${userObj.roleLabel || targetRole})`);
-      } catch (err) {
-        console.warn('Backend API fallback to local authentication mode:', err);
-        const matchedUser = findUserByEmail(emailVal);
-        let targetRole = matchedUser ? matchedUser.role : 'principal';
-        let userObj = matchedUser || { email: emailVal, role: targetRole, name: emailVal.split('@')[0] };
-        authenticatedUser = userObj;
-        activeRole = targetRole;
-        switchRolePersonality(targetRole, userObj);
-        loginModalOverlay?.classList.remove('active');
-        document.body.classList.remove('modal-open');
-        if (loginSubmitBtn) {
-          loginSubmitBtn.disabled = false;
-          loginSubmitBtn.innerHTML = `<span>Sign In to ERP Workspace</span><i data-lucide="arrow-right"></i>`;
-        }
-        showToast(`Signed in as ${userObj.name}`);
-      }
-    });
-
-    logoutBtn?.addEventListener('click', () => {
-      try {
-        localStorage.removeItem('vikas_erp_session');
-      } catch (e) {}
-      loginModalOverlay?.classList.add('active');
-      document.body.classList.add('modal-open');
-      showToast('Logged out. Enter registered email and password to verify login.');
-    });
-
-    document.querySelectorAll('input[name="customRole"]').forEach(radio => {
-      radio.addEventListener('change', () => {
-        const emailVal = loginEmailInput ? loginEmailInput.value.trim() : '';
-        if (!findUserByEmail(emailVal)) {
-          updateUnregisteredDetectionCard(emailVal, radio.value);
-        }
-      });
-    });
-  }
-
-  function findUserByEmail(emailStr) {
-    if (!emailStr || !MOCK_DATA.registeredUsers) return null;
-    const clean = emailStr.trim().toLowerCase();
-    return MOCK_DATA.registeredUsers.find(u => 
-      u.email.toLowerCase() === clean || 
-      (u.altEmail && u.altEmail.toLowerCase() === clean) ||
-      u.role.toLowerCase() === clean ||
-      u.name.toLowerCase().includes(clean)
-    );
-  }
-
-  function detectUserByEmail(emailStr) {
-    const user = findUserByEmail(emailStr);
-    
-    document.querySelectorAll('.demo-chip').forEach(chip => {
-      chip.classList.toggle('active', chip.getAttribute('data-email').toLowerCase() === emailStr.trim().toLowerCase());
-    });
-
-    if (user) {
-      if (customRoleGroup) customRoleGroup.style.display = 'none';
-      if (roleDetectionBox) roleDetectionBox.style.display = 'block';
-      if (detectionBadge) detectionBadge.textContent = user.badge;
-      if (detectionAvatar) detectionAvatar.src = user.avatar;
-      if (detectionName) detectionName.textContent = user.name;
-      if (detectionSub) detectionSub.textContent = `${user.designation} (${user.details})`;
-      if (detectionStatus) {
-        detectionStatus.innerHTML = `<i data-lucide="check-circle-2"></i> Verified School Account • Auto-assigned to <strong>${user.roleLabel || user.role}</strong> workspace`;
-        detectionStatus.style.color = 'var(--emerald)';
-      }
-    } else {
-      const selectedRole = document.querySelector('input[name="customRole"]:checked')?.value || 'principal';
-      updateUnregisteredDetectionCard(emailStr, selectedRole);
-    }
-    if (window.lucide) lucide.createIcons();
-  }
-
-  function updateUnregisteredDetectionCard(emailStr, selectedRole) {
-    if (customRoleGroup) customRoleGroup.style.display = 'block';
-    if (roleDetectionBox) roleDetectionBox.style.display = 'block';
-    const roleTitle = selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1);
-    if (detectionBadge) detectionBadge.textContent = `❓ Custom Account — ${roleTitle} Workspace`;
-    if (detectionAvatar) detectionAvatar.src = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80';
-    if (detectionName) detectionName.textContent = emailStr ? emailStr.split('@')[0] : 'Unregistered User';
-    if (detectionSub) detectionSub.textContent = emailStr || 'Unregistered email address';
-    if (detectionStatus) {
-      detectionStatus.innerHTML = `<i data-lucide="info"></i> New user login • Will open <strong>${roleTitle}</strong> workspace`;
-      detectionStatus.style.color = 'var(--indigo)';
-    }
-    if (window.lucide) lucide.createIcons();
+    switchRolePersonality('principal');
   }
 
   function setupEventListeners() {
+    window.handleNavClick = handleNavClick;
+    window.switchTeacherFeedbackTab = function(tab) {
+      activeTeacherTab = tab;
+      renderTeacherFeedbackScreen();
+    };
+    window.switchPrincipalFeedbackTab = function(tab) {
+      activePrincipalTab = tab;
+      renderPrincipalFeedbackOversightScreen();
+    };
+    window.acknowledgeFeedbackAsParent = function(id) {
+      const item = MOCK_DATA.teacherStudentFeedbacks.find(x => x.id === id);
+      if (item) {
+        const noteInput = document.getElementById(`parentNoteInput_${id}`);
+        const noteText = noteInput?.value ? noteInput.value.trim() : 'Reviewed and acknowledged by parent.';
+        item.parentAcknowledged = true;
+        item.parentNote = noteText;
+        const now = new Date();
+        item.acknowledgedDate = `Sep 02, 2026 at ${now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}`;
+        showToast(`Feedback acknowledged! Your reply was delivered to ${item.teacherName} and Principal.`);
+        renderParentTeacherFeedbackScreen();
+      }
+    };
+    window.principalAcknowledgeStudent = function(id) {
+      const item = MOCK_DATA.studentClassFeedbacks.find(x => x.id === id);
+      if (item) {
+        item.principalStatus = 'Acknowledged by Headmaster';
+        item.principalRemarks = 'Reviewed by Headmaster K. Rajesham. Excellent progress noted.';
+        showToast('Acknowledged student feedback!');
+        renderPrincipalFeedbackOversightScreen();
+      }
+    };
+    window.plugSubjectGap = function(subjectName) {
+      const student = MOCK_DATA.gpaSubjectDiagnostics[0];
+      const sub = student.subjects.find(s => s.subject === subjectName);
+      if (sub) {
+        sub.gapStatus = 'Plugged Successfully';
+        showToast(`Remedial action verified! Learning gap plugged for ${subjectName}.`);
+        renderGpaDiagnosticsScreen(activeRole);
+      }
+    };
+    window.advanceImprovementAction = function(id) {
+      const item = MOCK_DATA.whereToImprove.find(x => x.id === id);
+      if (item) {
+        if (item.progressPct < 100) {
+          item.progressPct = Math.min(100, item.progressPct + 10);
+          if (item.progressPct === 100) item.status = 'Fully Accomplished';
+          showToast(`Updated progress on ${item.area} to ${item.progressPct}%!`);
+          renderInstitutionalDiagnosticScreen();
+        } else {
+          showToast('Action item is already fully accomplished!');
+        }
+      }
+    };
+    window.switchMethodologyTab = function(tab) {
+      activeMethodologyTab = tab;
+      renderMethodologySatisfactionScreen(activeRole);
+    };
+    window.switchRelationsTab = function(tab) {
+      activeRelationsTab = tab;
+      renderRelationsAndConductScreen(activeRole);
+    };
+    window.switchFacilitiesTab = function(tab) {
+      activeFacilitiesTab = tab;
+      renderFacilitiesIncidentsScreen(activeRole);
+    };
+
     // Role Pills Switcher in Top Navbar
     document.querySelectorAll('.role-pill').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -763,22 +117,14 @@ document.addEventListener('DOMContentLoaded', () => {
       themeLightBtn.classList.remove('active');
     });
 
-    // Sidebar Responsive Collapse Toggle & Mobile Backdrop Overlay
-    const sidebarOverlay = document.getElementById('sidebarOverlay');
-
+    // Sidebar Responsive Collapse Toggle
     sidebarCollapseBtn?.addEventListener('click', () => {
       sidebar.classList.toggle('collapsed');
       document.querySelector('.main-wrapper').classList.toggle('expanded');
-      sidebarOverlay?.classList.toggle('active');
     });
 
-    sidebarOverlay?.addEventListener('click', () => {
-      sidebar.classList.remove('collapsed');
-      document.querySelector('.main-wrapper').classList.remove('expanded');
-      sidebarOverlay?.classList.remove('active');
-    });
-
-    // AI Drawer Open / Close
+    // AI Drawer Open/Close Controls
+    const openAiDrawerBtn = document.getElementById('openAiDrawerBtn');
     openAiDrawerBtn?.addEventListener('click', () => {
       aiDrawer?.classList.add('active');
       aiDrawerOverlay?.classList.add('active');
@@ -786,27 +132,28 @@ document.addEventListener('DOMContentLoaded', () => {
     closeAiDrawerBtn?.addEventListener('click', closeAiDrawer);
     aiDrawerOverlay?.addEventListener('click', closeAiDrawer);
 
-    // AI Drawer Prompt Form (simple canned assistant reply, client-side only)
+    // AI Copilot Chat Handling
+    const aiPromptForm = document.getElementById('aiPromptForm');
+    const aiPromptInput = document.getElementById('aiPromptInput');
+    const aiChatBody = document.getElementById('aiChatBody');
     aiPromptForm?.addEventListener('submit', (e) => {
       e.preventDefault();
-      const text = aiPromptInput.value.trim();
-      if (!text || !aiChatBody) return;
+      const q = aiPromptInput?.value.trim();
+      if (!q || !aiChatBody) return;
+      aiPromptInput.value = '';
 
       const userMsg = document.createElement('div');
       userMsg.className = 'ai-message user';
-      userMsg.style.cssText = 'align-self:flex-end; background:var(--accent-grad); color:#fff; border-bottom-right-radius:4px;';
-      userMsg.innerHTML = `<p>${text.replace(/</g, '&lt;')}</p>`;
+      userMsg.innerHTML = `<p>${q}</p>`;
       aiChatBody.appendChild(userMsg);
-      aiPromptInput.value = '';
-      aiChatBody.scrollTop = aiChatBody.scrollHeight;
 
       setTimeout(() => {
-        const replyMsg = document.createElement('div');
-        replyMsg.className = 'ai-message assistant';
-        replyMsg.innerHTML = `<p>Thanks for asking! This is a demo assistant — connect it to your live Vikas Grammar School data to answer "${text.replace(/</g, '&lt;')}" for real.</p>`;
-        aiChatBody.appendChild(replyMsg);
+        const botMsg = document.createElement('div');
+        botMsg.className = 'ai-message assistant';
+        botMsg.innerHTML = `<p><strong>Vikas AI Assistant:</strong> In response to "<em>${q}</em>" — Operational metrics for Vikas Grammar School HS Cherial (UDISE: 36182100637) are synchronized. All 11 institutional quality pillars are on track.</p>`;
+        aiChatBody.appendChild(botMsg);
         aiChatBody.scrollTop = aiChatBody.scrollHeight;
-      }, 500);
+      }, 400);
     });
 
     // Global Search Handler
@@ -832,10 +179,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.addEventListener('click', (e) => {
-      if (notifDropdown && !notifDropdown.contains(e.target) && e.target !== notifBtn) {
+      if (notifDropdown && !notifDropdown.contains(e.target) && !notifBtn?.contains(e.target)) {
         notifDropdown.classList.remove('active');
       }
     });
+
 
     markAllReadBtn?.addEventListener('click', () => {
       MOCK_DATA.notificationsList.forEach(n => n.unread = false);
@@ -894,61 +242,25 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
 
-  function switchRolePersonality(role, userObj) {
+  function switchRolePersonality(role) {
     document.body.className = `theme-light role-${role}`;
     renderRoleSidebarNav(role);
 
-    const currentUserObj = userObj || (MOCK_DATA.registeredUsers ? MOCK_DATA.registeredUsers.find(u => u.role === role) : null);
-
-    const sessionRoleIcon = document.getElementById('sessionRoleIcon');
-    const sessionRoleTitle = document.getElementById('sessionRoleTitle');
-    const sessionEmailText = document.getElementById('sessionEmailText');
-
-    if (currentUserObj) {
-      if (userName) userName.textContent = currentUserObj.name;
-      if (userRole) userRole.textContent = currentUserObj.roleLabel || currentUserObj.designation;
-      if (userAvatar && currentUserObj.avatar) userAvatar.src = currentUserObj.avatar;
-
-      const roleIcon = currentUserObj.role === 'principal' ? '👑' : currentUserObj.role === 'teacher' ? '👩‍🏫' : currentUserObj.role === 'student' ? '🎓' : '👨‍👩‍👧';
-      const cleanBadge = (currentUserObj.badge || (currentUserObj.role.toUpperCase() + ' WORKSPACE')).replace(/^[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{1F1E6}-\u{1F1FF}]\s*/u, '');
-      if (sessionRoleIcon) sessionRoleIcon.textContent = roleIcon;
-      if (sessionRoleTitle) sessionRoleTitle.textContent = cleanBadge;
-      if (sessionEmailText) sessionEmailText.textContent = currentUserObj.email || (currentUserObj.role + '@vikas.edu.in');
-    } else {
-      if (role === 'principal') {
-        if (userName) userName.textContent = 'K. Rajesham';
-        if (userRole) userRole.textContent = 'Headmaster';
-        if (sessionRoleIcon) sessionRoleIcon.textContent = '👑';
-        if (sessionRoleTitle) sessionRoleTitle.textContent = 'Principal Command Center';
-        if (sessionEmailText) sessionEmailText.textContent = 'principal@vikas.edu.in';
-      } else if (role === 'teacher') {
-        if (userName) userName.textContent = 'Mrs. S. Radhika';
-        if (userRole) userRole.textContent = 'Class Teacher (VIII A)';
-        if (sessionRoleIcon) sessionRoleIcon.textContent = '👩‍🏫';
-        if (sessionRoleTitle) sessionRoleTitle.textContent = 'Teacher Workspace';
-        if (sessionEmailText) sessionEmailText.textContent = 'teacher@vikas.edu.in';
-      } else if (role === 'student') {
-        if (userName) userName.textContent = 'Rahul Reddy';
-        if (userRole) userRole.textContent = 'Student (Class VIII A)';
-        if (sessionRoleIcon) sessionRoleIcon.textContent = '🎓';
-        if (sessionRoleTitle) sessionRoleTitle.textContent = 'Student Portal';
-        if (sessionEmailText) sessionEmailText.textContent = 'student@vikas.edu.in';
-      } else if (role === 'parent') {
-        if (userName) userName.textContent = 'Parent of Rahul Reddy';
-        if (userRole) userRole.textContent = 'Parent';
-        if (sessionRoleIcon) sessionRoleIcon.textContent = '👨‍👩‍👧';
-        if (sessionRoleTitle) sessionRoleTitle.textContent = 'Parent Info Portal';
-        if (sessionEmailText) sessionEmailText.textContent = 'parent@vikas.edu.in';
-      }
-    }
-
     if (role === 'principal') {
+      userName.textContent = 'K. Rajesham';
+      userRole.textContent = 'Headmaster';
       renderPrincipalDashboardScreen();
     } else if (role === 'teacher') {
+      userName.textContent = 'Mrs. S. Radhika';
+      userRole.textContent = 'Class Teacher (VIII A)';
       renderTeacherDashboardScreen();
     } else if (role === 'student') {
+      userName.textContent = 'Rahul Reddy';
+      userRole.textContent = 'Student (Class VIII A)';
       renderStudentDashboardScreen();
     } else if (role === 'parent') {
+      userName.textContent = 'Parent of Rahul Reddy';
+      userRole.textContent = 'Parent';
       renderParentDashboardScreen();
     }
   }
@@ -960,53 +272,70 @@ document.addEventListener('DOMContentLoaded', () => {
     if (role === 'principal') {
       items = [
         { id: 'dashboard', label: 'Dashboard', icon: 'layout-grid' },
+        { id: 'institutional_diagnostic', label: 'Where We Stand & Improve', icon: 'trending-up' },
+        { id: 'feedback_oversight', label: 'Daily Feedback Oversight', icon: 'message-square' },
+        { id: 'principal_gpa_analytics', label: 'GPA & Academic Gaps', icon: 'award' },
+        { id: 'methodology_satisfaction', label: 'Methodology & Satisfaction', icon: 'sparkles' },
+        { id: 'relations_climate', label: 'Teacher-Student Relations & Conduct', icon: 'heart-handshake' },
+        { id: 'facilities_incidents', label: 'Facilities & Safety Incidents', icon: 'shield-alert' },
+        { id: 'pacing_diary', label: 'Syllabus Pacing & Daily Progress', icon: 'clock' },
         { id: 'admissions', label: 'Admissions & Enquiries', icon: 'user-plus' },
         { id: 'students', label: 'Students Roster (Classes 1–10)', icon: 'users' },
         { id: 'academics', label: 'Academics & Board', icon: 'book-open' },
-        { id: 'sms_broadcast', label: '📢 SMS & WhatsApp Broadcaster', icon: 'send' },
         { id: 'staff_payroll', label: 'Staff & HR Payroll', icon: 'user-check' },
         { id: 'timetable', label: 'Master Timetables Matrix', icon: 'calendar' },
         { id: 'fees', label: 'Fee Collection Ledger', icon: 'indian-rupee' },
         { id: 'transport', label: 'Transport & Fleet', icon: 'bus' },
         { id: 'library', label: 'School Library', icon: 'book-marked' },
-        { id: 'calendar', label: 'School Holiday Calendar', icon: 'calendar' },
-        { id: 'my_profile', label: 'My Profile & Account Info', icon: 'user-cog' }
+        { id: 'calendar', label: 'School Holiday Calendar', icon: 'calendar' }
       ];
     } else if (role === 'teacher') {
       items = [
         { id: 'dashboard', label: 'Teacher Workspace', icon: 'layout-grid' },
+        { id: 'teacher_feedback', label: 'Daily Class & Student Feedback', icon: 'message-square' },
+        { id: 'teacher_behaviour', label: 'Student 360° Conduct & Behaviour', icon: 'heart-handshake' },
+        { id: 'teacher_gpa_gaps', label: 'GPA & Learning Gaps Plugging', icon: 'award' },
+        { id: 'pacing_diary', label: 'Syllabus Pacing & Daily Diary', icon: 'clock' },
+        { id: 'teacher_methodology', label: 'Teaching Methodology Review', icon: 'sparkles' },
+        { id: 'teacher_report_incident', label: 'Facilities & Safety Incidents', icon: 'shield-alert' },
         { id: 'my_students', label: 'My Class Students (360°)', icon: 'users' },
         { id: 'teacher_attendance', label: 'My Teacher Attendance', icon: 'check-circle' },
         { id: 'homework', label: 'Homework & Assignments', icon: 'book-open' },
-        { id: 'sms_broadcast', label: '📢 Class SMS & WhatsApp Alerts', icon: 'send' },
         { id: 'timetable', label: 'My Teaching Schedule', icon: 'clock' },
         { id: 'student_leave_approvals', label: 'Student Leave Approvals', icon: 'file-text' },
         { id: 'teacher_salary', label: 'My Salary & Payslips', icon: 'indian-rupee' },
-        { id: 'calendar', label: 'School Holiday Calendar', icon: 'calendar' },
-        { id: 'my_profile', label: 'My Profile & Account Info', icon: 'user-cog' }
+        { id: 'calendar', label: 'School Holiday Calendar', icon: 'calendar' }
       ];
     } else if (role === 'student') {
       items = [
         { id: 'dashboard', label: 'Student Portal', icon: 'layout-grid' },
-        { id: 'timetable', label: 'My Class Timetable', icon: 'clock' },
+        { id: 'student_daily_feedback', label: 'Daily Class Feedback', icon: 'message-square-plus' },
+        { id: 'student_gpa_gaps', label: 'My GPA & Learning Gaps', icon: 'award' },
+        { id: 'student_methodology_opinion', label: 'Teaching Method Opinion', icon: 'sparkles' },
+        { id: 'pacing_diary', label: 'Class Pacing & Today\'s Diary', icon: 'clock' },
+        { id: 'student_facilities_feedback', label: 'Campus Amenities & Facilities', icon: 'coffee' },
+        { id: 'student_report_incident', label: 'Safety & Incident Report', icon: 'shield-alert' },
+        { id: 'timetable', label: 'My Class Timetable', icon: 'calendar' },
         { id: 'homework', label: 'Today\'s Homework', icon: 'book-open' },
         { id: 'my_fees', label: 'My Fee Breakdown', icon: 'indian-rupee' },
         { id: 'student_apply_leave', label: 'Submit Leave Request', icon: 'file-text' },
         { id: 'bus_info', label: 'My Bus Route & Timing', icon: 'bus' },
-        { id: 'calendar', label: 'School Holiday Calendar', icon: 'calendar' },
-        { id: 'my_profile', label: 'My Profile & Account Info', icon: 'user-cog' }
+        { id: 'calendar', label: 'School Holiday Calendar', icon: 'calendar' }
       ];
     } else if (role === 'parent') {
       items = [
         { id: 'dashboard', label: 'Child Overview', icon: 'layout-grid' },
+        { id: 'teacher_feedback_parent', label: "Teacher's Daily Feedback", icon: 'message-circle' },
+        { id: 'parent_child_behaviour', label: 'Child 360° Conduct & Behaviour', icon: 'heart-handshake' },
+        { id: 'parent_gpa_gaps', label: 'Subject GPA & Learning Gaps', icon: 'award' },
+        { id: 'pacing_diary', label: 'Class Pacing & Syllabus Coverage', icon: 'clock' },
+        { id: 'parent_facilities_safety', label: 'Campus Hygiene & Safety Log', icon: 'shield-alert' },
         { id: 'child_attendance', label: 'Child Attendance & Performance', icon: 'user-check' },
         { id: 'child_homework', label: 'Child Homework', icon: 'book-open' },
-        { id: 'parent_broadcasts', label: '📢 WhatsApp & SMS Alerts', icon: 'bell' },
         { id: 'parent_apply_leave', label: 'Apply Child Leave', icon: 'file-text' },
         { id: 'pay_fee', label: 'Pay School Fee', icon: 'indian-rupee' },
         { id: 'bus_tracking', label: 'Child Bus Tracking', icon: 'bus' },
-        { id: 'calendar', label: 'School Holiday Calendar', icon: 'calendar' },
-        { id: 'my_profile', label: 'My Profile & Account Info', icon: 'user-cog' }
+        { id: 'calendar', label: 'School Holiday Calendar', icon: 'calendar' }
       ];
     }
 
@@ -1027,13 +356,6 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.classList.add('active');
         const view = btn.getAttribute('data-view');
         handleNavClick(view);
-
-        // Auto-close mobile sidebar drawer on selection
-        if (window.innerWidth <= 1024) {
-          sidebar.classList.remove('collapsed');
-          document.querySelector('.main-wrapper')?.classList.remove('expanded');
-          document.getElementById('sidebarOverlay')?.classList.remove('active');
-        }
       });
     });
 
@@ -1042,18 +364,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* NAV ROUTER CONTROLLER */
   function handleNavClick(viewId) {
-    if (viewId === 'my_profile') {
-      openProfileModal();
-      return;
-    }
-
     if (viewId === 'dashboard') {
       if (activeRole === 'principal') renderPrincipalDashboardScreen();
       else if (activeRole === 'teacher') renderTeacherDashboardScreen();
       else if (activeRole === 'student') renderStudentDashboardScreen();
       else if (activeRole === 'parent') renderParentDashboardScreen();
-    } else if (viewId === 'sms_broadcast' || viewId === 'parent_broadcasts' || viewId === 'broadcasts') {
-      renderBroadcastScreen();
+    } else if (viewId === 'institutional_diagnostic') {
+      renderInstitutionalDiagnosticScreen();
+    } else if (viewId === 'feedback_oversight') {
+      renderPrincipalFeedbackOversightScreen();
+    } else if (viewId === 'teacher_feedback') {
+      renderTeacherFeedbackScreen();
+    } else if (viewId === 'student_daily_feedback') {
+      renderStudentDailyFeedbackScreen();
+    } else if (viewId === 'teacher_feedback_parent') {
+      renderParentTeacherFeedbackScreen();
+    } else if (viewId === 'principal_gpa_analytics' || viewId === 'teacher_gpa_gaps' || viewId === 'student_gpa_gaps' || viewId === 'parent_gpa_gaps') {
+      renderGpaDiagnosticsScreen(activeRole);
+    } else if (viewId === 'methodology_satisfaction' || viewId === 'teacher_methodology' || viewId === 'student_methodology_opinion') {
+      renderMethodologySatisfactionScreen(activeRole);
+    } else if (viewId === 'relations_climate' || viewId === 'teacher_behaviour' || viewId === 'parent_child_behaviour') {
+      renderRelationsAndConductScreen(activeRole);
+    } else if (viewId === 'facilities_incidents' || viewId === 'teacher_report_incident' || viewId === 'student_facilities_feedback' || viewId === 'student_report_incident' || viewId === 'parent_facilities_safety') {
+      renderFacilitiesIncidentsScreen(activeRole);
+    } else if (viewId === 'pacing_diary' || viewId === 'teacher_syllabus_pacing') {
+      renderClassPacingDiaryScreen(activeRole);
     } else if (viewId === 'admissions' || viewId === 'admissions_enquiries' || viewId === 'admissions_forms' || viewId === 'admissions_tests') {
       renderAdmissionsScreen();
     } else if (viewId === 'students' || viewId === 'student_directory' || viewId === 'my_students' || viewId === 'student_lifecycle' || viewId === 'student_documents') {
@@ -1066,14 +401,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (activeRole === 'principal') renderMasterScheduleMatrixScreen('Class VIII A');
       else if (activeRole === 'teacher') renderTeacherTimetableScreen();
       else renderStudentTimetableScreen();
-    } else if (viewId === 'fees' || viewId === 'fees_ledger' || viewId === 'fees_defaulters') {
-      if (activeRole === 'principal') {
-        renderFeeLedgerScreen();
-      } else {
-        renderStudentFeeBreakdownScreen();
-      }
-    } else if (viewId === 'my_fees' || viewId === 'pay_fee') {
-      renderStudentFeeBreakdownScreen();
+    } else if (viewId === 'fees' || viewId === 'my_fees' || viewId === 'pay_fee' || viewId === 'fees_ledger' || viewId === 'fees_defaulters') {
+      renderFeeLedgerScreen();
     } else if (viewId === 'transport' || viewId === 'bus_info' || viewId === 'bus_tracking') {
       renderTransportFleetScreen();
     } else if (viewId === 'library') {
@@ -1095,7 +424,6 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       renderGenericView(viewId);
     }
-
   }
 
   /* ==========================================================================
@@ -1145,6 +473,10 @@ document.addEventListener('DOMContentLoaded', () => {
               <h3 class="panel-title"><i data-lucide="zap" style="color:var(--emerald);"></i> Operational Quick Actions</h3>
             </div>
             <div class="quick-cards-grid">
+              <div class="quick-action-card" onclick="handleNavClick('feedback_oversight')">
+                <div class="quick-icon-box" style="background:#ede9fe; color:#6366f1;"><i data-lucide="message-square"></i></div>
+                <span class="quick-title">Daily Feedback Center</span>
+              </div>
               <div class="quick-action-card" onclick="showToast('Annual bulk promotion completed for Class VIII to Class IX!')">
                 <div class="quick-icon-box" style="background:#ecfdf5; color:#10b981;"><i data-lucide="graduation-cap"></i></div>
                 <span class="quick-title">Bulk Promotion</span>
@@ -1193,7 +525,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* 2. TEACHER DASHBOARD */
   function renderTeacherDashboardScreen() {
-    renderTeacherTimetableScreen();
+    contentViewport.innerHTML = `
+      <!-- TEACHER QUICK FEEDBACK BANNER -->
+      <div class="panel-card" style="background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%); border:1px solid #c7d2fe; margin-bottom:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+          <div style="display:flex; align-items:center; gap:14px;">
+            <div style="width:48px; height:48px; border-radius:14px; background:var(--indigo); color:white; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(99,102,241,0.35);">
+              <i data-lucide="message-square" style="width:24px; height:24px;"></i>
+            </div>
+            <div>
+              <h3 style="font-size:1.25rem; font-weight:800; color:#1e1b4b; margin:0;">Daily Class & Student Feedback Portal</h3>
+              <p style="color:#4338ca; font-size:0.85rem; font-weight:600; margin:2px 0 0 0;">Evaluate student performance (reflects to Parents) & log daily class sessions (visible to Principal)</p>
+            </div>
+          </div>
+          <button onclick="handleNavClick('teacher_feedback')" style="padding:10px 20px; background:var(--indigo); color:white; border-radius:10px; font-weight:700; font-size:0.88rem; border:none; cursor:pointer; display:flex; align-items:center; gap:6px;">
+            <i data-lucide="edit-3"></i> Open Feedback Portal →
+          </button>
+        </div>
+      </div>
+    `;
+    renderTeacherTimetableScreen(true);
   }
 
   /* 3. STUDENT DASHBOARD */
@@ -1210,8 +561,26 @@ document.addEventListener('DOMContentLoaded', () => {
           <div style="font-size:0.75rem; text-transform:uppercase; font-weight:700;">Learning Streak</div>
         </div>
       </div>
+
+      <!-- STUDENT DAILY CLASS FEEDBACK BANNER -->
+      <div class="panel-card" style="background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%); border:1px solid #a7f3d0; margin-bottom:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+          <div style="display:flex; align-items:center; gap:14px;">
+            <div style="width:48px; height:48px; border-radius:14px; background:#10b981; color:white; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(16,185,129,0.35);">
+              <i data-lucide="message-square-plus" style="width:24px; height:24px;"></i>
+            </div>
+            <div>
+              <h3 style="font-size:1.25rem; font-weight:800; color:#064e3b; margin:0;">Daily Class Feedback</h3>
+              <p style="color:#047857; font-size:0.85rem; font-weight:600; margin:2px 0 0 0;">Rate your daily periods, pace & share doubts directly with Headmaster K. Rajesham</p>
+            </div>
+          </div>
+          <button onclick="handleNavClick('student_daily_feedback')" style="padding:10px 20px; background:#10b981; color:white; border-radius:10px; font-weight:700; font-size:0.88rem; border:none; cursor:pointer; display:flex; align-items:center; gap:6px;">
+            <i data-lucide="star"></i> Give Class Feedback →
+          </button>
+        </div>
+      </div>
     `;
-    renderStudentTimetableScreen();
+    renderStudentTimetableScreen(true);
   }
 
   /* 4. PARENT DASHBOARD */
@@ -1754,30 +1123,19 @@ document.addEventListener('DOMContentLoaded', () => {
     refreshLucideIcons();
   }
 
-  /* 10. FEE COLLECTION & FINANCIAL LEDGER (PRINCIPAL ONLY) */
+  /* 10. FEE COLLECTION LEDGER */
   function renderFeeLedgerScreen() {
     const list = MOCK_DATA.feeLedgerFullList;
     contentViewport.innerHTML = `
-      <div class="panel-card" style="background: #ffffff; border: 1px solid var(--border-color); margin-bottom:20px; border-radius: 16px; padding: 22px;">
+      <div class="panel-card" style="background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border-color: #a7f3d0; margin-bottom:20px;">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
           <div>
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <span style="font-size: 1.5rem;">👑</span>
-              <h2 style="margin: 0; color: var(--text-primary);"><i data-lucide="indian-rupee" style="color:var(--emerald);"></i> Fee Collection & Financial Ledger</h2>
-            </div>
-            <p style="color:var(--text-secondary); margin-top:4px; font-size: 0.85rem;">Principal Financial Command Center • Q2 Academic Year 2026-2027 • Vikas Grammar School HS Cherial (UDISE: 36182100637)</p>
+            <h2><i data-lucide="indian-rupee" style="color:var(--emerald);"></i> Fee Collection & Financial Ledger</h2>
+            <p style="color:var(--text-secondary); margin-top:4px;">Q2 Academic Year 2026-2027 • Vikas Grammar School Cherial (UDISE: 36182100637)</p>
           </div>
-          <div style="display:flex; gap:10px; flex-wrap: wrap;">
-            <button class="btn-primary" onclick="window.selectAllDefaultersOnly()" style="padding:8px 14px; background:#eff6ff; color:#3b82f6; border:1px solid #bfdbfe; border-radius:10px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:6px;">
-              <i data-lucide="check-square"></i> Select All Defaulters (42)
-            </button>
-            <button class="btn-primary" id="batchSendBtn" onclick="window.sendBatchFeeReminders()" style="padding:8px 16px; background:#25D366; color:white; border-radius:10px; font-weight:700; display:flex; align-items:center; gap:6px; border:none; cursor:pointer; box-shadow: 0 4px 12px rgba(37,211,102,0.3); opacity: 0.6; pointer-events: none;">
-              <i data-lucide="send"></i> ⚡ Multi-Channel Blast to Selected (<span id="selectedDefaulterCount">0</span>)
-            </button>
-            <button class="btn-primary" onclick="window.openBroadcastModal('tmpl_fee', 'Fee Defaulters Only')" style="padding:8px 14px; background:var(--indigo); color:white; border-radius:10px; font-weight:700; display:flex; align-items:center; gap:6px; border:none; cursor:pointer;">
-              <i data-lucide="message-circle"></i> Custom Blast
-            </button>
-          </div>
+          <button class="btn-primary" onclick="showToast('Dispatched Fee Reminder SMS to Defaulters!')" style="padding:8px 16px; background:var(--emerald); color:white; border-radius:10px; font-weight:700;">
+            <i data-lucide="send"></i> Send Fee Reminder SMS
+          </button>
         </div>
       </div>
 
@@ -1805,34 +1163,27 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
 
       <div class="panel-card">
-        <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <div class="panel-header">
           <h3 class="panel-title">Student Fee Accounts & Installment Status</h3>
-          <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Select multiple students to dispatch automated multi-channel fee reminders in 1 click</span>
         </div>
-        <div class="table-responsive">
-          <table class="custom-table" style="width:100%;">
+        <div class="table-container">
+          <table class="data-table" style="width:100%; border-collapse:collapse; text-align:left; font-size:0.88rem;">
             <thead>
-              <tr>
-                <th style="width:36px; text-align:center;">
-                  <input type="checkbox" id="selectAllFeeCheckbox" onchange="window.toggleSelectAllFee(this.checked)" title="Select all defaulter students" style="cursor: pointer; width: 16px; height: 16px;">
-                </th>
-                <th>Student Name</th>
+              <tr style="color:var(--text-muted); font-size:0.78rem; text-transform:uppercase; background:var(--bg-card-sub);">
+                <th style="padding:12px;">Student Name</th>
                 <th>Class & Section</th>
                 <th>Total Annual Fee</th>
                 <th>Amount Paid</th>
                 <th>Balance Due</th>
                 <th>Payment Status</th>
                 <th>Last Receipt</th>
-                <th>Direct Reminders & Actions</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
               ${list.map(f => `
-                <tr>
-                  <td style="text-align:center;">
-                    <input type="checkbox" class="fee-row-checkbox" data-id="${f.id}" data-name="${f.name}" data-due="${f.dueFee}" data-grade="${f.gradeSec}" data-phone="${f.phone || '7995870172'}" onchange="window.updateFeeSelectedCount()" ${f.dueFee > 0 ? 'style="cursor: pointer; width: 16px; height: 16px;"' : 'disabled style="opacity:0.25; cursor:not-allowed; width: 16px; height: 16px;"'}>
-                  </td>
-                  <td><strong>${f.name}</strong></td>
+                <tr style="border-bottom:1px solid var(--border-color);">
+                  <td style="padding:12px;"><strong>${f.name}</strong></td>
                   <td><span class="badge badge-indigo">${f.gradeSec}</span></td>
                   <td>₹${f.totalFee.toLocaleString()}</td>
                   <td style="color:#047857; font-weight:700;">₹${f.paidFee.toLocaleString()}</td>
@@ -1840,272 +1191,8 @@ document.addEventListener('DOMContentLoaded', () => {
                   <td><span class="badge ${f.status === 'Paid' ? 'badge-success' : f.status === 'Partial' ? 'badge-warning' : 'badge-danger'}">${f.status}</span></td>
                   <td><code>${f.receiptNo}</code></td>
                   <td>
-                    <div style="display:flex; gap:6px; flex-wrap:wrap;">
-                      ${f.dueFee > 0 ? `
-                        <button onclick="window.sendWhatsAppFeeReminder('${f.name}', ${f.dueFee}, '${f.gradeSec}', '+91 79958 70172')" title="Send WhatsApp Message to Parent" style="padding:4px 8px; font-size:0.75rem; background:#25D366; color:white; border:none; border-radius:6px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:4px;">
-                          <i data-lucide="message-circle" style="width:12px; height:12px;"></i> WhatsApp
-                        </button>
-                        <button onclick="window.sendSmsFeeReminder('${f.name}', ${f.dueFee}, '${f.gradeSec}')" title="Send SMS Alert to Parent" style="padding:4px 8px; font-size:0.75rem; background:#6366f1; color:white; border:none; border-radius:6px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:4px;">
-                          <i data-lucide="smartphone" style="width:12px; height:12px;"></i> SMS
-                        </button>
-                      ` : `
-                        <span style="font-size:0.72rem; color:var(--emerald); font-weight:700;">✅ Fully Cleared</span>
-                      `}
-                      <button onclick="showToast('Generated Fee Receipt PDF for ${f.name}!')" style="padding:4px 8px; font-size:0.75rem; background:var(--bg-card-sub); border:1px solid var(--border-color); color:var(--text-primary); border-radius:6px; font-weight:700; cursor:pointer;">
-                        PDF
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    `;
-    refreshLucideIcons();
-  }
-
-  /* 10B. INDIVIDUAL STUDENT FEE BREAKDOWN (STUDENT & PARENT PORTAL) */
-  function renderStudentFeeBreakdownScreen() {
-    const studentUser = authenticatedUser || findUserByRole('student');
-    const studentName = studentUser ? studentUser.name : 'Rahul Reddy';
-    const studentGrade = studentUser && studentUser.classSec ? studentUser.classSec : 'Class VIII Section A';
-    const feeInfo = MOCK_DATA.feeStructure || {
-      totalAmount: 15000,
-      paidAmount: 11500,
-      dueAmount: 3500,
-      dueDate: 'Sep 05, 2026',
-      receiptNo: 'REC-VG-2026-081'
-    };
-
-    contentViewport.innerHTML = `
-      <!-- TOP BANNER -->
-      <div class="panel-card" style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 1px solid #bbf7d0; margin-bottom: 20px; border-radius: 16px; padding: 22px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
-          <div>
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <span style="font-size: 1.6rem;">💳</span>
-              <div>
-                <h2 style="color: #166534; font-size: 1.35rem; font-weight: 800; margin: 0;">My Student Fee Account & Installment Breakdown</h2>
-                <p style="color: #15803d; font-size: 0.85rem; margin-top: 3px; font-weight: 600;">
-                  ${studentName} • ${studentGrade} • Vikas Grammar School HS Cherial (UDISE: 36182100637)
-                </p>
-              </div>
-            </div>
-          </div>
-          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-            ${feeInfo.dueAmount > 0 ? `
-              <button class="btn-primary" onclick="window.openPaymentModal(${feeInfo.dueAmount}, '${studentName} (${studentGrade})')" style="background: #10b981; color: white; padding: 9px 18px; border-radius: 10px; font-weight: 700; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(16,185,129,0.3);">
-                <i data-lucide="indian-rupee"></i> Pay Due Fee (₹${feeInfo.dueAmount.toLocaleString()})
-              </button>
-            ` : `
-              <span class="badge badge-success" style="padding: 8px 14px; font-size: 0.85rem;">✅ All Fees Cleared</span>
-            `}
-            <button onclick="showToast('Downloaded Official Fee Statement PDF for ${studentName}!')" style="background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px 14px; border-radius: 10px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-              <i data-lucide="download"></i> Fee Statement PDF
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- 4 STAT METRICS FOR STUDENT -->
-      <div class="stats-grid-4" style="margin-bottom: 20px;">
-        <div class="stat-card">
-          <div class="stat-title">Total Annual Tuition Fee</div>
-          <div class="stat-value">₹${feeInfo.totalAmount.toLocaleString()}</div>
-          <span class="trend-badge trend-up-blue">Academic Year 2026–27</span>
-        </div>
-        <div class="stat-card">
-          <div class="stat-title">Total Amount Paid</div>
-          <div class="stat-value" style="color: #10b981;">₹${feeInfo.paidAmount.toLocaleString()}</div>
-          <span class="trend-badge trend-up-green">76.7% Cleared</span>
-        </div>
-        <div class="stat-card">
-          <div class="stat-title">Current Outstanding Dues</div>
-          <div class="stat-value" style="color: ${feeInfo.dueAmount > 0 ? '#ef4444' : '#10b981'};">₹${feeInfo.dueAmount.toLocaleString()}</div>
-          <span class="trend-badge ${feeInfo.dueAmount > 0 ? 'trend-orange' : 'trend-up-green'}">${feeInfo.dueAmount > 0 ? 'Due by ' + feeInfo.dueDate : 'Fully Cleared ✅'}</span>
-        </div>
-        <div class="stat-card">
-          <div class="stat-title">Last Payment Receipt</div>
-          <div class="stat-value" style="font-size: 1.15rem; color: var(--indigo); font-family: monospace;">${feeInfo.receiptNo}</div>
-          <span class="trend-badge trend-purple">Verified On Bank Record</span>
-        </div>
-      </div>
-
-      <!-- INSTALLMENTS BREAKDOWN TABLE -->
-      <div class="panel-card" style="margin-bottom: 20px;">
-        <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
-          <h3 class="panel-title">📜 2026–2027 Term-Wise Fee Installments</h3>
-          <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Telangana State Board Curriculum Fee Structure</span>
-        </div>
-        <div class="table-responsive">
-          <table class="custom-table" style="width: 100%;">
-            <thead>
-              <tr>
-                <th>Installment Term</th>
-                <th>Covered Period</th>
-                <th>Term Fee</th>
-                <th>Due Date</th>
-                <th>Payment Status</th>
-                <th>Receipt / Transaction Reference</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>Term 1 (Admission & Tuition)</strong></td>
-                <td>April 2026 – July 2026</td>
-                <td><strong>₹5,000</strong></td>
-                <td>Jun 10, 2026</td>
-                <td><span class="badge badge-success">Paid in Full</span></td>
-                <td><code>REC-VG-2026-012</code></td>
-                <td>
-                  <button onclick="showToast('Downloaded Term 1 Receipt PDF!')" style="padding: 4px 10px; font-size: 0.75rem; background: var(--bg-card-sub); border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 6px; font-weight: 700; cursor: pointer;">
-                    Download PDF
-                  </button>
-                </td>
-              </tr>
-              <tr>
-                <td><strong>Term 2 (Mid-Term & Lab)</strong></td>
-                <td>August 2026 – November 2026</td>
-                <td><strong>₹6,500</strong></td>
-                <td>Aug 10, 2026</td>
-                <td><span class="badge badge-success">Paid in Full</span></td>
-                <td><code>REC-VG-2026-081</code></td>
-                <td>
-                  <button onclick="showToast('Downloaded Term 2 Receipt PDF!')" style="padding: 4px 10px; font-size: 0.75rem; background: var(--bg-card-sub); border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 6px; font-weight: 700; cursor: pointer;">
-                    Download PDF
-                  </button>
-                </td>
-              </tr>
-              <tr style="background: #fffbeb;">
-                <td><strong>Term 3 (Final Term & Exam)</strong></td>
-                <td>December 2026 – March 2027</td>
-                <td style="color: #dc2626; font-weight: 800;">₹3,500</td>
-                <td><strong>Sep 05, 2026</strong></td>
-                <td><span class="badge badge-danger">Pending Due</span></td>
-                <td><em>Awaiting Payment</em></td>
-                <td>
-                  <button onclick="window.openPaymentModal(3500, '${studentName} (${studentGrade})')" style="padding: 5px 12px; font-size: 0.75rem; background: #10b981; color: white; border: none; border-radius: 6px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 4px;">
-                    <i data-lucide="credit-card" style="width: 12px; height: 12px;"></i> Pay ₹3,500
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    `;
-
-    refreshLucideIcons();
-  }
-
-  /* 11. SMS & WHATSAPP BROADCAST HUB */
-  function renderBroadcastScreen() {
-    const broadcasts = MOCK_DATA.broadcastMessages || [];
-    const templates = MOCK_DATA.messageTemplates || [];
-
-    contentViewport.innerHTML = `
-      <div class="panel-card" style="background: linear-gradient(135deg, #065f46 0%, #047857 50%, #059669 100%); color: white; border: none; margin-bottom: 20px; border-radius: 16px; padding: 24px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
-          <div>
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <span style="font-size: 1.6rem;">📢</span>
-              <h2 style="font-family: 'Outfit', sans-serif; font-size: 1.5rem; font-weight: 800; color: white; margin: 0;">SMS & WhatsApp Communication Broadcaster</h2>
-            </div>
-            <p style="color: #a7f3d0; margin-top: 6px; font-size: 0.85rem;">
-              Broadcast urgent fee dues, rain holidays, PTM invites, and exam circulars directly to parents' mobile numbers via Official WhatsApp & SMS Gateway.
-            </p>
-          </div>
-          <button class="btn-primary" onclick="window.openBroadcastModal()" style="background: #10b981; color: white; font-weight: 800; padding: 10px 20px; border-radius: 12px; display: flex; align-items: center; gap: 8px; border: none; cursor: pointer; box-shadow: 0 4px 14px rgba(16,185,129,0.4);">
-            <i data-lucide="plus-circle"></i> Create New Broadcast
-          </button>
-        </div>
-      </div>
-
-      <!-- BROADCAST QUICK STATS -->
-      <div class="stats-grid-4" style="margin-bottom: 20px;">
-        <div class="stat-card">
-          <div class="stat-title">Total Messages Sent (Aug)</div>
-          <div class="stat-value">1,248</div>
-          <span class="trend-badge trend-up-green">100% Gateway Uptime</span>
-        </div>
-        <div class="stat-card">
-          <div class="stat-title">WhatsApp Delivery Rate</div>
-          <div class="stat-value" style="color: #10b981;">99.2%</div>
-          <span class="trend-badge trend-up-green">Direct Parent Phones</span>
-        </div>
-        <div class="stat-card">
-          <div class="stat-title">SMS Delivery Rate</div>
-          <div class="stat-value" style="color: #6366f1;">98.8%</div>
-          <span class="trend-badge trend-indigo">Telangana DLT Verified</span>
-        </div>
-        <div class="stat-card">
-          <div class="stat-title">Fee Reminders Dispatched</div>
-          <div class="stat-value" style="color: #f59e0b;">42 Defaulters</div>
-          <span class="trend-badge trend-orange">₹1.25 L Recovered</span>
-        </div>
-      </div>
-
-      <!-- READY-TO-SEND TEMPLATES -->
-      <div class="panel-card" style="margin-bottom: 20px;">
-        <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
-          <h3 class="panel-title">⚡ Quick Broadcast Templates</h3>
-          <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">One-click prefilled official circulars</span>
-        </div>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin-top: 14px;">
-          ${templates.map(t => `
-            <div style="background: var(--bg-card-sub); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; justify-content: space-between;">
-              <div>
-                <div style="font-weight: 800; font-size: 0.9rem; color: var(--text-primary); margin-bottom: 6px;">${t.name}</div>
-                <p style="font-size: 0.78rem; color: var(--text-secondary); line-height: 1.4; margin-bottom: 12px;">${t.text.substring(0, 100)}...</p>
-              </div>
-              <div style="display: flex; gap: 8px; margin-top: 10px;">
-                <button class="btn-sm" onclick="window.openBroadcastModal('${t.id}')" style="flex: 1; background: var(--indigo); color: white; border: none; border-radius: 8px; padding: 6px 10px; font-weight: 700; font-size: 0.75rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;">
-                  <i data-lucide="send" style="width: 12px; height: 12px;"></i> Use Template
-                </button>
-              </div>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-
-      <!-- DISPATCHED LOGS -->
-      <div class="panel-card">
-        <div class="panel-header">
-          <h3 class="panel-title">📜 Recent Multi-Channel Broadcast History</h3>
-        </div>
-        <div class="table-responsive">
-          <table class="custom-table" style="width: 100%;">
-            <thead>
-              <tr>
-                <th>Circular Subject</th>
-                <th>Category</th>
-                <th>Channel</th>
-                <th>Audience</th>
-                <th>Recipients</th>
-                <th>Dispatched At</th>
-                <th>Delivery Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${broadcasts.map(b => `
-                <tr>
-                  <td>
-                    <div style="font-weight: 700; color: var(--text-primary);">${b.title}</div>
-                    <div style="font-size: 0.72rem; color: var(--text-muted);">${b.content.substring(0, 60)}...</div>
-                  </td>
-                  <td><span class="badge-indigo">${b.category}</span></td>
-                  <td><strong>${b.channel}</strong></td>
-                  <td>${b.audience}</td>
-                  <td><strong>${b.recipientCount} Parents</strong></td>
-                  <td>${b.date}</td>
-                  <td><span class="${b.statusClass}">${b.status}</span></td>
-                  <td>
-                    <button class="btn-sm" onclick="window.resendBroadcast('${b.id}')" style="background: var(--bg-card-sub); border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 6px; padding: 4px 8px; font-size: 0.72rem; cursor: pointer; display: flex; align-items: center; gap: 2px;">
-                      <i data-lucide="refresh-cw" style="width: 12px; height: 12px;"></i> Resend
+                    <button onclick="showToast('Generated Fee Receipt PDF for ${f.name}!')" style="padding:4px 10px; font-size:0.75rem; background:var(--indigo); color:white; border-radius:6px; font-weight:700;">
+                      Receipt PDF
                     </button>
                   </td>
                 </tr>
@@ -2115,7 +1202,6 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       </div>
     `;
-
     refreshLucideIcons();
   }
 
@@ -2277,9 +1363,9 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   /* 14. TEACHER TIMETABLE / SCHEDULE */
-  function renderTeacherTimetableScreen() {
+  function renderTeacherTimetableScreen(append = false) {
     const slots = MOCK_DATA.teacherTimetable;
-    contentViewport.innerHTML = `
+    const html = `
       <div class="panel-card" style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-color: #bbf7d0; margin-bottom:20px;">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
           <div>
@@ -2315,13 +1401,15 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       </div>
     `;
+    if (append) contentViewport.innerHTML += html;
+    else contentViewport.innerHTML = html;
     refreshLucideIcons();
   }
 
   /* 15. STUDENT TIMETABLE SCREEN */
-  function renderStudentTimetableScreen() {
+  function renderStudentTimetableScreen(append = false) {
     const slots = MOCK_DATA.studentTimetable;
-    contentViewport.innerHTML = `
+    const html = `
       <div class="panel-card" style="background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%); border-color: #bfdbfe; margin-bottom:20px;">
         <h2><i data-lucide="clock" style="color:var(--indigo);"></i> Class VIII Section A Timetable — Rahul Reddy</h2>
         <p style="color:var(--text-secondary); margin-top:4px;">Telangana State Board Curriculum • Vikas Grammar School HS Cherial</p>
@@ -2340,6 +1428,8 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       </div>
     `;
+    if (append) contentViewport.innerHTML += html;
+    else contentViewport.innerHTML = html;
     refreshLucideIcons();
   }
 
@@ -2570,31 +1660,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* 21. CHILD ATTENDANCE & PERFORMANCE (PARENT) */
   function renderChildAttendanceScreen() {
-    const feeDue = MOCK_DATA.feeStructure ? MOCK_DATA.feeStructure.dueAmount : 3500;
-    const broadcasts = MOCK_DATA.broadcastMessages || [];
+    const latestFeedback = MOCK_DATA.teacherStudentFeedbacks.find(f => f.studentName.includes('Rahul Reddy')) || MOCK_DATA.teacherStudentFeedbacks[0];
 
     contentViewport.innerHTML = `
-      <div class="panel-card" style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border-color: #bfdbfe; margin-bottom:20px; border-radius: 16px; padding: 22px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
-          <div>
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <span style="font-size: 1.5rem;">👨‍👩‍👧</span>
-              <h2 style="margin: 0; color: #1e1b4b; font-family: 'Outfit', sans-serif;"><i data-lucide="user-check" style="color:var(--indigo);"></i> Child Academic & Attendance Portal — Rahul Reddy</h2>
-            </div>
-            <p style="color:var(--text-secondary); margin-top:4px; font-size: 0.85rem;">Ward of V. Reddy • Class VIII Section A • Vikas Grammar School HS Cherial (UDISE: 36182100637)</p>
-          </div>
-          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-            <button class="btn-primary" onclick="window.openPaymentModal(${feeDue}, 'Rahul Reddy (Class VIII A)')" style="background: #10b981; color: white; padding: 8px 16px; border-radius: 10px; font-weight: 700; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-              <i data-lucide="indian-rupee"></i> Pay Fee Dues (₹${feeDue.toLocaleString()})
-            </button>
-            <button class="btn-primary" onclick="window.openMarksheetModal('Rahul Reddy')" style="background: var(--indigo); color: white; padding: 8px 16px; border-radius: 10px; font-weight: 700; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-              <i data-lucide="file-text"></i> BSE Marksheet
-            </button>
-            <button class="btn-primary" onclick="window.openLeaveModal()" style="background: #f59e0b; color: white; padding: 8px 16px; border-radius: 10px; font-weight: 700; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-              <i data-lucide="calendar"></i> Apply Leave
-            </button>
-          </div>
-        </div>
+      <div class="panel-card" style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border-color: #bfdbfe; margin-bottom:20px;">
+        <h2><i data-lucide="user-check" style="color:var(--indigo);"></i> Child Academic & Attendance Profile — Rahul Reddy</h2>
+        <p style="color:var(--text-secondary); margin-top:4px;">Monitoring Rahul Reddy (Class VIII Section A) • Vikas Grammar School HS Cherial</p>
       </div>
 
       <div class="stats-grid-4" style="margin-bottom:20px;">
@@ -2604,49 +1675,2232 @@ document.addEventListener('DOMContentLoaded', () => {
           <span class="trend-badge trend-up-green">142/150 Days Present</span>
         </div>
         <div class="stat-card">
-          <div class="stat-title">Cumulative GPA Grade</div>
-          <div class="stat-value" style="color:#3b82f6;">89.1%</div>
-          <span class="trend-badge trend-up-blue">Grade A+ (9.2 CGPA)</span>
+          <div class="stat-title">Academic Score Average</div>
+          <div class="stat-value" style="color:#3b82f6;">86%</div>
+          <span class="trend-badge trend-up-blue">Rank #3 in Class VIII A</span>
         </div>
         <div class="stat-card">
           <div class="stat-title">Pending Homeworks</div>
-          <div class="stat-value" style="color:#f59e0b;">1 Assignment</div>
-          <span class="trend-badge trend-orange">Due Sep 02</span>
+          <div class="stat-value" style="color:#f59e0b;">2</div>
+          <span class="trend-badge trend-orange">Due Tomorrow</span>
         </div>
         <div class="stat-card">
           <div class="stat-title">Fee Balance Due</div>
-          <div class="stat-value" style="color:${feeDue > 0 ? '#ef4444' : '#10b981'};">₹${feeDue.toLocaleString()}</div>
-          <span class="trend-badge ${feeDue > 0 ? 'trend-purple' : 'trend-up-green'}">${feeDue > 0 ? 'Term 3 Dues' : 'Cleared ✅'}</span>
+          <div class="stat-value" style="color:#ef4444;">₹3,500</div>
+          <span class="trend-badge trend-purple">Term 3 Dues</span>
         </div>
       </div>
 
-      <!-- RECEIVED WHATSAPP & SMS CIRCULARS FOR PARENTS -->
-      <div class="panel-card" style="margin-bottom: 20px;">
-        <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
-          <h3 class="panel-title">📱 Official School WhatsApp & SMS Alerts Received</h3>
-          <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Broadcast Feed for Parent Contact (+91 79958 70172)</span>
-        </div>
-        <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 14px;">
-          ${broadcasts.map(b => `
-            <div style="background: var(--bg-card-sub); border: 1px solid var(--border-color); border-left: 4px solid #10b981; border-radius: 12px; padding: 14px 18px; display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; flex-wrap: wrap;">
-              <div style="flex: 1; min-width: 260px;">
-                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-                  <span class="badge-indigo" style="font-size: 0.72rem;">${b.category}</span>
-                  <span style="font-size: 0.72rem; color: #10b981; font-weight: 700;">via ${b.channel}</span>
-                  <span style="font-size: 0.72rem; color: var(--text-muted);">${b.date}</span>
-                </div>
-                <div style="font-weight: 800; font-size: 0.92rem; color: var(--text-primary); margin-bottom: 4px;">${b.title}</div>
-                <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.4; margin: 0;">${b.content}</p>
+      ${latestFeedback ? `
+        <!-- TEACHER FEEDBACK HIGHLIGHT FOR PARENT -->
+        <div class="panel-card" style="margin-bottom:20px; border-left:5px solid var(--indigo);">
+          <div class="panel-header" style="margin-bottom:12px;">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div style="width:40px; height:40px; border-radius:12px; background:#e0e7ff; color:#4f46e5; display:flex; align-items:center; justify-content:center;">
+                <i data-lucide="message-circle" style="width:20px; height:20px;"></i>
               </div>
-              <div style="text-align: right; flex-shrink: 0;">
-                <div style="font-size: 0.75rem; font-weight: 700; color: var(--indigo);">${b.sender}</div>
-                <div style="font-size: 0.7rem; color: var(--text-muted);">Vikas Grammar School</div>
+              <div>
+                <h3 style="font-size:1.15rem; font-weight:800; color:var(--text-primary); margin:0;">Latest Teacher Feedback on Rahul Reddy</h3>
+                <p style="font-size:0.8rem; color:var(--text-secondary); margin:2px 0 0 0;">
+                  From <strong>${latestFeedback.teacherName}</strong> (${latestFeedback.teacherDesignation}) • ${latestFeedback.subject}
+                </p>
+              </div>
+            </div>
+            <button onclick="handleNavClick('teacher_feedback_parent')" style="padding:8px 16px; background:#4f46e5; color:white; border-radius:8px; font-weight:700; font-size:0.82rem; border:none; cursor:pointer; display:flex; align-items:center; gap:6px;">
+              View All Teacher Feedbacks & Reply →
+            </button>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <div class="star-rating-display">${renderStarsHtml(latestFeedback.rating)}</div>
+            <span class="feedback-pill pill-emerald">${latestFeedback.performanceLevel}</span>
+          </div>
+
+          <div class="feedback-body-grid" style="grid-template-columns: 1fr 1fr; margin-bottom:12px;">
+            <div class="feedback-content-box">
+              <div class="feedback-label">🧠 Concept Grasp & Focus</div>
+              <div class="feedback-text">${latestFeedback.conceptGrasp}</div>
+            </div>
+            <div class="feedback-content-box" style="background:#fefce8; border-color:#fef08a;">
+              <div class="feedback-label" style="color:#854d0e;">🏡 Teacher Advice for Parents & Home Practice</div>
+              <div class="feedback-text" style="color:#713f12; font-weight:700;">${latestFeedback.adviceForParents}</div>
+            </div>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; border-radius:8px; background:${latestFeedback.parentAcknowledged ? 'rgba(16,185,129,0.08)' : 'rgba(245,158,11,0.08)'}; border:1px solid ${latestFeedback.parentAcknowledged ? '#a7f3d0' : '#fde68a'}; flex-wrap:wrap; gap:8px;">
+            <span style="font-size:0.82rem; font-weight:700; color:${latestFeedback.parentAcknowledged ? '#047857' : '#b45309'};">
+              ${latestFeedback.parentAcknowledged ? `✓ You acknowledged this on ${latestFeedback.acknowledgedDate}` : '🔔 Feedback waiting for your review & acknowledgment'}
+            </span>
+            ${latestFeedback.parentAcknowledged && latestFeedback.parentNote ? `
+              <span style="font-size:0.8rem; color:#065f46; font-style:italic;">"${latestFeedback.parentNote}"</span>
+            ` : `
+              <button onclick="handleNavClick('teacher_feedback_parent')" style="padding:4px 12px; background:#10b981; color:white; border-radius:6px; font-weight:700; font-size:0.75rem; border:none; cursor:pointer;">
+                Acknowledge Now
+              </button>
+            `}
+          </div>
+        </div>
+      ` : ''}
+    `;
+    refreshLucideIcons();
+  }
+
+  /* HELPER: RENDER STARS HTML */
+  function renderStarsHtml(count, max = 5) {
+    let html = '';
+    for (let i = 1; i <= max; i++) {
+      html += `<span style="color:${i <= count ? '#f59e0b' : '#cbd5e1'}; font-size:1.15rem; line-height:1;">★</span>`;
+    }
+    return html;
+  }
+
+  /* 22. STUDENT DAILY CLASS FEEDBACK SCREEN */
+  let currentStudentRating = 5;
+  function renderStudentDailyFeedbackScreen() {
+    const list = MOCK_DATA.studentClassFeedbacks;
+    const timetable = MOCK_DATA.studentTimetable;
+
+    contentViewport.innerHTML = `
+      <!-- HERO BANNER -->
+      <div class="panel-card" style="background: linear-gradient(135deg, #e0e7ff 0%, #ede9fe 100%); border: 1px solid #c7d2fe; margin-bottom: 20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+          <div style="display:flex; align-items:center; gap:16px;">
+            <div style="width:52px; height:52px; border-radius:16px; background:#4f46e5; color:white; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(79,70,229,0.35);">
+              <i data-lucide="message-square-plus" style="width:26px; height:26px;"></i>
+            </div>
+            <div>
+              <h2 style="font-size:1.6rem; font-weight:800; color:#1e1b4b; margin-bottom:2px;">Daily Class Feedback — Rahul Reddy</h2>
+              <p style="color:#4338ca; font-size:0.88rem; font-weight:600;">Share your ratings, pace & doubts on today's classes • Directly monitored by Headmaster K. Rajesham</p>
+            </div>
+          </div>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <span class="badge badge-indigo" style="font-size:0.85rem; padding:8px 16px;">Class VIII A • Roll No: VIII-014</span>
+            <span class="badge badge-success" style="font-size:0.85rem; padding:8px 16px;">Active Day: Sep 02, 2026</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- MAIN CONTENT GRID -->
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-bottom:24px;">
+        
+        <!-- LEFT: FORM CARD -->
+        <div class="panel-card">
+          <div class="panel-header" style="margin-bottom:16px;">
+            <h3 class="panel-title"><i data-lucide="edit-3" style="color:var(--indigo);"></i> Give Feedback on Today's Class</h3>
+            <span class="badge badge-emerald">Interactive Feedback</span>
+          </div>
+
+          <form id="studentFeedbackForm" style="display:flex; flex-direction:column; gap:14px;">
+            <div>
+              <label style="font-size:0.82rem; font-weight:700; color:var(--text-secondary); display:block; margin-bottom:4px;">Select Period & Subject *</label>
+              <select id="sfbPeriodSelect" required style="width:100%; padding:10px 12px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-card-sub); color:var(--text-primary); font-size:0.88rem; font-weight:600;">
+                ${timetable.map(t => `
+                  <option value="${t.period}|${t.subject}|${t.teacher}">
+                    Period ${t.period}: ${t.subject} (${t.teacher}) — ${t.time}
+                  </option>
+                `).join('')}
+              </select>
+            </div>
+
+            <div>
+              <label style="font-size:0.82rem; font-weight:700; color:var(--text-secondary); display:block; margin-bottom:4px;">How well did you understand the concept? (1–5 Stars) *</label>
+              <div class="star-rating-picker" id="studentStarPicker">
+                ${[1, 2, 3, 4, 5].map(star => `
+                  <button type="button" class="star-btn ${star <= currentStudentRating ? 'selected' : ''}" data-value="${star}">★</button>
+                `).join('')}
+                <span id="starRatingLabel" style="font-size:0.85rem; font-weight:700; color:var(--amber); margin-left:8px;">${currentStudentRating} / 5 (Excellent)</span>
+              </div>
+            </div>
+
+            <div>
+              <label style="font-size:0.82rem; font-weight:700; color:var(--text-secondary); display:block; margin-bottom:4px;">Teaching Pace & Explanation *</label>
+              <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                <label style="display:flex; align-items:center; gap:6px; font-size:0.85rem; font-weight:600; cursor:pointer;">
+                  <input type="radio" name="comprehensionPace" value="Paced Perfectly" checked> Paced Perfectly
+                </label>
+                <label style="display:flex; align-items:center; gap:6px; font-size:0.85rem; font-weight:600; cursor:pointer;">
+                  <input type="radio" name="comprehensionPace" value="A Bit Too Fast"> A Bit Too Fast
+                </label>
+                <label style="display:flex; align-items:center; gap:6px; font-size:0.85rem; font-weight:600; cursor:pointer;">
+                  <input type="radio" name="comprehensionPace" value="Needed More Time"> Needed More Time
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <label style="font-size:0.82rem; font-weight:700; color:var(--text-secondary); display:block; margin-bottom:4px;">Topic / Chapter Covered Today *</label>
+              <input type="text" id="sfbTopic" placeholder="e.g. Chapter 4: Congruent Triangles Exercise 4.2" required style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-card-sub); color:var(--text-primary); font-size:0.88rem;">
+            </div>
+
+            <div>
+              <label style="font-size:0.82rem; font-weight:700; color:var(--text-secondary); display:block; margin-bottom:4px;">What went well? / Student Comments *</label>
+              <textarea id="sfbComments" rows="3" placeholder="Tell your teacher and Headmaster what you learned and enjoyed..." required style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-card-sub); color:var(--text-primary); font-size:0.88rem;"></textarea>
+            </div>
+
+            <div>
+              <label style="font-size:0.82rem; font-weight:700; color:var(--text-secondary); display:block; margin-bottom:4px;">Any Doubts or Topics needing more explanation? (Optional)</label>
+              <textarea id="sfbDoubts" rows="2" placeholder="Write any doubts or difficult questions (or write 'None')..." style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-card-sub); color:var(--text-primary); font-size:0.88rem;">None</textarea>
+            </div>
+
+            <button type="submit" class="btn-primary" style="padding:12px; background:var(--indigo); color:white; border-radius:8px; font-weight:700; margin-top:6px; display:flex; align-items:center; justify-content:center; gap:8px;">
+              <i data-lucide="send"></i> Submit Daily Class Feedback
+            </button>
+          </form>
+        </div>
+
+        <!-- RIGHT: TIMELINE -->
+        <div>
+          <div class="panel-card" style="margin-bottom:16px;">
+            <div class="panel-header">
+              <h3 class="panel-title"><i data-lucide="history" style="color:var(--emerald);"></i> My Submitted Feedbacks (${list.length})</h3>
+              <span class="badge badge-indigo">All Sent to Principal</span>
+            </div>
+            <p style="font-size:0.82rem; color:var(--text-secondary); margin-top:4px;">Headmaster K. Rajesham regularly reviews feedback to ensure teaching excellence.</p>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:14px; max-height:580px; overflow-y:auto; padding-right:4px;">
+            ${list.map(f => `
+              <div class="feedback-card highlight-student">
+                <div class="feedback-card-header">
+                  <div>
+                    <div style="font-size:1.05rem; font-weight:800; color:var(--text-primary);">${f.subject}</div>
+                    <div style="font-size:0.82rem; color:var(--text-secondary); margin-top:2px;">
+                      Teacher: <strong>${f.teacher}</strong> • ${f.period}
+                    </div>
+                  </div>
+                  <div style="text-align:right;">
+                    <div class="star-rating-display">${renderStarsHtml(f.rating)}</div>
+                    <span class="badge badge-success" style="font-size:0.72rem; margin-top:4px; display:inline-block;">${f.principalStatus}</span>
+                  </div>
+                </div>
+
+                <div class="feedback-body-grid" style="grid-template-columns:1fr; margin:8px 0;">
+                  <div class="feedback-content-box">
+                    <div class="feedback-label">📖 Topic Covered</div>
+                    <div class="feedback-text" style="font-weight:600;">${f.topic}</div>
+                  </div>
+                  <div class="feedback-content-box">
+                    <div class="feedback-label">💬 Student Feedback (${f.comprehensionPace})</div>
+                    <div class="feedback-text">${f.comments}</div>
+                  </div>
+                  ${f.doubts && f.doubts !== 'None' && f.doubts !== 'None.' ? `
+                    <div class="doubt-alert-box">
+                      <div class="feedback-label" style="color:#b45309;"><i data-lucide="help-circle" style="width:14px; height:14px;"></i> Question / Doubt Raised for Teacher</div>
+                      <div class="feedback-text" style="color:#92400e; font-weight:600;">${f.doubts}</div>
+                    </div>
+                  ` : ''}
+                  ${f.principalRemarks ? `
+                    <div class="principal-note-box">
+                      <div class="feedback-label" style="color:#5b21b6;"><i data-lucide="award" style="width:14px; height:14px;"></i> Headmaster Remark</div>
+                      <div class="feedback-text" style="color:#4c1d95; font-size:0.82rem; font-weight:600;">"${f.principalRemarks}"</div>
+                    </div>
+                  ` : ''}
+                </div>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.75rem; color:var(--text-muted); border-top:1px dashed var(--border-color); padding-top:8px; margin-top:8px;">
+                  <span>Logged on: <strong>${f.formattedDate || f.date}</strong></span>
+                  <span>Student: <strong>${f.studentName} (${f.rollNo})</strong></span>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+      </div>
+    `;
+
+    // Star picker logic
+    const starPicker = document.getElementById('studentStarPicker');
+    const starLabel = document.getElementById('starRatingLabel');
+    starPicker?.querySelectorAll('.star-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentStudentRating = parseInt(btn.getAttribute('data-value'));
+        starPicker.querySelectorAll('.star-btn').forEach(b => {
+          const val = parseInt(b.getAttribute('data-value'));
+          b.classList.toggle('selected', val <= currentStudentRating);
+        });
+        const labels = ['', 'Needs Help', 'Fair', 'Good', 'Very Good', 'Excellent'];
+        if (starLabel) starLabel.textContent = `${currentStudentRating} / 5 (${labels[currentStudentRating]})`;
+      });
+    });
+
+    // Form submission
+    document.getElementById('studentFeedbackForm')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const periodVal = document.getElementById('sfbPeriodSelect').value;
+      const [periodNum, subjectName, teacherName] = periodVal.split('|');
+      const paceVal = document.querySelector('input[name="comprehensionPace"]:checked')?.value || 'Paced Perfectly';
+      const topicVal = document.getElementById('sfbTopic').value.trim();
+      const commentsVal = document.getElementById('sfbComments').value.trim();
+      const doubtsVal = document.getElementById('sfbDoubts').value.trim();
+
+      const newFeedback = {
+        id: `sfb_${Date.now()}`,
+        date: '2026-09-02',
+        formattedDate: 'Sep 02, 2026',
+        studentName: 'Rahul Reddy',
+        rollNo: 'VIII-014',
+        grade: 'Class VIII Section A',
+        subject: subjectName,
+        teacher: teacherName,
+        period: `Period ${periodNum}`,
+        rating: currentStudentRating,
+        comprehensionPace: paceVal,
+        topic: topicVal,
+        comments: commentsVal,
+        doubts: doubtsVal || 'None',
+        principalStatus: 'Reviewed by Principal',
+        principalRemarks: 'Acknowledged by Headmaster K. Rajesham. Great academic effort.'
+      };
+
+      MOCK_DATA.studentClassFeedbacks.unshift(newFeedback);
+      showToast(`Daily class feedback for ${subjectName} submitted! Sent to Headmaster K. Rajesham.`);
+      renderStudentDailyFeedbackScreen();
+    });
+
+    refreshLucideIcons();
+  }
+
+  /* 23. TEACHER DAILY CLASS & STUDENT FEEDBACK SCREEN */
+  let activeTeacherTab = 'students';
+  let currentTeacherRating = 5;
+  function renderTeacherFeedbackScreen() {
+    const studentFeedbacks = MOCK_DATA.teacherStudentFeedbacks;
+    const classFeedbacks = MOCK_DATA.teacherDailyClassFeedbacks;
+    const studentsList = MOCK_DATA.studentDirectoryList;
+
+    contentViewport.innerHTML = `
+      <!-- HERO BANNER -->
+      <div class="panel-card" style="background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%); border:1px solid #c7d2fe; margin-bottom:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+          <div style="display:flex; align-items:center; gap:16px;">
+            <div style="width:52px; height:52px; border-radius:16px; background:#4f46e5; color:white; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(79,70,229,0.35);">
+              <i data-lucide="message-square" style="width:26px; height:26px;"></i>
+            </div>
+            <div>
+              <h2 style="font-size:1.6rem; font-weight:800; color:#1e1b4b; margin-bottom:2px;">Teacher Feedback Center — Mrs. S. Radhika</h2>
+              <p style="color:#4338ca; font-size:0.88rem; font-weight:600;">Class VIII A Mentor • Student feedback reflects to Parents; Classroom logs reflect to Principal</p>
+            </div>
+          </div>
+          <span class="badge badge-indigo" style="font-size:0.85rem; padding:8px 16px;">Senior Math Lead (EMP-VG-002)</span>
+        </div>
+      </div>
+
+      <!-- TABS SWITCHER -->
+      <div class="feedback-tabs">
+        <button type="button" class="feedback-tab-btn ${activeTeacherTab === 'students' ? 'active' : ''}" onclick="switchTeacherFeedbackTab('students')">
+          <i data-lucide="user-check"></i> Feedback on Individual Students (Reflects to Parents & Principal) (${studentFeedbacks.length})
+        </button>
+        <button type="button" class="feedback-tab-btn ${activeTeacherTab === 'classes' ? 'active' : ''}" onclick="switchTeacherFeedbackTab('classes')">
+          <i data-lucide="book-open"></i> Daily Classroom Session Logs (Visible to Principal) (${classFeedbacks.length})
+        </button>
+      </div>
+
+      ${activeTeacherTab === 'students' ? `
+        <!-- TAB 1: INDIVIDUAL STUDENT APPRAISAL -->
+        <div style="display:grid; grid-template-columns: 440px 1fr; gap:20px; margin-bottom:24px;">
+          
+          <!-- SUBMISSION FORM -->
+          <div class="panel-card">
+            <div class="panel-header" style="margin-bottom:14px;">
+              <h3 class="panel-title"><i data-lucide="edit" style="color:var(--indigo);"></i> Evaluate Student Performance</h3>
+              <span class="badge badge-emerald">Instant Parent Sync</span>
+            </div>
+
+            <form id="teacherStudentFeedbackForm" style="display:flex; flex-direction:column; gap:12px;">
+              <div>
+                <label style="font-size:0.82rem; font-weight:700; color:var(--text-secondary); display:block; margin-bottom:4px;">Select Student *</label>
+                <select id="tsfStudentSelect" required style="width:100%; padding:10px 12px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-card-sub); color:var(--text-primary); font-size:0.88rem; font-weight:600;">
+                  ${studentsList.map(s => `
+                    <option value="${s.id}|${s.name}|${s.grade}|${s.rollNo}" ${s.name === 'Rahul Reddy' ? 'selected' : ''}>
+                      ${s.name} (${s.grade} • Roll: ${s.rollNo})
+                    </option>
+                  `).join('')}
+                </select>
+              </div>
+
+              <div>
+                <label style="font-size:0.82rem; font-weight:700; color:var(--text-secondary); display:block; margin-bottom:4px;">Subject *</label>
+                <input type="text" id="tsfSubject" value="📐 Mathematics & Geometry" required style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-card-sub); color:var(--text-primary); font-size:0.88rem; font-weight:600;">
+              </div>
+
+              <div>
+                <label style="font-size:0.82rem; font-weight:700; color:var(--text-secondary); display:block; margin-bottom:4px;">Overall Performance Rating *</label>
+                <div class="star-rating-picker" id="teacherStarPicker">
+                  ${[1, 2, 3, 4, 5].map(star => `
+                    <button type="button" class="star-btn ${star <= currentTeacherRating ? 'selected' : ''}" data-value="${star}">★</button>
+                  `).join('')}
+                  <span id="teacherStarLabel" style="font-size:0.85rem; font-weight:700; color:var(--amber); margin-left:8px;">${currentTeacherRating} / 5 (Outstanding)</span>
+                </div>
+              </div>
+
+              <div>
+                <label style="font-size:0.82rem; font-weight:700; color:var(--text-secondary); display:block; margin-bottom:4px;">Performance Standing *</label>
+                <select id="tsfPerformanceLevel" style="width:100%; padding:9px 12px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-card-sub); color:var(--text-primary); font-size:0.88rem; font-weight:600;">
+                  <option value="Outstanding">🌟 Outstanding (Top Tier)</option>
+                  <option value="Very Good">👍 Very Good</option>
+                  <option value="Good">👌 Good (On Track)</option>
+                  <option value="Needs Attention">⚠️ Needs Attention & Revision</option>
+                </select>
+              </div>
+
+              <div>
+                <label style="font-size:0.82rem; font-weight:700; color:var(--text-secondary); display:block; margin-bottom:4px;">Concept Comprehension & Focus *</label>
+                <textarea id="tsfConceptGrasp" rows="2" placeholder="e.g. Mastered theorem proofs, solved problems quickly on board..." required style="width:100%; padding:9px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-card-sub); color:var(--text-primary); font-size:0.85rem;">Mastered Congruent Triangles theorem proofs with exceptional accuracy. Rahul volunteered to solve complex problems on the blackboard with confidence.</textarea>
+              </div>
+
+              <div>
+                <label style="font-size:0.82rem; font-weight:700; color:var(--text-secondary); display:block; margin-bottom:4px;">Classroom Behavior & Discipline *</label>
+                <textarea id="tsfBehavior" rows="2" placeholder="e.g. Attentive, polite, actively collaborates in group work..." required style="width:100%; padding:9px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-card-sub); color:var(--text-primary); font-size:0.85rem;">Very attentive, respectful, and actively helps classmates during peer practice.</textarea>
+              </div>
+
+              <div>
+                <label style="font-size:0.82rem; font-weight:700; color:var(--text-secondary); display:block; margin-bottom:4px;">Key Strengths Observed *</label>
+                <input type="text" id="tsfStrengths" value="Analytical reasoning, fast mental calculations, and structured proof writing." required style="width:100%; padding:9px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-card-sub); color:var(--text-primary); font-size:0.85rem;">
+              </div>
+
+              <div>
+                <label style="font-size:0.82rem; font-weight:700; color:var(--text-secondary); display:block; margin-bottom:4px;">Advice for Parents & Home Practice *</label>
+                <textarea id="tsfAdvice" rows="2" placeholder="What should parent guide child with at home?" required style="width:100%; padding:9px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-card-sub); color:var(--text-primary); font-size:0.85rem;">Rahul is performing at the top tier in Math! Please ensure he spends 20 minutes daily reviewing geometry theorem steps at home to maintain this momentum.</textarea>
+              </div>
+
+              <div>
+                <label style="font-size:0.82rem; font-weight:700; color:var(--text-secondary); display:block; margin-bottom:4px;">Homework Status *</label>
+                <select id="tsfHomeworkStatus" style="width:100%; padding:9px 12px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-card-sub); color:var(--text-primary); font-size:0.88rem; font-weight:600;">
+                  <option value="Completed on Time (Grade: A+)">Completed on Time (Grade: A+)</option>
+                  <option value="Submitted (Grade: A)">Submitted (Grade: A)</option>
+                  <option value="Submitted with Minor Corrections (Grade: B)">Submitted with Corrections (Grade: B)</option>
+                  <option value="Pending Submission">Pending Submission</option>
+                </select>
+              </div>
+
+              <button type="submit" class="btn-primary" style="padding:12px; background:var(--indigo); color:white; border-radius:8px; font-weight:700; margin-top:6px; display:flex; align-items:center; justify-content:center; gap:8px;">
+                <i data-lucide="send"></i> Publish Feedback to Parent & Principal
+              </button>
+            </form>
+          </div>
+
+          <!-- RECENT STUDENT APPRAISALS FEED -->
+          <div>
+            <div class="panel-card" style="margin-bottom:16px;">
+              <div class="panel-header">
+                <h3 class="panel-title"><i data-lucide="users" style="color:var(--emerald);"></i> Published Student Feedbacks (${studentFeedbacks.length})</h3>
+                <span class="badge badge-indigo">Direct Parent Delivery</span>
+              </div>
+              <p style="font-size:0.82rem; color:var(--text-secondary); margin-top:4px;">Parents receive this feedback in their Child Overview. When parents acknowledge, their confirmation and reply notes appear below.</p>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:16px; max-height:760px; overflow-y:auto; padding-right:4px;">
+              ${studentFeedbacks.map(f => `
+                <div class="feedback-card ${f.parentAcknowledged ? 'highlight-parent-ack' : 'highlight-student'}">
+                  <div class="feedback-card-header">
+                    <div class="feedback-user-info">
+                      <div class="feedback-avatar-icon">🎓</div>
+                      <div>
+                        <div style="font-size:1.15rem; font-weight:800; color:var(--text-primary);">${f.studentName}</div>
+                        <div style="font-size:0.82rem; color:var(--text-secondary);">
+                          ${f.grade} • Roll No: <strong>${f.rollNo}</strong> • ${f.subject}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style="text-align:right;">
+                      <div class="star-rating-display">${renderStarsHtml(f.rating)}</div>
+                      <span class="feedback-pill ${f.performanceLevel === 'Outstanding' ? 'pill-emerald' : f.performanceLevel === 'Very Good' ? 'pill-blue' : 'pill-amber'}" style="margin-top:4px;">
+                        ${f.performanceLevel}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="feedback-body-grid">
+                    <div class="feedback-content-box">
+                      <div class="feedback-label">🧠 Concept Grasp & Focus</div>
+                      <div class="feedback-text">${f.conceptGrasp}</div>
+                    </div>
+                    <div class="feedback-content-box">
+                      <div class="feedback-label">🤝 Behavior & Discipline</div>
+                      <div class="feedback-text">${f.behaviorAndDiscipline}</div>
+                    </div>
+                    <div class="feedback-content-box">
+                      <div class="feedback-label">⭐ Key Strengths</div>
+                      <div class="feedback-text">${f.strengths}</div>
+                    </div>
+                    <div class="feedback-content-box" style="background:#fefce8; border-color:#fef08a;">
+                      <div class="feedback-label" style="color:#854d0e;">🏡 Advice for Parents / Home Guidance</div>
+                      <div class="feedback-text" style="color:#713f12; font-weight:600;">${f.adviceForParents}</div>
+                    </div>
+                  </div>
+
+                  <!-- PARENT ACKNOWLEDGMENT STATUS -->
+                  <div style="margin-top:12px; padding:12px 14px; border-radius:10px; background:${f.parentAcknowledged ? 'rgba(16,185,129,0.08)' : 'rgba(245,158,11,0.08)'}; border:1px solid ${f.parentAcknowledged ? '#a7f3d0' : '#fde68a'};">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                      <div style="display:flex; align-items:center; gap:8px;">
+                        <i data-lucide="${f.parentAcknowledged ? 'check-circle-2' : 'clock'}" style="color:${f.parentAcknowledged ? '#10b981' : '#f59e0b'}; width:18px; height:18px;"></i>
+                        <strong style="font-size:0.85rem; color:${f.parentAcknowledged ? '#047857' : '#b45309'};">
+                          ${f.parentAcknowledged ? '✓ Parent Acknowledged Receipt' : '⏳ Awaiting Parent Acknowledgment'}
+                        </strong>
+                      </div>
+                      <span style="font-size:0.75rem; color:var(--text-muted);">${f.acknowledgedDate || 'Notification Dispatched'}</span>
+                    </div>
+
+                    ${f.parentNote ? `
+                      <div class="parent-reply-box">
+                        <div class="parent-reply-header">
+                          <span>💬 Parent Reply Note:</span>
+                          <span style="font-size:0.7rem; color:var(--text-muted);">${f.acknowledgedDate}</span>
+                        </div>
+                        <p style="margin:0; font-size:0.85rem; color:#065f46; font-style:italic;">"${f.parentNote}"</p>
+                      </div>
+                    ` : ''}
+                  </div>
+
+                  <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.75rem; color:var(--text-muted); border-top:1px dashed var(--border-color); padding-top:8px; margin-top:12px;">
+                    <span>Evaluated by: <strong>${f.teacherName}</strong> on ${f.formattedDate || f.date}</span>
+                    <span class="badge badge-indigo">${f.homeworkStatus}</span>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+        </div>
+      ` : `
+        <!-- TAB 2: DAILY CLASSROOM LOGS -->
+        <div style="display:grid; grid-template-columns: 440px 1fr; gap:20px; margin-bottom:24px;">
+          
+          <!-- LOG FORM -->
+          <div class="panel-card">
+            <div class="panel-header" style="margin-bottom:14px;">
+              <h3 class="panel-title"><i data-lucide="clipboard-list" style="color:var(--emerald);"></i> Log Classroom Session</h3>
+              <span class="badge badge-emerald">Principal View</span>
+            </div>
+
+            <form id="teacherClassroomLogForm" style="display:flex; flex-direction:column; gap:12px;">
+              <div>
+                <label style="font-size:0.82rem; font-weight:700; color:var(--text-secondary); display:block; margin-bottom:4px;">Class & Section *</label>
+                <select id="tcfGrade" style="width:100%; padding:10px 12px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-card-sub); color:var(--text-primary); font-size:0.88rem; font-weight:600;">
+                  <option value="Class VIII Section A">Class VIII Section A</option>
+                  <option value="Class X Section B">Class X Section B</option>
+                  <option value="Class IX Section A">Class IX Section A</option>
+                  <option value="Class VIII Section B">Class VIII Section B</option>
+                </select>
+              </div>
+
+              <div>
+                <label style="font-size:0.82rem; font-weight:700; color:var(--text-secondary); display:block; margin-bottom:4px;">Subject *</label>
+                <input type="text" id="tcfSubject" value="📐 Mathematics" required style="width:100%; padding:9px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-card-sub); color:var(--text-primary); font-size:0.88rem; font-weight:600;">
+              </div>
+
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <div>
+                  <label style="font-size:0.82rem; font-weight:700; color:var(--text-secondary); display:block; margin-bottom:4px;">Period *</label>
+                  <select id="tcfPeriod" style="width:100%; padding:9px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-card-sub); color:var(--text-primary); font-size:0.85rem;">
+                    <option value="Period 1 (09:00 - 09:45 AM)">Period 1</option>
+                    <option value="Period 2 (09:50 - 10:35 AM)">Period 2</option>
+                    <option value="Period 4 (11:30 - 12:15 PM)">Period 4</option>
+                    <option value="Period 6 (01:00 - 01:45 PM)">Period 6</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size:0.82rem; font-weight:700; color:var(--text-secondary); display:block; margin-bottom:4px;">Room No. *</label>
+                  <input type="text" id="tcfRoom" value="Room 203" style="width:100%; padding:9px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-card-sub); color:var(--text-primary); font-size:0.85rem;">
+                </div>
+              </div>
+
+              <div>
+                <label style="font-size:0.82rem; font-weight:700; color:var(--text-secondary); display:block; margin-bottom:4px;">Topic Taught *</label>
+                <input type="text" id="tcfTopic" placeholder="e.g. Congruence of Triangles Exercise 4.2" required style="width:100%; padding:9px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-card-sub); color:var(--text-primary); font-size:0.88rem;">
+              </div>
+
+              <div>
+                <label style="font-size:0.82rem; font-weight:700; color:var(--text-secondary); display:block; margin-bottom:4px;">Classroom Engagement Rating *</label>
+                <select id="tcfRating" style="width:100%; padding:9px 12px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-card-sub); color:var(--text-primary); font-size:0.88rem; font-weight:600;">
+                  <option value="5">★★★★★ 5/5 — Highly Engaged & Responsive</option>
+                  <option value="4">★★★★☆ 4/5 — Good Attention</option>
+                  <option value="3">★★★☆☆ 3/5 — Average Attention</option>
+                  <option value="2">★★☆☆☆ 2/5 — Low Focus, Revision Required</option>
+                </select>
+              </div>
+
+              <div>
+                <label style="font-size:0.82rem; font-weight:700; color:var(--text-secondary); display:block; margin-bottom:4px;">Homework Assigned *</label>
+                <input type="text" id="tcfHomework" placeholder="e.g. Solve Ex 4.2 Questions 1 to 12" required style="width:100%; padding:9px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-card-sub); color:var(--text-primary); font-size:0.88rem;">
+              </div>
+
+              <div>
+                <label style="font-size:0.82rem; font-weight:700; color:var(--text-secondary); display:block; margin-bottom:4px;">Teacher Observations & Discipline *</label>
+                <textarea id="tcfObservations" rows="3" placeholder="Notes on classroom participation, pace, and discipline..." required style="width:100%; padding:9px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-card-sub); color:var(--text-primary); font-size:0.85rem;"></textarea>
+              </div>
+
+              <button type="submit" class="btn-primary" style="padding:12px; background:var(--indigo); color:white; border-radius:8px; font-weight:700; margin-top:6px; display:flex; align-items:center; justify-content:center; gap:8px;">
+                <i data-lucide="save"></i> Save Classroom Daily Log
+              </button>
+            </form>
+          </div>
+
+          <!-- RECENT CLASSROOM LOGS FEED -->
+          <div>
+            <div class="panel-card" style="margin-bottom:16px;">
+              <div class="panel-header">
+                <h3 class="panel-title"><i data-lucide="clock" style="color:var(--indigo);"></i> Today's Classroom Logs (${classFeedbacks.length})</h3>
+                <span class="badge badge-success">Reviewed by Headmaster</span>
+              </div>
+              <p style="font-size:0.82rem; color:var(--text-secondary); margin-top:4px;">All periods logged here are compiled on Headmaster K. Rajesham's Oversight Dashboard.</p>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:16px; max-height:760px; overflow-y:auto; padding-right:4px;">
+              ${classFeedbacks.map(cf => `
+                <div class="feedback-card" style="border-left:5px solid var(--emerald);">
+                  <div class="feedback-card-header">
+                    <div>
+                      <div style="font-size:1.15rem; font-weight:800; color:var(--text-primary);">${cf.subject} — ${cf.grade}</div>
+                      <div style="font-size:0.82rem; color:var(--text-secondary); margin-top:2px;">
+                        ${cf.period} • 📍 ${cf.room} • Teacher: <strong>${cf.teacherName}</strong>
+                      </div>
+                    </div>
+                    <div style="text-align:right;">
+                      <div class="star-rating-display">${renderStarsHtml(cf.classEngagementRating)}</div>
+                      <span class="badge badge-success" style="font-size:0.72rem; margin-top:4px; display:inline-block;">${cf.principalStatus}</span>
+                    </div>
+                  </div>
+
+                  <div class="feedback-body-grid" style="grid-template-columns:1fr; margin:8px 0;">
+                    <div class="feedback-content-box">
+                      <div class="feedback-label">📖 Topic Taught</div>
+                      <div class="feedback-text" style="font-weight:600;">${cf.topicTaught}</div>
+                    </div>
+                    <div class="feedback-content-box">
+                      <div class="feedback-label">📝 Homework Assigned</div>
+                      <div class="feedback-text">${cf.homeworkAssigned}</div>
+                    </div>
+                    <div class="feedback-content-box">
+                      <div class="feedback-label">👁️ Teacher Observations & Engagement</div>
+                      <div class="feedback-text">${cf.observations}</div>
+                    </div>
+                  </div>
+
+                  <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.75rem; color:var(--text-muted); border-top:1px dashed var(--border-color); padding-top:8px; margin-top:8px;">
+                    <span>Date: <strong>${cf.formattedDate || cf.date}</strong></span>
+                    <span>Discipline Level: <strong style="color:#047857;">${cf.discipline}</strong></span>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+        </div>
+      `}
+    `;
+
+    // Tab switcher helper
+    window.switchTeacherFeedbackTab = function(tab) {
+      activeTeacherTab = tab;
+      renderTeacherFeedbackScreen();
+    };
+
+    // Teacher Star Rating Picker
+    const starPicker = document.getElementById('teacherStarPicker');
+    const starLabel = document.getElementById('teacherStarLabel');
+    starPicker?.querySelectorAll('.star-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentTeacherRating = parseInt(btn.getAttribute('data-value'));
+        starPicker.querySelectorAll('.star-btn').forEach(b => {
+          const val = parseInt(b.getAttribute('data-value'));
+          b.classList.toggle('selected', val <= currentTeacherRating);
+        });
+        const labels = ['', 'Needs Attention', 'Fair', 'Good', 'Very Good', 'Outstanding'];
+        if (starLabel) starLabel.textContent = `${currentTeacherRating} / 5 (${labels[currentTeacherRating]})`;
+      });
+    });
+
+    // Form: Student Feedback submission
+    document.getElementById('teacherStudentFeedbackForm')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const stdVal = document.getElementById('tsfStudentSelect').value;
+      const [stdId, stdName, stdGrade, stdRoll] = stdVal.split('|');
+      const subject = document.getElementById('tsfSubject').value.trim();
+      const perfLevel = document.getElementById('tsfPerformanceLevel').value;
+      const conceptGrasp = document.getElementById('tsfConceptGrasp').value.trim();
+      const behavior = document.getElementById('tsfBehavior').value.trim();
+      const strengths = document.getElementById('tsfStrengths').value.trim();
+      const advice = document.getElementById('tsfAdvice').value.trim();
+      const hwStatus = document.getElementById('tsfHomeworkStatus').value;
+
+      const newStudentFeedback = {
+        id: `tsf_${Date.now()}`,
+        date: '2026-09-02',
+        formattedDate: 'Sep 02, 2026',
+        studentId: stdId,
+        studentName: stdName,
+        rollNo: stdRoll,
+        grade: stdGrade,
+        subject: subject,
+        teacherName: 'Mrs. S. Radhika',
+        teacherDesignation: 'Class VIII Mentor & Senior Math Lead',
+        empId: 'EMP-VG-002',
+        rating: currentTeacherRating,
+        performanceLevel: perfLevel,
+        conceptGrasp: conceptGrasp,
+        behaviorAndDiscipline: behavior,
+        strengths: strengths,
+        adviceForParents: advice,
+        homeworkStatus: hwStatus,
+        parentAcknowledged: false,
+        parentNote: '',
+        acknowledgedDate: '',
+        principalStatus: 'Reviewed by Principal',
+        principalNote: 'Acknowledged by Headmaster K. Rajesham.'
+      };
+
+      MOCK_DATA.teacherStudentFeedbacks.unshift(newStudentFeedback);
+      showToast(`Feedback published for ${stdName}! Successfully reflected on Parent Portal and Principal Oversight.`);
+      renderTeacherFeedbackScreen();
+    });
+
+    // Form: Classroom Daily Log submission
+    document.getElementById('teacherClassroomLogForm')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const grade = document.getElementById('tcfGrade').value;
+      const subject = document.getElementById('tcfSubject').value.trim();
+      const period = document.getElementById('tcfPeriod').value;
+      const room = document.getElementById('tcfRoom').value.trim();
+      const topic = document.getElementById('tcfTopic').value.trim();
+      const rating = parseInt(document.getElementById('tcfRating').value);
+      const homework = document.getElementById('tcfHomework').value.trim();
+      const observations = document.getElementById('tcfObservations').value.trim();
+
+      const newLog = {
+        id: `tcf_${Date.now()}`,
+        date: '2026-09-02',
+        formattedDate: 'Sep 02, 2026',
+        teacherName: 'Mrs. S. Radhika',
+        empId: 'EMP-VG-002',
+        grade: grade,
+        subject: subject,
+        period: period,
+        room: room,
+        topicTaught: topic,
+        classEngagementRating: rating,
+        homeworkAssigned: homework,
+        observations: observations,
+        discipline: 'Very Good',
+        principalStatus: 'Acknowledged by Headmaster'
+      };
+
+      MOCK_DATA.teacherDailyClassFeedbacks.unshift(newLog);
+      showToast(`Classroom log saved! Visible to Headmaster K. Rajesham.`);
+      renderTeacherFeedbackScreen();
+    });
+
+    refreshLucideIcons();
+  }
+
+  /* 24. PARENT: TEACHER'S DAILY FEEDBACK ON CHILD SCREEN */
+  function renderParentTeacherFeedbackScreen() {
+    const allFeedbacks = MOCK_DATA.teacherStudentFeedbacks.filter(f => f.studentName.includes('Rahul Reddy'));
+    const unacknowledgedCount = allFeedbacks.filter(f => !f.parentAcknowledged).length;
+
+    contentViewport.innerHTML = `
+      <!-- HERO BANNER -->
+      <div class="panel-card" style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border:1px solid #bbf7d0; margin-bottom:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+          <div style="display:flex; align-items:center; gap:16px;">
+            <div style="width:52px; height:52px; border-radius:16px; background:#10b981; color:white; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(16,185,129,0.35);">
+              <i data-lucide="message-circle" style="width:26px; height:26px;"></i>
+            </div>
+            <div>
+              <h2 style="font-size:1.6rem; font-weight:800; color:#064e3b; margin-bottom:2px;">Teacher's Daily Feedback — Rahul Reddy</h2>
+              <p style="color:#047857; font-size:0.88rem; font-weight:600;">Daily performance reviews, behavioral feedback, and guidance notes submitted by subject teachers</p>
+            </div>
+          </div>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <span class="badge badge-indigo" style="font-size:0.85rem; padding:8px 16px;">Class VIII A • Roll: VIII-014</span>
+            <span class="badge ${unacknowledgedCount > 0 ? 'badge-warning' : 'badge-success'}" style="font-size:0.85rem; padding:8px 16px;">
+              ${unacknowledgedCount > 0 ? `🔔 ${unacknowledgedCount} Awaiting Acknowledgment` : '✓ All Feedbacks Acknowledged'}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- STATS SUMMARY -->
+      <div class="stats-grid-4" style="margin-bottom:20px;">
+        <div class="stat-card">
+          <div class="stat-title">Total Feedbacks Received</div>
+          <div class="stat-value" style="color:var(--indigo);">${allFeedbacks.length}</div>
+          <span class="trend-badge trend-up-blue">This Term</span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">Average Teacher Rating</div>
+          <div class="stat-value" style="color:#f59e0b;">4.8 ★</div>
+          <span class="trend-badge trend-up-green">Top 5% in Class</span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">Performance Standing</div>
+          <div class="stat-value" style="color:#10b981; font-size:1.45rem;">Outstanding</div>
+          <span class="trend-badge trend-up-green">Consistent Grade A+</span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">Parent Action Required</div>
+          <div class="stat-value" style="color:${unacknowledgedCount > 0 ? '#f59e0b' : '#10b981'};">${unacknowledgedCount}</div>
+          <span class="trend-badge ${unacknowledgedCount > 0 ? 'trend-orange' : 'trend-up-green'}">${unacknowledgedCount > 0 ? 'Review & Acknowledge' : 'Up to date'}</span>
+        </div>
+      </div>
+
+      <!-- FEEDBACKS LIST -->
+      <div style="display:flex; flex-direction:column; gap:20px; margin-bottom:30px;">
+        ${allFeedbacks.map(f => `
+          <div class="feedback-card ${f.parentAcknowledged ? 'highlight-parent-ack' : 'highlight-student'}">
+            
+            <div class="feedback-card-header">
+              <div class="feedback-user-info">
+                <div class="feedback-avatar-icon">👩‍🏫</div>
+                <div>
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <h3 style="font-size:1.2rem; font-weight:800; color:var(--text-primary); margin:0;">${f.subject}</h3>
+                    <span class="feedback-pill ${f.performanceLevel === 'Outstanding' ? 'pill-emerald' : 'pill-blue'}">${f.performanceLevel}</span>
+                  </div>
+                  <div style="font-size:0.85rem; color:var(--text-secondary); margin-top:2px;">
+                    Teacher: <strong>${f.teacherName}</strong> (${f.teacherDesignation}) • Date: <strong>${f.formattedDate || f.date}</strong>
+                  </div>
+                </div>
+              </div>
+
+              <div style="text-align:right;">
+                <div class="star-rating-display">${renderStarsHtml(f.rating)}</div>
+                <div style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">Official BSE Telangana Curriculum Evaluation</div>
+              </div>
+            </div>
+
+            <!-- DETAILED OBSERVATIONS GRID -->
+            <div class="feedback-body-grid">
+              <div class="feedback-content-box">
+                <div class="feedback-label">🧠 Concept Comprehension & Classroom Work</div>
+                <div class="feedback-text">${f.conceptGrasp}</div>
+              </div>
+              <div class="feedback-content-box">
+                <div class="feedback-label">🤝 Behavior & Collaboration</div>
+                <div class="feedback-text">${f.behaviorAndDiscipline}</div>
+              </div>
+              <div class="feedback-content-box">
+                <div class="feedback-label">⭐ Strengths Observed</div>
+                <div class="feedback-text">${f.strengths}</div>
+              </div>
+              <div class="feedback-content-box" style="background:#fefce8; border-color:#fef08a;">
+                <div class="feedback-label" style="color:#854d0e;">🏡 Teacher Advice for Parents & Home Practice</div>
+                <div class="feedback-text" style="color:#713f12; font-weight:700;">${f.adviceForParents}</div>
+              </div>
+            </div>
+
+            <!-- HOMEWORK STATUS BADGE -->
+            <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-card-sub); padding:10px 14px; border-radius:8px; border:1px solid var(--border-color); margin:10px 0;">
+              <span style="font-size:0.82rem; font-weight:700; color:var(--text-secondary);">📚 Homework Standing:</span>
+              <span class="badge badge-indigo">${f.homeworkStatus}</span>
+            </div>
+
+            <!-- PARENT ACKNOWLEDGMENT BOX -->
+            <div style="margin-top:14px; padding:14px 16px; border-radius:12px; background:${f.parentAcknowledged ? 'linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%)' : 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)'}; border:1px solid ${f.parentAcknowledged ? '#a7f3d0' : '#fde68a'};">
+              ${f.parentAcknowledged ? `
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <i data-lucide="check-circle" style="color:#10b981; width:20px; height:20px;"></i>
+                    <div>
+                      <strong style="font-size:0.9rem; color:#047857;">You have acknowledged this feedback</strong>
+                      <div style="font-size:0.75rem; color:#065f46;">Acknowledged on: ${f.acknowledgedDate}</div>
+                    </div>
+                  </div>
+                  <span class="badge badge-success">Delivered to Teacher & Principal</span>
+                </div>
+
+                ${f.parentNote ? `
+                  <div class="parent-reply-box" style="margin-top:10px;">
+                    <div class="parent-reply-header">
+                      <span>💬 Your Note to Mrs. S. Radhika:</span>
+                    </div>
+                    <p style="margin:0; font-size:0.88rem; color:#065f46; font-style:italic;">"${f.parentNote}"</p>
+                  </div>
+                ` : ''}
+              ` : `
+                <div>
+                  <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+                    <i data-lucide="alert-circle" style="color:#d97706; width:20px; height:20px;"></i>
+                    <div>
+                      <strong style="font-size:0.92rem; color:#92400e;">Please review and acknowledge this feedback</strong>
+                      <div style="font-size:0.78rem; color:#b45309;">Confirm to the class mentor that you have reviewed today's advice.</div>
+                    </div>
+                  </div>
+
+                  <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:8px;">
+                    <input type="text" id="parentNoteInput_${f.id}" placeholder="Add a reply note to teacher (e.g. 'Thank you ma'am, we practiced geometry proofs at home!')..." style="flex:1; min-width:240px; padding:10px 14px; border-radius:8px; border:1px solid #d97706; background:white; color:var(--text-primary); font-size:0.85rem;">
+                    <button type="button" onclick="acknowledgeFeedbackAsParent('${f.id}')" style="padding:10px 20px; background:#10b981; color:white; border-radius:8px; font-weight:700; font-size:0.88rem; border:none; cursor:pointer; display:flex; align-items:center; gap:6px; box-shadow:0 4px 12px rgba(16,185,129,0.3);">
+                      <i data-lucide="check"></i> Acknowledge & Send Note
+                    </button>
+                  </div>
+                </div>
+              `}
+            </div>
+
+            <!-- PRINCIPAL REVIEW FOOTER -->
+            <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.78rem; color:var(--text-muted); border-top:1px dashed var(--border-color); padding-top:10px; margin-top:14px;">
+              <span>UDISE Code: <strong>36182100637</strong> (Vikas Grammar School HS Cherial)</span>
+              <span style="color:var(--indigo); font-weight:600;"><i data-lucide="shield-check" style="width:14px; height:14px; display:inline-block; vertical-align:middle;"></i> Headmaster Verified</span>
+            </div>
+
+          </div>
+        `).join('')}
+      </div>
+    `;
+
+    // Parent Acknowledgment Action
+    window.acknowledgeFeedbackAsParent = function(id) {
+      const item = MOCK_DATA.teacherStudentFeedbacks.find(x => x.id === id);
+      if (item) {
+        const noteInput = document.getElementById(`parentNoteInput_${id}`);
+        const noteText = noteInput?.value.trim() || 'Reviewed and acknowledged by parent.';
+        item.parentAcknowledged = true;
+        item.parentNote = noteText;
+        const now = new Date();
+        item.acknowledgedDate = `Sep 02, 2026 at ${now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}`;
+        showToast(`Feedback acknowledged! Your reply was delivered to ${item.teacherName} and Principal.`);
+        renderParentTeacherFeedbackScreen();
+      }
+    };
+
+    refreshLucideIcons();
+  }
+
+  /* 25. PRINCIPAL DAILY FEEDBACK OVERSIGHT SCREEN */
+  let activePrincipalTab = 'students_class';
+  function renderPrincipalFeedbackOversightScreen() {
+    const studentFeedbacks = MOCK_DATA.studentClassFeedbacks;
+    const teacherStudentFeedbacks = MOCK_DATA.teacherStudentFeedbacks;
+    const teacherClassFeedbacks = MOCK_DATA.teacherDailyClassFeedbacks;
+
+    const avgStudentRating = (studentFeedbacks.reduce((acc, f) => acc + f.rating, 0) / (studentFeedbacks.length || 1)).toFixed(1);
+    const parentAckCount = teacherStudentFeedbacks.filter(f => f.parentAcknowledged).length;
+    const parentAckPct = Math.round((parentAckCount / (teacherStudentFeedbacks.length || 1)) * 100);
+    const doubtsCount = studentFeedbacks.filter(f => f.doubts && f.doubts !== 'None' && f.doubts !== 'None.').length;
+
+    contentViewport.innerHTML = `
+      <!-- HERO BANNER -->
+      <div class="panel-card" style="background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%); border:1px solid #c7d2fe; margin-bottom:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+          <div style="display:flex; align-items:center; gap:16px;">
+            <div style="width:52px; height:52px; border-radius:16px; background:#4f46e5; color:white; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(79,70,229,0.35);">
+              <i data-lucide="message-square" style="width:26px; height:26px;"></i>
+            </div>
+            <div>
+              <h2 style="font-size:1.6rem; font-weight:800; color:#1e1b4b; margin-bottom:2px;">Daily Feedback Oversight — Headmaster K. Rajesham</h2>
+              <p style="color:#4338ca; font-size:0.88rem; font-weight:600;">Full institutional oversight of student class ratings, doubts, teacher classroom logs & parent reflections</p>
+            </div>
+          </div>
+          <span class="badge badge-indigo" style="font-size:0.85rem; padding:8px 16px;">UDISE: 36182100637 • Cherial HS</span>
+        </div>
+      </div>
+
+      <!-- 4 EXECUTIVE KPI CARDS -->
+      <div class="stats-grid-4" style="margin-bottom:20px;">
+        <div class="stat-card">
+          <div class="stat-title">Student Class Feedbacks</div>
+          <div class="stat-value" style="color:var(--indigo);">${studentFeedbacks.length}</div>
+          <span class="trend-badge trend-up-green">Avg Rating: <strong>${avgStudentRating} ★</strong></span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">Teacher Student Appraisals</div>
+          <div class="stat-value" style="color:#10b981;">${teacherStudentFeedbacks.length}</div>
+          <span class="trend-badge trend-up-blue">Reflected to Parents</span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">Parent Acknowledgment Rate</div>
+          <div class="stat-value" style="color:#3b82f6;">${parentAckPct}%</div>
+          <span class="trend-badge trend-up-green">${parentAckCount} / ${teacherStudentFeedbacks.length} Confirmed</span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">Student Doubts / Questions</div>
+          <div class="stat-value" style="color:${doubtsCount > 0 ? '#f59e0b' : '#10b981'};">${doubtsCount}</div>
+          <span class="trend-badge ${doubtsCount > 0 ? 'trend-orange' : 'trend-up-green'}">${doubtsCount > 0 ? 'Action Required' : 'All Clear'}</span>
+        </div>
+      </div>
+
+      <!-- TABS SWITCHER -->
+      <div class="feedback-tabs">
+        <button type="button" class="feedback-tab-btn ${activePrincipalTab === 'students_class' ? 'active' : ''}" onclick="switchPrincipalFeedbackTab('students_class')">
+          <i data-lucide="graduation-cap"></i> Student Feedbacks on Daily Classes (${studentFeedbacks.length})
+        </button>
+        <button type="button" class="feedback-tab-btn ${activePrincipalTab === 'teacher_student' ? 'active' : ''}" onclick="switchPrincipalFeedbackTab('teacher_student')">
+          <i data-lucide="users"></i> Teacher Feedback on Students (Reflected to Parents) (${teacherStudentFeedbacks.length})
+        </button>
+        <button type="button" class="feedback-tab-btn ${activePrincipalTab === 'teacher_class' ? 'active' : ''}" onclick="switchPrincipalFeedbackTab('teacher_class')">
+          <i data-lucide="clipboard-list"></i> Teacher Daily Classroom Session Logs (${teacherClassFeedbacks.length})
+        </button>
+      </div>
+
+      ${activePrincipalTab === 'students_class' ? `
+        <!-- TAB A: STUDENT FEEDBACK ON DAILY CLASSES -->
+        <div style="display:flex; flex-direction:column; gap:16px; margin-bottom:30px;">
+          ${studentFeedbacks.map(sf => `
+            <div class="feedback-card ${sf.doubts && sf.doubts !== 'None' ? 'highlight-doubt' : 'highlight-student'}">
+              <div class="feedback-card-header">
+                <div>
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <h3 style="font-size:1.15rem; font-weight:800; color:var(--text-primary); margin:0;">${sf.subject}</h3>
+                    <span class="badge badge-indigo">${sf.period}</span>
+                    <span class="badge badge-success">${sf.comprehensionPace}</span>
+                  </div>
+                  <div style="font-size:0.85rem; color:var(--text-secondary); margin-top:3px;">
+                    Student: <strong>${sf.studentName}</strong> (${sf.grade} • Roll: ${sf.rollNo}) • Teacher: <strong>${sf.teacher}</strong>
+                  </div>
+                </div>
+
+                <div style="text-align:right;">
+                  <div class="star-rating-display">${renderStarsHtml(sf.rating)}</div>
+                  <span class="badge badge-emerald" style="margin-top:4px; display:inline-block;">${sf.principalStatus}</span>
+                </div>
+              </div>
+
+              <div class="feedback-body-grid" style="grid-template-columns: 1fr 1fr;">
+                <div class="feedback-content-box">
+                  <div class="feedback-label">📖 Topic Covered</div>
+                  <div class="feedback-text" style="font-weight:600;">${sf.topic}</div>
+                </div>
+                <div class="feedback-content-box">
+                  <div class="feedback-label">💬 Student Reaction & Comments</div>
+                  <div class="feedback-text">${sf.comments}</div>
+                </div>
+              </div>
+
+              ${sf.doubts && sf.doubts !== 'None' && sf.doubts !== 'None.' ? `
+                <div class="doubt-alert-box">
+                  <div class="feedback-label" style="color:#b45309;">
+                    <i data-lucide="help-circle" style="width:14px; height:14px;"></i> Student Doubts / Difficulties (Flagged for Mentor Review)
+                  </div>
+                  <div class="feedback-text" style="color:#92400e; font-weight:600;">${sf.doubts}</div>
+                </div>
+              ` : ''}
+
+              ${sf.principalRemarks ? `
+                <div class="principal-note-box">
+                  <div class="feedback-label" style="color:#5b21b6;">
+                    <i data-lucide="award" style="width:14px; height:14px;"></i> Headmaster Feedback Acknowledgment
+                  </div>
+                  <div class="feedback-text" style="color:#4c1d95; font-size:0.85rem; font-weight:600;">"${sf.principalRemarks}"</div>
+                </div>
+              ` : ''}
+
+              <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.75rem; color:var(--text-muted); border-top:1px dashed var(--border-color); padding-top:10px; margin-top:10px;">
+                <span>Logged on: <strong>${sf.formattedDate || sf.date}</strong></span>
+                <button type="button" onclick="principalAcknowledgeStudent('${sf.id}')" style="padding:6px 14px; background:#e0e7ff; color:#4338ca; border-radius:6px; font-weight:700; font-size:0.78rem; border:none; cursor:pointer;">
+                  ✓ Headmaster Acknowledged
+                </button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      ` : activePrincipalTab === 'teacher_student' ? `
+        <!-- TAB B: TEACHER FEEDBACK ON STUDENTS -->
+        <div style="display:flex; flex-direction:column; gap:16px; margin-bottom:30px;">
+          ${teacherStudentFeedbacks.map(tsf => `
+            <div class="feedback-card ${tsf.parentAcknowledged ? 'highlight-parent-ack' : 'highlight-student'}">
+              <div class="feedback-card-header">
+                <div>
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <h3 style="font-size:1.15rem; font-weight:800; color:var(--text-primary); margin:0;">${tsf.studentName} (${tsf.grade})</h3>
+                    <span class="feedback-pill ${tsf.performanceLevel === 'Outstanding' ? 'pill-emerald' : 'pill-blue'}">${tsf.performanceLevel}</span>
+                  </div>
+                  <div style="font-size:0.85rem; color:var(--text-secondary); margin-top:3px;">
+                    Subject: <strong>${tsf.subject}</strong> • Evaluated by: <strong>${tsf.teacherName}</strong> (${tsf.teacherDesignation})
+                  </div>
+                </div>
+
+                <div style="text-align:right;">
+                  <div class="star-rating-display">${renderStarsHtml(tsf.rating)}</div>
+                  <span class="badge ${tsf.parentAcknowledged ? 'badge-success' : 'badge-warning'}" style="margin-top:4px; display:inline-block;">
+                    ${tsf.parentAcknowledged ? '✓ Reflected & Acknowledged by Parent' : '⏳ Dispatched to Parent'}
+                  </span>
+                </div>
+              </div>
+
+              <div class="feedback-body-grid">
+                <div class="feedback-content-box">
+                  <div class="feedback-label">🧠 Concept Grasp & Focus</div>
+                  <div class="feedback-text">${tsf.conceptGrasp}</div>
+                </div>
+                <div class="feedback-content-box">
+                  <div class="feedback-label">🤝 Classroom Behavior</div>
+                  <div class="feedback-text">${tsf.behaviorAndDiscipline}</div>
+                </div>
+                <div class="feedback-content-box">
+                  <div class="feedback-label">⭐ Key Strengths</div>
+                  <div class="feedback-text">${tsf.strengths}</div>
+                </div>
+                <div class="feedback-content-box" style="background:#fefce8; border-color:#fef08a;">
+                  <div class="feedback-label" style="color:#854d0e;">🏡 Advice Given to Parents</div>
+                  <div class="feedback-text" style="color:#713f12; font-weight:600;">${tsf.adviceForParents}</div>
+                </div>
+              </div>
+
+              ${tsf.parentNote ? `
+                <div class="parent-reply-box">
+                  <div class="parent-reply-header">
+                    <span>💬 Parent Reply Note (from Rahul Reddy's Parent):</span>
+                    <span>${tsf.acknowledgedDate}</span>
+                  </div>
+                  <p style="margin:0; font-size:0.85rem; color:#065f46; font-style:italic;">"${tsf.parentNote}"</p>
+                </div>
+              ` : ''}
+
+              <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.75rem; color:var(--text-muted); border-top:1px dashed var(--border-color); padding-top:10px; margin-top:10px;">
+                <span>Evaluated on: <strong>${tsf.formattedDate || tsf.date}</strong></span>
+                <div style="display:flex; gap:10px; align-items:center;">
+                  <span class="badge badge-indigo">${tsf.homeworkStatus}</span>
+                  <span class="badge badge-success">${tsf.principalStatus}</span>
+                </div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      ` : `
+        <!-- TAB C: TEACHER DAILY CLASSROOM LOGS -->
+        <div style="display:flex; flex-direction:column; gap:16px; margin-bottom:30px;">
+          ${teacherClassFeedbacks.map(tcf => `
+            <div class="feedback-card" style="border-left:5px solid var(--emerald);">
+              <div class="feedback-card-header">
+                <div>
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <h3 style="font-size:1.15rem; font-weight:800; color:var(--text-primary); margin:0;">${tcf.subject} — ${tcf.grade}</h3>
+                    <span class="badge badge-indigo">${tcf.period}</span>
+                    <span class="badge badge-info">📍 ${tcf.room}</span>
+                  </div>
+                  <div style="font-size:0.85rem; color:var(--text-secondary); margin-top:3px;">
+                    Teacher: <strong>${tcf.teacherName}</strong> (${tcf.empId}) • Discipline: <strong style="color:#047857;">${tcf.discipline}</strong>
+                  </div>
+                </div>
+
+                <div style="text-align:right;">
+                  <div class="star-rating-display">${renderStarsHtml(tcf.classEngagementRating)}</div>
+                  <span class="badge badge-success" style="margin-top:4px; display:inline-block;">${tcf.principalStatus}</span>
+                </div>
+              </div>
+
+              <div class="feedback-body-grid" style="grid-template-columns:1fr 1fr;">
+                <div class="feedback-content-box">
+                  <div class="feedback-label">📖 Topic Covered</div>
+                  <div class="feedback-text" style="font-weight:600;">${tcf.topicTaught}</div>
+                </div>
+                <div class="feedback-content-box">
+                  <div class="feedback-label">📝 Homework Assigned</div>
+                  <div class="feedback-text">${tcf.homeworkAssigned}</div>
+                </div>
+              </div>
+
+              <div class="feedback-content-box" style="margin-top:8px;">
+                <div class="feedback-label">👁️ Classroom Observations & Engagement</div>
+                <div class="feedback-text">${tcf.observations}</div>
+              </div>
+
+              <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.75rem; color:var(--text-muted); border-top:1px dashed var(--border-color); padding-top:10px; margin-top:10px;">
+                <span>Session Date: <strong>${tcf.formattedDate || tcf.date}</strong></span>
+                <span style="font-weight:700; color:#047857;">✓ Verified for UDISE Academic Coverage</span>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `}
+    `;
+
+    // Principal Tab Switcher
+    window.switchPrincipalFeedbackTab = function(tab) {
+      activePrincipalTab = tab;
+      renderPrincipalFeedbackOversightScreen();
+    };
+
+    // Principal Acknowledge Student action
+    window.principalAcknowledgeStudent = function(id) {
+      const item = MOCK_DATA.studentClassFeedbacks.find(x => x.id === id);
+      if (item) {
+        item.principalStatus = 'Acknowledged by Headmaster';
+        item.principalRemarks = 'Reviewed by Headmaster K. Rajesham. Excellent progress noted.';
+        showToast('Acknowledged student feedback!');
+        renderPrincipalFeedbackOversightScreen();
+      }
+    };
+
+    refreshLucideIcons();
+  }
+
+  /* ==========================================================================
+     11 INSTITUTIONAL FOUNDATION PILLARS SCREEN RENDERERS
+     ========================================================================== */
+
+  /* 26. WHERE WE STAND & WHERE WE NEED TO IMPROVE (POINTS 10 & 11) */
+  function renderInstitutionalDiagnosticScreen() {
+    const ws = MOCK_DATA.whereWeStand;
+    const wi = MOCK_DATA.whereToImprove;
+
+    contentViewport.innerHTML = `
+      <div class="panel-card" style="margin-bottom:20px; background:linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); color:white; border:none;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+          <div>
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:6px;">
+              <span class="badge" style="background:#4338ca; color:#c7d2fe;">UDISE: 36182100637</span>
+              <span class="badge" style="background:#065f46; color:#a7f3d0;">Cherial Mandal Rank #1</span>
+              <span class="badge" style="background:#78350f; color:#fde68a;">Top 3 in Siddipet District</span>
+            </div>
+            <h1 style="font-size:1.6rem; font-weight:800; margin:0; color:white;">Institutional Diagnostic: Where We Stand & Where We Need To Improve</h1>
+            <p style="font-size:0.88rem; color:#c7d2fe; margin-top:4px;">Holistic quality benchmarking, statutory compliance, and strategic development matrix for Vikas Grammar School.</p>
+          </div>
+          <div style="text-align:right; background:rgba(255,255,255,0.1); padding:12px 20px; border-radius:12px; backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.15);">
+            <div style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em; color:#e0e7ff;">Institutional Health Score</div>
+            <div style="font-size:2.2rem; font-weight:900; color:#10b981; line-height:1.1;">${ws.institutionalHealthScore} <span style="font-size:1rem; color:#a7f3d0;">/ 100</span></div>
+            <span style="font-size:0.75rem; color:#d1fae5;">Grade A+ (Exemplary Performance)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUALITY ACCREDITATION BADGES -->
+      <div style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:24px;">
+        ${ws.accreditationBadges.map(b => `
+          <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:999px; padding:6px 14px; font-size:0.82rem; font-weight:700; color:var(--text-primary); display:flex; align-items:center; gap:6px; box-shadow:var(--shadow-sm);">
+            ${b}
+          </div>
+        `).join('')}
+      </div>
+
+      <!-- SECTION 10: WHERE WE STAND (BENCHMARKING) -->
+      <div style="margin-bottom:32px;">
+        <div class="panel-header" style="margin-bottom:14px;">
+          <h2 style="font-size:1.25rem; font-weight:800; color:var(--text-primary); display:flex; align-items:center; gap:8px;">
+            <i data-lucide="bar-chart-3" style="color:var(--indigo);"></i> 10. Where We Stand (Institutional Comparative Benchmarks)
+          </h2>
+          <span class="badge badge-indigo">SCERT & District Norms</span>
+        </div>
+
+        <div class="benchmark-grid">
+          ${ws.pillars.map(p => `
+            <div class="benchmark-card">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+                <h4 style="font-size:0.95rem; font-weight:700; color:var(--text-primary); margin:0;">${p.pillar}</h4>
+                <span class="badge badge-success" style="font-size:0.7rem;">${p.badge}</span>
+              </div>
+
+              <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px;">
+                <span style="font-size:1.5rem; font-weight:800; color:var(--indigo);">${p.schoolScore}%</span>
+                <span style="font-size:0.75rem; color:var(--text-secondary);">District Avg: <strong>${p.districtAvg}%</strong> • State: <strong>${p.stateBenchmark}%</strong></span>
+              </div>
+
+              <!-- Bar Visualization -->
+              <div class="benchmark-bar-track">
+                <div class="benchmark-bar-fill" style="width:${p.schoolScore}%; background:linear-gradient(90deg, #6366f1, #10b981);"></div>
+              </div>
+
+              <div style="display:flex; justify-content:space-between; font-size:0.72rem; color:var(--text-muted); margin-top:4px;">
+                <span>0%</span>
+                <span style="color:#047857; font-weight:700;">+${p.schoolScore - p.districtAvg}% Above District Average</span>
+                <span>100%</span>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <!-- SECTION 11: WHERE WE NEED TO IMPROVE (ACTION PLAN ROADMAP) -->
+      <div>
+        <div class="panel-header" style="margin-bottom:14px;">
+          <h2 style="font-size:1.25rem; font-weight:800; color:var(--text-primary); display:flex; align-items:center; gap:8px;">
+            <i data-lucide="target" style="color:var(--emerald);"></i> 11. Where We Need To Improve (Strategic School Development Matrix)
+          </h2>
+          <span class="badge badge-emerald">${wi.length} Active Targets</span>
+        </div>
+
+        <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:16px;">
+          Continuous institutional improvement framework addressing academic gaps, facilities upgrades, pedagogical enhancements, and student safety.
+        </p>
+
+        <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:30px;">
+          ${wi.map(item => `
+            <div class="action-item-card">
+              <div class="action-header-row">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span class="badge ${item.priority === 'High Priority' ? 'badge-danger' : item.priority === 'Medium Priority' ? 'badge-warning' : 'badge-info'}">
+                    ${item.priority}
+                  </span>
+                  <span class="badge badge-indigo">${item.category}</span>
+                  <h3 style="font-size:1.05rem; font-weight:800; color:var(--text-primary); margin:0;">${item.area}</h3>
+                </div>
+                <div style="display:flex; align-items:center; gap:12px;">
+                  <span style="font-size:0.8rem; color:var(--text-muted);">Due: <strong>${item.dueDate}</strong></span>
+                  <span class="badge ${item.status === 'Near Completion' ? 'badge-success' : 'badge-warning'}">${item.status} (${item.progressPct}%)</span>
+                </div>
+              </div>
+
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:6px;">
+                <div class="feedback-content-box">
+                  <div class="feedback-label">⚠️ Current Challenge / Deficit Identified</div>
+                  <div class="feedback-text" style="color:#b45309;">${item.currentIssue}</div>
+                </div>
+                <div class="feedback-content-box" style="background:#f0fdf4; border-color:#bbf7d0;">
+                  <div class="feedback-label" style="color:#047857;">🎯 Targeted Strategic Action Plan</div>
+                  <div class="feedback-text" style="color:#065f46; font-weight:600;">${item.actionItem}</div>
+                </div>
+              </div>
+
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; padding-top:8px; border-top:1px dashed var(--border-color); font-size:0.8rem; color:var(--text-secondary);">
+                <span>Lead Responsible Faculty: <strong style="color:var(--text-primary);">${item.targetOwner}</strong></span>
+                <button type="button" onclick="advanceImprovementAction('${item.id}')" style="padding:5px 12px; background:var(--bg-card-sub); border:1px solid var(--border-color); border-radius:6px; font-weight:700; font-size:0.75rem; cursor:pointer; color:var(--indigo);">
+                  + Advance Progress (+10%)
+                </button>
               </div>
             </div>
           `).join('')}
         </div>
       </div>
     `;
+
+    window.advanceImprovementAction = function(id) {
+      const item = MOCK_DATA.whereToImprove.find(x => x.id === id);
+      if (item) {
+        if (item.progressPct < 100) {
+          item.progressPct = Math.min(100, item.progressPct + 10);
+          if (item.progressPct === 100) item.status = 'Fully Accomplished';
+          showToast(`Updated progress on ${item.area} to ${item.progressPct}%!`);
+          renderInstitutionalDiagnosticScreen();
+        } else {
+          showToast('Action item is already fully accomplished!');
+        }
+      }
+    };
+
+    refreshLucideIcons();
+  }
+
+  /* 27. GPA GRADE & SUBJECT PARAMETERS & GAPS PLUGGING (POINT 2) */
+  function renderGpaDiagnosticsScreen(roleFilter) {
+    const studentDiag = MOCK_DATA.gpaSubjectDiagnostics[0]; // Rahul Reddy
+
+    contentViewport.innerHTML = `
+      <div class="panel-card" style="margin-bottom:20px;">
+        <div class="panel-header">
+          <div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <h2 style="font-size:1.3rem; font-weight:800; color:var(--text-primary); margin:0;">
+                <i data-lucide="award" style="color:var(--indigo);"></i> 2. GPA Grade & Subject-Wise Parameters
+              </h2>
+              <span class="badge badge-success">Gaps Should Be Plugged</span>
+            </div>
+            <p style="font-size:0.85rem; color:var(--text-secondary); margin-top:4px;">
+              Formative Assessments (FA1–FA4), Summative Tests (SA1), Slip Tests & Targeted Learning Gap Remediation.
+            </p>
+          </div>
+
+          <div style="display:flex; align-items:center; gap:16px;">
+            <div style="text-align:right;">
+              <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase;">Overall Cumulative GPA</div>
+              <div style="font-size:1.8rem; font-weight:900; color:var(--indigo);">${studentDiag.overallGpa} <span style="font-size:0.9rem; color:var(--text-secondary);">/ 10</span></div>
+            </div>
+            <div style="padding:10px 16px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; text-align:center;">
+              <div style="font-size:0.75rem; color:#047857; font-weight:700;">Class Standing</div>
+              <div style="font-size:1.1rem; font-weight:800; color:#065f46;">${studentDiag.overallRank}</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:12px; margin-top:10px; font-size:0.85rem; color:var(--text-secondary);">
+          <span>Student: <strong style="color:var(--text-primary);">${studentDiag.studentName}</strong> (${studentDiag.rollNo})</span>
+          <span>•</span>
+          <span>Class: <strong>${studentDiag.grade}</strong></span>
+          <span>•</span>
+          <span>Syllabus: <strong>Telangana State SCERT SSC Pattern</strong></span>
+        </div>
+      </div>
+
+      <!-- SUBJECT PARAMETER BREAKDOWN CARDS -->
+      <div style="display:flex; flex-direction:column; gap:16px; margin-bottom:30px;">
+        ${studentDiag.subjects.map(sub => `
+          <div class="gap-plugging-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
+              <div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <h3 style="font-size:1.2rem; font-weight:800; color:var(--text-primary); margin:0;">${sub.subject}</h3>
+                  <span class="badge badge-indigo">Faculty: ${sub.teacher}</span>
+                  <span class="badge badge-emerald">Grade: ${sub.grade} (GPA: ${sub.gpa})</span>
+                </div>
+              </div>
+              <div>
+                <span class="gap-tag ${sub.gapStatus.indexOf('Plugged Successfully') !== -1 ? 'gap-tag-plugged' : 'gap-tag-active'}">
+                  ${sub.gapStatus.indexOf('Plugged Successfully') !== -1 ? '✓ Gap Plugged' : '⚡ Remedial Attention Active'}
+                </span>
+              </div>
+            </div>
+
+            <!-- Detailed Marks Parameter Grid -->
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap:10px; margin-bottom:14px; background:var(--bg-card-sub); padding:12px; border-radius:10px; border:1px solid var(--border-color);">
+              <div style="text-align:center;">
+                <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase;">FA 1 (20)</div>
+                <div style="font-size:1.15rem; font-weight:800; color:var(--text-primary);">${sub.fa1}</div>
+              </div>
+              <div style="text-align:center;">
+                <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase;">FA 2 (20)</div>
+                <div style="font-size:1.15rem; font-weight:800; color:var(--text-primary);">${sub.fa2}</div>
+              </div>
+              <div style="text-align:center;">
+                <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase;">FA 3 (20)</div>
+                <div style="font-size:1.15rem; font-weight:800; color:var(--text-primary);">${sub.fa3}</div>
+              </div>
+              <div style="text-align:center;">
+                <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase;">FA 4 (20)</div>
+                <div style="font-size:1.15rem; font-weight:800; color:var(--text-primary);">${sub.fa4}</div>
+              </div>
+              <div style="text-align:center;">
+                <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase;">SA 1 (80)</div>
+                <div style="font-size:1.15rem; font-weight:800; color:var(--indigo);">${sub.sa1}</div>
+              </div>
+              <div style="text-align:center;">
+                <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase;">Slip Tests</div>
+                <div style="font-size:1.15rem; font-weight:800; color:#059669;">${sub.slipTests}%</div>
+              </div>
+              <div style="text-align:center;">
+                <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase;">Total Marks</div>
+                <div style="font-size:1.15rem; font-weight:900; color:#1e1b4b;">${sub.totalScore}%</div>
+              </div>
+            </div>
+
+            <!-- Project & Strengths -->
+            <div style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:10px;">
+              <span>📁 <strong>Project Submission:</strong> ${sub.projectWork}</span> • 
+              <span>⭐ <strong>Key Strengths:</strong> ${sub.strengths}</span>
+            </div>
+
+            <!-- GAP TO BE PLUGGED ALERT BOX -->
+            <div class="gap-remedy-alert">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px;">
+                <div style="flex:1;">
+                  <div style="font-size:0.78rem; font-weight:800; color:#92400e; text-transform:uppercase; margin-bottom:2px; display:flex; align-items:center; gap:6px;">
+                    <i data-lucide="alert-triangle" style="width:14px; height:14px;"></i> Concept / Speed Gap Identified:
+                  </div>
+                  <div style="font-size:0.88rem; color:#78350f; font-weight:600;">${sub.identifiedGap}</div>
+
+                  <div style="font-size:0.78rem; font-weight:800; color:#065f46; text-transform:uppercase; margin-top:8px; margin-bottom:2px; display:flex; align-items:center; gap:6px;">
+                    <i data-lucide="check-circle" style="width:14px; height:14px;"></i> What is to be done (Remedial Plugging Action):
+                  </div>
+                  <div style="font-size:0.88rem; color:#047857; font-weight:700;">${sub.remedialAction}</div>
+                </div>
+
+                <div style="text-align:right;">
+                  <span class="badge ${sub.gapStatus.indexOf('Plugged Successfully') !== -1 ? 'badge-success' : 'badge-warning'}">
+                    ${sub.gapStatus}
+                  </span>
+                  <div style="margin-top:6px;">
+                    <button type="button" onclick="plugSubjectGap('${sub.subject}')" style="padding:6px 14px; background:#10b981; color:white; border-radius:6px; font-weight:700; font-size:0.75rem; border:none; cursor:pointer;">
+                      ✓ Mark Gap Plugged
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        `).join('')}
+      </div>
+    `;
+
+    window.plugSubjectGap = function(subjectName) {
+      const student = MOCK_DATA.gpaSubjectDiagnostics[0];
+      const sub = student.subjects.find(s => s.subject === subjectName);
+      if (sub) {
+        sub.gapStatus = 'Plugged Successfully';
+        showToast(`Remedial action verified! Learning gap plugged for ${subjectName}.`);
+        renderGpaDiagnosticsScreen(roleFilter);
+      }
+    };
+
+    refreshLucideIcons();
+  }
+
+  /* 28. TEACHING METHODOLOGY, FEEDBACK METRICS & STUDENT SATISFACTION (POINTS 3, 4, 9) */
+  let activeMethodologyTab = 'methodology_gaps'; // 'metrics', 'methodology_gaps', 'satisfaction'
+
+  function renderMethodologySatisfactionScreen(roleFilter) {
+    const fm = MOCK_DATA.feedbackMetrics;
+    const tm = MOCK_DATA.teachingMethodologyData;
+    const ssi = MOCK_DATA.studentSatisfactionIndex;
+
+    contentViewport.innerHTML = `
+      <div class="panel-card" style="margin-bottom:20px;">
+        <div class="panel-header">
+          <div>
+            <h2 style="font-size:1.3rem; font-weight:800; color:var(--text-primary); margin:0; display:flex; align-items:center; gap:8px;">
+              <i data-lucide="sparkles" style="color:var(--indigo);"></i> Teaching Methodology, Feedback Metrics & Student Satisfaction
+            </h2>
+            <p style="font-size:0.85rem; color:var(--text-secondary); margin-top:4px;">
+              Pillars 3, 4 & 9: Opinion collection on pedagogy, gap identification, improvement action plans, and student satisfaction index.
+            </p>
+          </div>
+          <span class="badge badge-indigo">School-Wide Analytics</span>
+        </div>
+      </div>
+
+      <!-- TABS -->
+      <div class="feedback-tabs" style="margin-bottom:20px;">
+        <button type="button" class="feedback-tab-btn ${activeMethodologyTab === 'methodology_gaps' ? 'active' : ''}" onclick="switchMethodologyTab('methodology_gaps')">
+          <i data-lucide="book-open"></i> 4. Teaching Methodology (Opinions & Gaps)
+        </button>
+        <button type="button" class="feedback-tab-btn ${activeMethodologyTab === 'metrics' ? 'active' : ''}" onclick="switchMethodologyTab('metrics')">
+          <i data-lucide="bar-chart-2"></i> 3. Feedback Metrics (Subject & Class Wise)
+        </button>
+        <button type="button" class="feedback-tab-btn ${activeMethodologyTab === 'satisfaction' ? 'active' : ''}" onclick="switchMethodologyTab('satisfaction')">
+          <i data-lucide="smile"></i> 9. Level of Satisfaction of Students
+        </button>
+      </div>
+
+      ${activeMethodologyTab === 'methodology_gaps' ? `
+        <!-- TAB 4: TEACHING METHODOLOGY (OPINION COLLECTION -> GAPS -> WHAT IS TO BE DONE) -->
+        <div style="display:flex; flex-direction:column; gap:16px; margin-bottom:30px;">
+          ${tm.map(item => `
+            <div class="panel-card" style="border-left:5px solid var(--indigo);">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+                <div>
+                  <h3 style="font-size:1.15rem; font-weight:800; color:var(--text-primary); margin:0;">${item.subject}</h3>
+                  <div style="font-size:0.82rem; color:var(--text-secondary); margin-top:2px;">
+                    Lead Faculty: <strong>${item.teacher}</strong> • Method: <em>${item.methodologyUsed}</em>
+                  </div>
+                </div>
+                <span class="badge badge-success">${item.status}</span>
+              </div>
+
+              <!-- 3-STEP PIPELINE: OPINIONS -> GAPS -> ACTION PLAN -->
+              <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:12px;">
+                <!-- Step 1: Opinions -->
+                <div class="feedback-content-box" style="background:var(--bg-card);">
+                  <div class="feedback-label" style="color:var(--indigo);">💬 Step 1: Student Opinion Collection</div>
+                  <div style="display:flex; flex-direction:column; gap:8px; margin-top:6px;">
+                    ${item.studentOpinions.map(op => `
+                      <div style="font-size:0.82rem; color:var(--text-secondary); font-style:italic; border-left:2px solid var(--indigo); padding-left:8px;">${op}</div>
+                    `).join('')}
+                  </div>
+                </div>
+
+                <!-- Step 2: Gaps -->
+                <div class="feedback-content-box" style="background:#fffbeb; border-color:#fef3c7;">
+                  <div class="feedback-label" style="color:#b45309;">⚠️ Step 2: Pedagogical Gaps Identified</div>
+                  <ul style="margin:6px 0 0 16px; padding:0; font-size:0.82rem; color:#78350f;">
+                    ${item.identifiedGaps.map(g => `<li style="margin-bottom:4px;">${g}</li>`).join('')}
+                  </ul>
+                </div>
+
+                <!-- Step 3: What is to be done -->
+                <div class="feedback-content-box" style="background:#f0fdf4; border-color:#bbf7d0;">
+                  <div class="feedback-label" style="color:#047857;">🎯 Step 3: What is to be done for improvement</div>
+                  <ul style="margin:6px 0 0 16px; padding:0; font-size:0.82rem; color:#065f46; font-weight:600;">
+                    ${item.improvementActionPlan.map(a => `<li style="margin-bottom:4px;">${a}</li>`).join('')}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          `).join('')}
+
+          <!-- STUDENT OPINION CONTRIBUTION BOX -->
+          <div class="panel-card" style="background:linear-gradient(135deg, rgba(99,102,241,0.05) 0%, rgba(16,185,129,0.05) 100%); border:1px solid rgba(99,102,241,0.2);">
+            <div class="panel-header" style="margin-bottom:10px;">
+              <h3 class="panel-title"><i data-lucide="message-circle" style="color:var(--indigo);"></i> Submit Your Opinion on Teaching Methodology</h3>
+              <span class="badge badge-indigo">Student & Peer Teacher Voice</span>
+            </div>
+            <p style="font-size:0.82rem; color:var(--text-secondary); margin-bottom:12px;">Share what teaching techniques help you learn best and what can be improved in classroom deliveries.</p>
+            <form id="methodologyOpinionForm" style="display:flex; gap:10px; flex-wrap:wrap;">
+              <select id="moSubject" style="padding:10px 14px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-card); font-size:0.85rem; font-weight:600; color:var(--text-primary);">
+                <option value="Mathematics">📐 Mathematics</option>
+                <option value="Physical Science">🔬 Physical Science</option>
+                <option value="Social Studies">📜 Social Studies</option>
+                <option value="English">📖 English</option>
+              </select>
+              <input type="text" id="moText" placeholder="e.g. Please show more 3D model animations and slow down step 2 of quadratic proofs..." required style="flex:1; min-width:260px; padding:10px 14px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-card); font-size:0.85rem; color:var(--text-primary);">
+              <button type="submit" class="btn-primary" style="padding:10px 18px; border-radius:8px; font-weight:700; font-size:0.85rem; background:var(--indigo); color:white; border:none; cursor:pointer;">
+                Submit Opinion
+              </button>
+            </form>
+          </div>
+        </div>
+      ` : activeMethodologyTab === 'metrics' ? `
+        <!-- TAB 3: FEEDBACK METRICS (SUBJECT & CLASS WISE) -->
+        <div style="display:flex; flex-direction:column; gap:20px; margin-bottom:30px;">
+          <!-- SUBJECT WISE -->
+          <div class="panel-card">
+            <div class="panel-header" style="margin-bottom:14px;">
+              <h3 class="panel-title"><i data-lucide="book-open" style="color:var(--indigo);"></i> Subject-Wise Feedback Breakdown</h3>
+              <span class="badge badge-indigo">${fm.totalDailyFeedbacksSubmitted} Total Logs</span>
+            </div>
+            <div style="overflow-x:auto;">
+              <table style="width:100%; border-collapse:collapse; font-size:0.88rem;">
+                <thead>
+                  <tr style="border-bottom:2px solid var(--border-color); text-align:left; color:var(--text-muted); font-size:0.75rem; text-transform:uppercase;">
+                    <th style="padding:10px 12px;">Subject</th>
+                    <th style="padding:10px 12px;">Average Rating</th>
+                    <th style="padding:10px 12px;">Comprehension Pace</th>
+                    <th style="padding:10px 12px;">Doubts Reported</th>
+                    <th style="padding:10px 12px;">Satisfaction %</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${fm.subjectWiseMetrics.map(s => `
+                    <tr style="border-bottom:1px solid var(--border-color);">
+                      <td style="padding:12px; font-weight:700; color:var(--text-primary);">${s.subject}</td>
+                      <td style="padding:12px; font-weight:800; color:var(--indigo);">${s.avgRating} ★</td>
+                      <td style="padding:12px;"><span class="badge badge-success">${s.perfectPace}% Paced Perfectly</span></td>
+                      <td style="padding:12px;"><span class="badge badge-warning">${s.doubtsReported} Flagged</span></td>
+                      <td style="padding:12px; font-weight:800; color:#059669;">${s.satisfactionRate}%</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- CLASS WISE -->
+          <div class="panel-card">
+            <div class="panel-header" style="margin-bottom:14px;">
+              <h3 class="panel-title"><i data-lucide="users" style="color:var(--emerald);"></i> Class-Wise Academic & Conduct Metrics</h3>
+              <span class="badge badge-emerald">Model Classrooms</span>
+            </div>
+            <div style="overflow-x:auto;">
+              <table style="width:100%; border-collapse:collapse; font-size:0.88rem;">
+                <thead>
+                  <tr style="border-bottom:2px solid var(--border-color); text-align:left; color:var(--text-muted); font-size:0.75rem; text-transform:uppercase;">
+                    <th style="padding:10px 12px;">Grade & Section</th>
+                    <th style="padding:10px 12px;">Feedback Rating</th>
+                    <th style="padding:10px 12px;">Attendance %</th>
+                    <th style="padding:10px 12px;">Homework Completion</th>
+                    <th style="padding:10px 12px;">Benchmark Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${fm.classWiseMetrics.map(c => `
+                    <tr style="border-bottom:1px solid var(--border-color);">
+                      <td style="padding:12px; font-weight:700; color:var(--text-primary);">${c.grade}</td>
+                      <td style="padding:12px; font-weight:800; color:var(--indigo);">${c.avgRating} ★</td>
+                      <td style="padding:12px; font-weight:700;">${c.attendancePct}%</td>
+                      <td style="padding:12px; font-weight:700; color:#059669;">${c.homeworkCompletion}%</td>
+                      <td style="padding:12px;"><span class="badge badge-indigo">${c.status}</span></td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      ` : `
+        <!-- TAB 9: LEVEL OF SATISFACTION OF STUDENTS -->
+        <div style="display:flex; flex-direction:column; gap:20px; margin-bottom:30px;">
+          <div class="panel-card" style="background:linear-gradient(135deg, #065f46 0%, #047857 100%); color:white; border:none;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+              <div>
+                <h3 style="font-size:1.3rem; font-weight:800; color:white; margin:0;">Overall Student Satisfaction Index</h3>
+                <p style="font-size:0.85rem; color:#a7f3d0; margin-top:4px;">Aggregated across all 832 enrolled students in Vikas Grammar School.</p>
+              </div>
+              <div style="font-size:2.4rem; font-weight:900; color:#d1fae5;">${ssi.overallIndexScore}%</div>
+            </div>
+            
+            <div style="display:flex; gap:14px; margin-top:16px; flex-wrap:wrap;">
+              <div style="background:rgba(255,255,255,0.15); padding:8px 16px; border-radius:8px;">
+                <span style="font-size:0.75rem; display:block;">Highly Satisfied</span>
+                <strong style="font-size:1.1rem;">${ssi.satisfactionBands.highlySatisfiedPct}%</strong>
+              </div>
+              <div style="background:rgba(255,255,255,0.15); padding:8px 16px; border-radius:8px;">
+                <span style="font-size:0.75rem; display:block;">Satisfied</span>
+                <strong style="font-size:1.1rem;">${ssi.satisfactionBands.satisfiedPct}%</strong>
+              </div>
+              <div style="background:rgba(255,255,255,0.15); padding:8px 16px; border-radius:8px;">
+                <span style="font-size:0.75rem; display:block;">Neutral</span>
+                <strong style="font-size:1.1rem;">${ssi.satisfactionBands.neutralPct}%</strong>
+              </div>
+              <div style="background:rgba(255,255,255,0.15); padding:8px 16px; border-radius:8px;">
+                <span style="font-size:0.75rem; display:block;">Dissatisfied</span>
+                <strong style="font-size:1.1rem;">${ssi.satisfactionBands.dissatisfiedPct}%</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- PARAMETER RATINGS -->
+          <div class="panel-card">
+            <div class="panel-header" style="margin-bottom:14px;">
+              <h3 class="panel-title"><i data-lucide="check-square" style="color:var(--emerald);"></i> Core Satisfaction Parameters</h3>
+              <span class="badge badge-success">High Engagement</span>
+            </div>
+
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:12px;">
+              ${ssi.parameterRatings.map(pr => `
+                <div class="feedback-content-box">
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                    <span style="font-size:0.88rem; font-weight:700; color:var(--text-primary);">${pr.parameter}</span>
+                    <span class="badge badge-indigo">${pr.status}</span>
+                  </div>
+                  <div style="display:flex; justify-content:space-between; align-items:baseline;">
+                    <span style="font-size:1.3rem; font-weight:900; color:var(--indigo);">${pr.score} <span style="font-size:0.75rem; color:var(--text-muted);">/ 5.0</span></span>
+                    <span style="font-size:0.75rem; color:#047857; font-weight:700;">${Math.round((pr.score/pr.max)*100)}% Positive</span>
+                  </div>
+                  <div class="benchmark-bar-track">
+                    <div class="benchmark-bar-fill" style="width:${(pr.score/pr.max)*100}%; background:#10b981;"></div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `}
+    `;
+
+    // Tab switcher
+    window.switchMethodologyTab = function(tab) {
+      activeMethodologyTab = tab;
+      renderMethodologySatisfactionScreen(roleFilter);
+    };
+
+    // Handle opinion form submit
+    const opForm = document.getElementById('methodologyOpinionForm');
+    opForm?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const sub = document.getElementById('moSubject')?.value;
+      const text = document.getElementById('moText')?.value;
+      if (text) {
+        const item = tm.find(x => x.subject.indexOf(sub) !== -1) || tm[0];
+        item.studentOpinions.unshift(`“${text.trim()}” — Student Voice`);
+        showToast('Thank you! Your teaching methodology opinion was submitted.');
+        renderMethodologySatisfactionScreen(roleFilter);
+      }
+    });
+
+    refreshLucideIcons();
+  }
+
+  /* 29. TEACHER-STUDENT RELATIONS & 360° STUDENT BEHAVIOUR (POINTS 1 & 7) */
+  let activeRelationsTab = 'relations'; // 'relations' or 'behaviour_matrix'
+
+  function renderRelationsAndConductScreen(roleFilter) {
+    const rels = MOCK_DATA.teacherStudentRelations;
+    const behs = MOCK_DATA.studentBehaviourRecords;
+
+    contentViewport.innerHTML = `
+      <div class="panel-card" style="margin-bottom:20px;">
+        <div class="panel-header">
+          <div>
+            <h2 style="font-size:1.3rem; font-weight:800; color:var(--text-primary); margin:0; display:flex; align-items:center; gap:8px;">
+              <i data-lucide="heart-handshake" style="color:var(--indigo);"></i> Teacher-Student Relations & 360° Student Behaviour
+            </h2>
+            <p style="font-size:0.85rem; color:var(--text-secondary); margin-top:4px;">
+              Pillars 1 & 7: Positive classroom bonding, mutual respect, peer cooperation, teacher respect, and overall conduct.
+            </p>
+          </div>
+          <span class="badge badge-emerald">Campus Harmony</span>
+        </div>
+      </div>
+
+      <!-- TABS -->
+      <div class="feedback-tabs" style="margin-bottom:20px;">
+        <button type="button" class="feedback-tab-btn ${activeRelationsTab === 'relations' ? 'active' : ''}" onclick="switchRelationsTab('relations')">
+          <i data-lucide="users"></i> 7. Teacher-Student Relations in All Classes
+        </button>
+        <button type="button" class="feedback-tab-btn ${activeRelationsTab === 'behaviour_matrix' ? 'active' : ''}" onclick="switchRelationsTab('behaviour_matrix')">
+          <i data-lucide="user-check"></i> 1. Student 360° Behaviour (Co-Students, Teachers & Overall)
+        </button>
+      </div>
+
+      ${activeRelationsTab === 'relations' ? `
+        <!-- TAB 7: TEACHER-STUDENT RELATIONS -->
+        <div style="display:flex; flex-direction:column; gap:16px; margin-bottom:30px;">
+          ${rels.map(r => `
+            <div class="panel-card" style="border-left:5px solid var(--emerald);">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
+                <div>
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <h3 style="font-size:1.15rem; font-weight:800; color:var(--text-primary); margin:0;">${r.grade}</h3>
+                    <span class="badge badge-indigo">Class Mentor: ${r.classMentor}</span>
+                    <span class="badge badge-info">${r.totalStudents} Students</span>
+                  </div>
+                </div>
+                <div style="text-align:right;">
+                  <span style="font-size:1.3rem; font-weight:900; color:#059669;">${r.rapportIndex} <span style="font-size:0.75rem; color:var(--text-muted);">/ 10</span></span>
+                  <div style="font-size:0.72rem; color:#047857; font-weight:700;">Rapport: ${r.approachabilityRating}</div>
+                </div>
+              </div>
+
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                <div class="feedback-content-box">
+                  <div class="feedback-label">🌞 Classroom Climate & Trust</div>
+                  <div class="feedback-text">${r.classroomClimate}</div>
+                </div>
+                <div class="feedback-content-box">
+                  <div class="feedback-label">👩‍🏫 Mentor's Observation</div>
+                  <div class="feedback-text">${r.mentorComments}</div>
+                </div>
+              </div>
+
+              <div class="principal-note-box" style="margin-top:10px;">
+                <div class="feedback-label" style="color:#5b21b6;">
+                  <i data-lucide="shield-check" style="width:14px; height:14px;"></i> Headmaster Periodic Classroom Climate Audit
+                </div>
+                <div class="feedback-text" style="color:#4c1d95; font-size:0.85rem; font-weight:600;">"${r.principalAudit}"</div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      ` : `
+        <!-- TAB 1: STUDENT 360° BEHAVIOUR MATRIX -->
+        <div style="display:flex; flex-direction:column; gap:16px; margin-bottom:30px;">
+          ${behs.map(b => `
+            <div class="panel-card" style="border-left:5px solid var(--indigo);">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
+                <div>
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <h3 style="font-size:1.15rem; font-weight:800; color:var(--text-primary); margin:0;">${b.studentName}</h3>
+                    <span class="badge badge-indigo">Roll: ${b.rollNo}</span>
+                    <span class="badge badge-info">${b.grade}</span>
+                  </div>
+                  <div style="font-size:0.8rem; color:var(--text-secondary); margin-top:2px;">
+                    Mentor: <strong>${b.mentorTeacher}</strong> • Evaluated: ${b.lastEvaluation}
+                  </div>
+                </div>
+                <div>
+                  <span class="badge badge-success" style="font-size:0.85rem; padding:6px 12px;">
+                    Overall: ${b.overallConduct.level}
+                  </span>
+                </div>
+              </div>
+
+              <!-- 3-WAY CONDUCT GRID: CO-STUDENTS, TEACHERS, OVERALL -->
+              <div class="conduct-3way-grid">
+                <!-- 1. Co-students -->
+                <div class="conduct-box co-students">
+                  <div>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                      <span style="font-size:0.75rem; font-weight:800; color:#1d4ed8; text-transform:uppercase;">🤝 With Co-Students</span>
+                      <span style="font-weight:800; color:#1d4ed8;">${b.coStudentsBehaviour.rating} ★</span>
+                    </div>
+                    <div style="font-size:0.85rem; font-weight:700; color:var(--text-primary); margin:4px 0;">${b.coStudentsBehaviour.level}</div>
+                    <div style="font-size:0.82rem; color:var(--text-secondary);">${b.coStudentsBehaviour.notes}</div>
+                  </div>
+                </div>
+
+                <!-- 2. Teachers -->
+                <div class="conduct-box teachers">
+                  <div>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                      <span style="font-size:0.75rem; font-weight:800; color:#4338ca; text-transform:uppercase;">👩‍🏫 With Teachers</span>
+                      <span style="font-weight:800; color:#4338ca;">${b.teachersBehaviour.rating} ★</span>
+                    </div>
+                    <div style="font-size:0.85rem; font-weight:700; color:var(--text-primary); margin:4px 0;">${b.teachersBehaviour.level}</div>
+                    <div style="font-size:0.82rem; color:var(--text-secondary);">${b.teachersBehaviour.notes}</div>
+                  </div>
+                </div>
+
+                <!-- 3. Overall Conduct -->
+                <div class="conduct-box overall">
+                  <div>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                      <span style="font-size:0.75rem; font-weight:800; color:#047857; text-transform:uppercase;">⭐ Overall Conduct</span>
+                      <span style="font-weight:800; color:#047857;">${b.overallConduct.rating} ★</span>
+                    </div>
+                    <div style="font-size:0.85rem; font-weight:700; color:var(--text-primary); margin:4px 0;">${b.overallConduct.level}</div>
+                    <div style="font-size:0.78rem; color:var(--text-secondary); margin-top:2px;">
+                      • Punctuality: <strong>${b.overallConduct.punctuality}</strong><br>
+                      • Uniform: <strong>${b.overallConduct.uniformEtiquette}</strong><br>
+                      • Discipline: <strong>${b.overallConduct.campusDiscipline}</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Commendations and Guidance -->
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-top:10px; padding-top:8px; border-top:1px dashed var(--border-color); font-size:0.8rem;">
+                <div>
+                  <span style="color:var(--text-muted);">🏅 Commendations:</span>
+                  ${b.commendations.map(c => `<span class="badge badge-emerald" style="margin-left:4px;">${c}</span>`).join('')}
+                </div>
+                <div style="color:#854d0e;">
+                  👁️ <em>Guidance: ${b.areasToWatch}</em>
+                </div>
+              </div>
+
+            </div>
+          `).join('')}
+        </div>
+      `}
+    `;
+
+    window.switchRelationsTab = function(tab) {
+      activeRelationsTab = tab;
+      renderRelationsAndConductScreen(roleFilter);
+    };
+
+    refreshLucideIcons();
+  }
+
+  /* 30. FACILITIES & SAFETY INCIDENT LOG (POINTS 5 & 6) */
+  let activeFacilitiesTab = 'facilities'; // 'facilities' or 'incidents'
+
+  function renderFacilitiesIncidentsScreen(roleFilter) {
+    const fac = MOCK_DATA.campusFacilitiesData;
+    const incs = MOCK_DATA.unusualIncidents;
+
+    contentViewport.innerHTML = `
+      <div class="panel-card" style="margin-bottom:20px;">
+        <div class="panel-header">
+          <div>
+            <h2 style="font-size:1.3rem; font-weight:800; color:var(--text-primary); margin:0; display:flex; align-items:center; gap:8px;">
+              <i data-lucide="shield-alert" style="color:var(--indigo);"></i> Campus Facilities & Safety Incident Log
+            </h2>
+            <p style="font-size:0.85rem; color:var(--text-secondary); margin-top:4px;">
+              Pillars 5 & 6: Student amenities (Toilets, Drinking Water, Maintenance) and "Anything unusual happened" safety anomaly tracking.
+            </p>
+          </div>
+          <span class="badge badge-success">Clean & Safe Campus</span>
+        </div>
+      </div>
+
+      <!-- TABS -->
+      <div class="feedback-tabs" style="margin-bottom:20px;">
+        <button type="button" class="feedback-tab-btn ${activeFacilitiesTab === 'facilities' ? 'active' : ''}" onclick="switchFacilitiesTab('facilities')">
+          <i data-lucide="coffee"></i> 5. Facilities for Students (Toilets, Drinking Water, Maintenance)
+        </button>
+        <button type="button" class="feedback-tab-btn ${activeFacilitiesTab === 'incidents' ? 'active' : ''}" onclick="switchFacilitiesTab('incidents')">
+          <i data-lucide="alert-triangle"></i> 6. Anything Unusual Happened (Incident & Safety Log)
+        </button>
+      </div>
+
+      ${activeFacilitiesTab === 'facilities' ? `
+        <!-- TAB 5: FACILITIES -->
+        <div style="margin-bottom:30px;">
+          <!-- AUDIT STATUS -->
+          <div class="panel-card" style="margin-bottom:20px; background:linear-gradient(135deg, rgba(16,185,129,0.08) 0%, rgba(6,182,212,0.08) 100%); border:1px solid #a7f3d0;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+              <div>
+                <span class="badge badge-success">Hygiene Audit Verified</span>
+                <h3 style="font-size:1.15rem; font-weight:800; color:#065f46; margin:4px 0;">Campus Hygiene & Amenities Score: ${fac.overallCampusHygieneScore}%</h3>
+                <span style="font-size:0.8rem; color:#047857;">Last Certified: ${fac.lastHygieneAudit}</span>
+              </div>
+              <button type="button" onclick="showToast('Recorded new hygiene sweep audit!')" class="btn-primary" style="padding:8px 16px; border-radius:8px; background:#10b981; color:white; border:none; font-weight:700; font-size:0.82rem; cursor:pointer;">
+                + Log Routine Cleaning Audit
+              </button>
+            </div>
+          </div>
+
+          <!-- FACILITY NODES GRID -->
+          <div class="facility-grid">
+            ${fac.facilityNodes.map(f => `
+              <div class="facility-card">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;">
+                  <div>
+                    <span class="badge badge-indigo" style="font-size:0.7rem;">${f.category}</span>
+                    <h4 style="font-size:1.05rem; font-weight:800; color:var(--text-primary); margin:4px 0;">${f.name}</h4>
+                  </div>
+                  <span class="badge badge-success">${f.status}</span>
+                </div>
+
+                <div style="font-size:0.82rem; color:var(--text-secondary); display:flex; flex-direction:column; gap:4px; margin-bottom:12px;">
+                  <div>🧹 <strong>Last Sanitized:</strong> ${f.lastCleaned}</div>
+                  ${f.tdsLevel ? `<div>💧 <strong>Water Quality:</strong> TDS: ${f.tdsLevel} • pH: ${f.phLevel}</div>` : ''}
+                  ${f.chillerFunctioning ? `<div>❄️ <strong>Cooling:</strong> ${f.chillerFunctioning}</div>` : ''}
+                  ${f.runningWaterSupply ? `<div>🚰 <strong>Running Water:</strong> ${f.runningWaterSupply}</div>` : ''}
+                  ${f.soapDispensers ? `<div>🧼 <strong>Soap Dispensers:</strong> ${f.soapDispensers}</div>` : ''}
+                  ${f.ventilationFans ? `<div>💨 <strong>Ventilation:</strong> ${f.ventilationFans}</div>` : ''}
+                  ${f.incineratorUnit ? `<div>🛡️ <strong>Sanitary Incinerator:</strong> ${f.incineratorUnit}</div>` : ''}
+                </div>
+
+                <div style="font-size:0.78rem; color:var(--text-muted); border-top:1px dashed var(--border-color); padding-top:8px;">
+                  📝 ${f.maintenanceNotes}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+
+          <!-- MAINTENANCE TICKETS LOG -->
+          <div class="panel-card">
+            <div class="panel-header" style="margin-bottom:14px;">
+              <h3 class="panel-title"><i data-lucide="wrench" style="color:var(--indigo);"></i> Campus Maintenance Tickets</h3>
+              <button type="button" onclick="document.getElementById('reportIssueBox').scrollIntoView({behavior:'smooth'})" class="btn-primary" style="padding:6px 14px; border-radius:6px; font-size:0.78rem; background:var(--indigo); color:white; border:none; cursor:pointer;">
+                + Report Maintenance Issue
+              </button>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:20px;">
+              ${fac.maintenanceTickets.map(t => `
+                <div style="padding:12px 14px; background:var(--bg-card-sub); border:1px solid var(--border-color); border-radius:8px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                  <div>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                      <strong style="color:var(--text-primary); font-size:0.9rem;">${t.facility}</strong>
+                      <span class="badge badge-indigo">${t.ticketId}</span>
+                      <span class="badge ${t.priority === 'Medium' ? 'badge-warning' : 'badge-info'}">${t.priority} Priority</span>
+                    </div>
+                    <div style="font-size:0.82rem; color:var(--text-secondary); margin-top:2px;">
+                      Issue: <strong>${t.issue}</strong> • Reported by: ${t.reportedBy} on ${t.date}
+                    </div>
+                  </div>
+                  <div style="text-align:right;">
+                    <span class="badge badge-success">${t.status}</span>
+                    <div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">Assigned: ${t.assignedTo}</div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+
+            <!-- TICKET REPORT FORM -->
+            <div id="reportIssueBox" style="background:var(--bg-card); padding:16px; border:1px solid var(--border-color); border-radius:10px;">
+              <h4 style="font-size:0.95rem; font-weight:800; color:var(--text-primary); margin-bottom:10px;">
+                Report an Amenity / Toilet / Drinking Water Maintenance Need
+              </h4>
+              <form id="maintenanceReportForm" style="display:flex; flex-direction:column; gap:10px;">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                  <div>
+                    <label style="font-size:0.78rem; font-weight:700; color:var(--text-secondary); display:block; margin-bottom:4px;">Facility Location *</label>
+                    <input type="text" id="mrfLocation" placeholder="e.g. Boys Restroom Ground Floor Tap 4" required style="width:100%; padding:8px 12px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-card-sub); color:var(--text-primary); font-size:0.85rem;">
+                  </div>
+                  <div>
+                    <label style="font-size:0.78rem; font-weight:700; color:var(--text-secondary); display:block; margin-bottom:4px;">Priority *</label>
+                    <select id="mrfPriority" style="width:100%; padding:8px 12px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-card-sub); color:var(--text-primary); font-size:0.85rem;">
+                      <option value="Low">Low Priority</option>
+                      <option value="Medium" selected>Medium Priority</option>
+                      <option value="High">High / Urgent (Water leak/Hygiene)</option>
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <label style="font-size:0.78rem; font-weight:700; color:var(--text-secondary); display:block; margin-bottom:4px;">Description of Issue *</label>
+                  <input type="text" id="mrfIssue" placeholder="e.g. Soap dispenser empty, needs refill / low water pressure" required style="width:100%; padding:8px 12px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-card-sub); color:var(--text-primary); font-size:0.85rem;">
+                </div>
+                <button type="submit" class="btn-primary" style="padding:10px 16px; background:var(--indigo); color:white; border-radius:8px; font-weight:700; font-size:0.85rem; border:none; cursor:pointer; align-self:flex-start;">
+                  <i data-lucide="send"></i> Dispatch Maintenance Ticket
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      ` : `
+        <!-- TAB 6: ANYTHING UNUSUAL HAPPENED (INCIDENT & SAFETY LOG) -->
+        <div style="display:flex; flex-direction:column; gap:16px; margin-bottom:30px;">
+          <!-- LOG INCIDENT FORM -->
+          <div class="panel-card" style="background:#fef2f2; border:1px solid #fecaca;">
+            <div class="panel-header" style="margin-bottom:10px;">
+              <h3 class="panel-title" style="color:#991b1b;"><i data-lucide="shield-alert"></i> 6. Log Unusual Event / Safety Anomaly</h3>
+              <span class="badge badge-danger">Immediate Headmaster Attention</span>
+            </div>
+            <p style="font-size:0.82rem; color:#b91c1c; margin-bottom:12px;">
+              Document any playground scrapes, medical dizziness, power/weather fluctuations, bus route delays, or behavioral conflicts.
+            </p>
+
+            <form id="unusualIncidentForm" style="display:flex; flex-direction:column; gap:10px;">
+              <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
+                <div>
+                  <label style="font-size:0.75rem; font-weight:700; color:#991b1b; display:block; margin-bottom:4px;">Nature of Incident *</label>
+                  <select id="uifNature" style="width:100%; padding:8px 10px; border-radius:8px; border:1px solid #fca5a5; background:white; font-size:0.85rem;">
+                    <option value="Minor Playground Scrape / First Aid">Minor Playground Scrape / First Aid</option>
+                    <option value="Student Feeling Unwell / Dizziness">Student Feeling Unwell / Dizziness</option>
+                    <option value="Weather / Power Anomaly">Weather / Power Anomaly</option>
+                    <option value="Transport / Bus Route Delay">Transport / Bus Route Delay</option>
+                    <option value="Behavioral / Peer Friction">Behavioral / Peer Friction</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size:0.75rem; font-weight:700; color:#991b1b; display:block; margin-bottom:4px;">Severity Level *</label>
+                  <select id="uifSeverity" style="width:100%; padding:8px 10px; border-radius:8px; border:1px solid #fca5a5; background:white; font-size:0.85rem;">
+                    <option value="Low" selected>Low (Standard campus first aid/remedy)</option>
+                    <option value="Medium">Medium (Parent notification needed)</option>
+                    <option value="High">High (Urgent doctor/headmaster review)</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size:0.75rem; font-weight:700; color:#991b1b; display:block; margin-bottom:4px;">Campus Location *</label>
+                  <input type="text" id="uifLocation" placeholder="e.g. Primary playground / Room 203" required style="width:100%; padding:8px 10px; border-radius:8px; border:1px solid #fca5a5; background:white; font-size:0.85rem;">
+                </div>
+              </div>
+
+              <div>
+                <label style="font-size:0.75rem; font-weight:700; color:#991b1b; display:block; margin-bottom:4px;">Description of What Happened *</label>
+                <input type="text" id="uifDesc" placeholder="e.g. Master K. tripped during physical education game and grazed knee..." required style="width:100%; padding:8px 10px; border-radius:8px; border:1px solid #fca5a5; background:white; font-size:0.85rem;">
+              </div>
+
+              <div>
+                <label style="font-size:0.75rem; font-weight:700; color:#991b1b; display:block; margin-bottom:4px;">Immediate Action Taken *</label>
+                <input type="text" id="uifAction" placeholder="e.g. First aid administered in clinic, wound sanitized, resting peacefully..." required style="width:100%; padding:8px 10px; border-radius:8px; border:1px solid #fca5a5; background:white; font-size:0.85rem;">
+              </div>
+
+              <button type="submit" class="btn-primary" style="padding:10px 18px; background:#b91c1c; color:white; border-radius:8px; font-weight:700; font-size:0.85rem; border:none; cursor:pointer; align-self:flex-start;">
+                <i data-lucide="shield"></i> Record Incident to Safety Log
+              </button>
+            </form>
+          </div>
+
+          <!-- INCIDENTS LIST -->
+          <div>
+            <div class="panel-header" style="margin-bottom:12px;">
+              <h3 class="panel-title"><i data-lucide="history" style="color:var(--indigo);"></i> Incident & Safety Event History (${incs.length})</h3>
+              <span class="badge badge-indigo">Statutory Safety Protocol</span>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:14px;">
+              ${incs.map(inc => `
+                <div class="incident-card sev-${inc.severity.toLowerCase()}">
+                  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+                    <div>
+                      <div style="display:flex; align-items:center; gap:8px;">
+                        <h4 style="font-size:1.1rem; font-weight:800; color:var(--text-primary); margin:0;">${inc.natureOfIncident}</h4>
+                        <span class="sev-pill ${inc.severity.toLowerCase()}">${inc.severity} Severity</span>
+                        <span class="badge badge-indigo">📍 ${inc.location}</span>
+                      </div>
+                      <div style="font-size:0.8rem; color:var(--text-secondary); margin-top:2px;">
+                        Logged on: <strong>${inc.date} at ${inc.time}</strong> • Reported by: <strong>${inc.reportedBy}</strong>
+                      </div>
+                    </div>
+                    <div>
+                      <span class="badge ${inc.parentInformed.indexOf('Yes') !== -1 ? 'badge-success' : 'badge-warning'}">
+                        Parent Informed: ${inc.parentInformed}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div style="font-size:0.88rem; color:var(--text-primary); margin:8px 0;">
+                    ${inc.description}
+                  </div>
+
+                  <div class="feedback-content-box" style="background:#f0fdf4; border-color:#bbf7d0; margin-bottom:8px;">
+                    <div class="feedback-label" style="color:#047857;">🚑 Immediate Action Taken:</div>
+                    <div class="feedback-text" style="color:#065f46; font-weight:600;">${inc.immediateActionTaken}</div>
+                  </div>
+
+                  <div class="principal-note-box">
+                    <div class="feedback-label" style="color:#5b21b6;">
+                      <i data-lucide="award" style="width:14px; height:14px;"></i> Headmaster Resolution & Safety Sign-off:
+                    </div>
+                    <div class="feedback-text" style="color:#4c1d95; font-size:0.85rem; font-weight:600;">"${inc.principalSignOff}"</div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `}
+    `;
+
+    window.switchFacilitiesTab = function(tab) {
+      activeFacilitiesTab = tab;
+      renderFacilitiesIncidentsScreen(roleFilter);
+    };
+
+    // Maintenance ticket handler
+    const mrf = document.getElementById('maintenanceReportForm');
+    mrf?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const loc = document.getElementById('mrfLocation')?.value;
+      const prio = document.getElementById('mrfPriority')?.value;
+      const iss = document.getElementById('mrfIssue')?.value;
+      if (loc && iss) {
+        fac.maintenanceTickets.unshift({
+          ticketId: `TKT-2026-09${fac.maintenanceTickets.length + 1}`,
+          facility: loc,
+          reportedBy: `${activeRole.toUpperCase()} Portal User`,
+          date: 'Sep 02, 2026',
+          issue: iss,
+          priority: prio,
+          status: 'Dispatched to Campus Caretaker',
+          assignedTo: 'Mr. Mallesh (Campus Caretaker)'
+        });
+        showToast('Maintenance ticket dispatched! Campus caretaker notified.');
+        renderFacilitiesIncidentsScreen(roleFilter);
+      }
+    });
+
+    // Incident report handler
+    const uif = document.getElementById('unusualIncidentForm');
+    uif?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const nat = document.getElementById('uifNature')?.value;
+      const sev = document.getElementById('uifSeverity')?.value;
+      const loc = document.getElementById('uifLocation')?.value;
+      const desc = document.getElementById('uifDesc')?.value;
+      const act = document.getElementById('uifAction')?.value;
+      if (loc && desc && act) {
+        incs.unshift({
+          id: `inc_${Date.now()}`,
+          date: '2026-09-02',
+          time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
+          location: loc,
+          reportedBy: `${activeRole.toUpperCase()} Duty Log`,
+          natureOfIncident: nat,
+          severity: sev,
+          description: desc,
+          immediateActionTaken: act,
+          parentInformed: sev === 'Low' ? 'Noted in daily register' : 'Yes (Telephone dispatch)',
+          principalReviewed: true,
+          principalSignOff: 'Reviewed by Headmaster K. Rajesham. Action taken validated.'
+        });
+        showToast('Safety incident logged and dispatched to Headmaster!');
+        renderFacilitiesIncidentsScreen(roleFilter);
+      }
+    });
+
+    refreshLucideIcons();
+  }
+
+  /* 31. HOW THE CLASSES ARE GOING ON (POINT 8: PACING & DAILY PROGRESS) */
+  function renderClassPacingDiaryScreen(roleFilter) {
+    const pacing = MOCK_DATA.classSyllabusPacing[0]; // Class VIII A
+
+    contentViewport.innerHTML = `
+      <div class="panel-card" style="margin-bottom:20px;">
+        <div class="panel-header">
+          <div>
+            <h2 style="font-size:1.3rem; font-weight:800; color:var(--text-primary); margin:0; display:flex; align-items:center; gap:8px;">
+              <i data-lucide="clock" style="color:var(--indigo);"></i> 8. How The Classes Are Going On (Pacing & Syllabus Coverage)
+            </h2>
+            <p style="font-size:0.85rem; color:var(--text-secondary); margin-top:4px;">
+              SCERT Telangana syllabus milestone tracking, period-by-period daily classroom progress, and syllabus pacing buffers.
+            </p>
+          </div>
+          <span class="badge badge-success">${pacing.overallPacingStatus}</span>
+        </div>
+
+        <!-- SYLLABUS PACING METER -->
+        <div style="margin-top:16px; background:var(--bg-card-sub); padding:16px 18px; border-radius:10px; border:1px solid var(--border-color);">
+          <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;">
+            <span style="font-weight:700; color:var(--text-primary); font-size:0.95rem;">${pacing.grade} — ${pacing.academicTerm}</span>
+            <span style="font-size:1.1rem; font-weight:900; color:var(--indigo);">${pacing.syllabusProgressPct}% <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">(Target: ${pacing.targetForCurrentMonth}%)</span></span>
+          </div>
+
+          <div class="benchmark-bar-track" style="height:12px;">
+            <div class="benchmark-bar-fill" style="width:${pacing.syllabusProgressPct}%; background:linear-gradient(90deg, #6366f1, #10b981);"></div>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-secondary); margin-top:6px;">
+            <span>Term Start (June 2026)</span>
+            <span style="color:#047857; font-weight:700;">✓ Ahead of Monthly SCERT Milestone</span>
+            <span>SA1 Milestone (October 2026)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- TODAY'S PERIOD-BY-PERIOD CLASSROOM DIARY -->
+      <div class="panel-card">
+        <div class="panel-header" style="margin-bottom:14px;">
+          <h3 class="panel-title"><i data-lucide="calendar" style="color:var(--emerald);"></i> Today's Period-by-Period Classroom Diary (Sep 02, 2026)</h3>
+          <span class="badge badge-indigo">Class VIII Section A</span>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:20px;">
+          ${pacing.dailyDiaryToday.map(d => `
+            <div style="padding:12px 16px; background:var(--bg-card-sub); border:1px solid var(--border-color); border-radius:8px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+              <div style="display:flex; align-items:center; gap:12px;">
+                <span class="period-badge-tag">${d.period}</span>
+                <div>
+                  <strong style="color:var(--text-primary); font-size:0.95rem;">${d.subject}</strong>
+                  <div style="font-size:0.85rem; color:var(--text-secondary); margin-top:2px;">
+                    📖 Topic: <strong>${d.topic}</strong>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <span class="badge badge-success">✓ ${d.status}</span>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+
     refreshLucideIcons();
   }
 

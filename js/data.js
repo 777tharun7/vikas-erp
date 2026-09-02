@@ -17,90 +17,6 @@ const MOCK_DATA = {
     medium: 'English'
   },
 
-  // REGISTERED ACCOUNTS FOR EMAIL-BASED ROLE LOGIN
-  registeredUsers: [
-    {
-      email: 'principal@vikas.edu.in',
-      altEmail: 'rajesham@vikas.edu.in',
-      role: 'principal',
-      name: 'K. Rajesham',
-      roleLabel: 'Principal / Headmaster',
-      designation: 'Headmaster & School Administrator',
-      badge: 'Principal Command Center',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80',
-      details: 'UDISE Admin • Vikas Grammar School HS Cherial',
-      phone: '+91 98480 99887',
-      idNumber: 'EMP-VG-001',
-      penId: 'UDISE-ADMIN-36182100637',
-      address: 'H.No. 2-45, Headmaster Quarters, Cheriyal Main Road, Siddipet Dist, Telangana — 506223',
-      classSec: 'Administration / All Classes (1–10)',
-      bloodGroup: 'O+',
-      dob: '15 Aug 1978',
-      emergencyContact: 'Mrs. K. Sujatha (+91 98480 99888)',
-      joinedDate: '12 June 2004'
-    },
-    {
-      email: 'teacher@vikas.edu.in',
-      altEmail: 'radhika@vikas.edu.in',
-      role: 'teacher',
-      name: 'Mrs. S. Radhika',
-      roleLabel: 'Class Teacher (VIII A)',
-      designation: 'Senior Mathematics Lead & Mentor',
-      badge: 'Teacher Workspace',
-      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=120&q=80',
-      details: 'EMP-VG-002 • Mathematics Department',
-      phone: '+91 98481 44332',
-      idNumber: 'EMP-VG-002',
-      penId: 'TCHR-VG-2026-08',
-      address: 'Plot 14, Teachers Colony, Cheriyal, Siddipet Dist, Telangana — 506223',
-      classSec: 'Class VIII Section A (Mentor) & Class X Mathematics',
-      bloodGroup: 'B+',
-      dob: '22 May 1986',
-      emergencyContact: 'S. Raghava Rao (+91 98481 44333)',
-      joinedDate: '01 June 2012'
-    },
-    {
-      email: 'student@vikas.edu.in',
-      altEmail: 'rahul@vikas.edu.in',
-      role: 'student',
-      name: 'Rahul Reddy',
-      roleLabel: 'Student (Class VIII A)',
-      designation: 'Class VIII Section A Student',
-      badge: 'Gamified Student Portal',
-      avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=120&q=80',
-      details: 'Roll No: VIII-014 • PEN-36182100637-801',
-      phone: '+91 79958 70172',
-      idNumber: 'VIII-014',
-      penId: 'PEN-36182100637-801',
-      address: 'H.No. 5-12/A, Near Bus Station, Cheriyal, Siddipet Dist, Telangana — 506223',
-      classSec: 'Class VIII Section A',
-      bloodGroup: 'A+',
-      dob: '14 Nov 2012',
-      emergencyContact: 'V. Reddy (Father) (+91 79958 70172)',
-      joinedDate: '05 June 2018'
-    },
-    {
-      email: 'parent@vikas.edu.in',
-      altEmail: 'vreddy@vikas.edu.in',
-      role: 'parent',
-      name: 'V. Reddy',
-      roleLabel: 'Parent of Rahul Reddy',
-      designation: 'Parent / Guardian',
-      badge: 'Parent Info-First Portal',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80',
-      details: 'Parent ID: PRT-VG-101 • Contact: +91 79958 70172',
-      phone: '+91 79958 70172',
-      idNumber: 'PRT-VG-101',
-      penId: 'PRT-REF-Rahul-Reddy-VIII014',
-      address: 'H.No. 5-12/A, Near Bus Station, Cheriyal, Siddipet Dist, Telangana — 506223',
-      classSec: 'Parent of Rahul Reddy (Class VIII A)',
-      bloodGroup: 'O+',
-      dob: '08 Apr 1980',
-      emergencyContact: 'V. Laxmi (Spouse) (+91 79958 70172)',
-      joinedDate: '05 June 2018'
-    }
-  ],
-
   // 1. ADMISSIONS LEADS LIST
   admissionsLeadsList: [
     { id: 'adm_01', applicantName: 'S. Varun Tej', gradeApplied: 'Class VIII', parentName: 'S. Narsing Rao', phone: '+91 98481 11223', testScore: '92/100', status: 'Approved', statusClass: 'badge-success', date: 'Aug 20, 2026' },
@@ -122,7 +38,7 @@ const MOCK_DATA = {
 
   // 2. STUDENT DIRECTORY (CLASSES 1 TO 10)
   studentDirectoryList: [
-    { id: 'std_101', name: 'Rahul Reddy', grade: 'Class VIII', section: 'Section A', rollNo: 'VIII-014', penId: 'PEN-36182100637-801', parentName: 'V. Reddy', parentContact: '+91 79958 70172', attendancePct: 94.5, gpaPct: 88, gradeLetter: 'Grade A', feeStatus: 'Partial', feeDue: 3500, avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=120&q=80' },
+    { id: 'std_101', name: 'Rahul Reddy', grade: 'Class VIII', section: 'Section A', rollNo: 'VIII-014', penId: 'PEN-36182100637-801', parentName: 'V. Reddy', parentContact: '+91 98480 12345', attendancePct: 94.5, gpaPct: 88, gradeLetter: 'Grade A', feeStatus: 'Partial', feeDue: 3500, avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=120&q=80' },
     { id: 'std_102', name: 'Pooja Sharma', grade: 'Class VIII', section: 'Section A', rollNo: 'VIII-015', penId: 'PEN-36182100637-802', parentName: 'K. Sharma', parentContact: '+91 98480 67890', attendancePct: 96.8, gpaPct: 94, gradeLetter: 'Grade A+', feeStatus: 'Paid', feeDue: 0, avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=120&q=80' },
     { id: 'std_103', name: 'V. Sai Kumar', grade: 'Class X', section: 'Section A', rollNo: 'X-001', penId: 'PEN-36182100637-1001', parentName: 'V. Srinivas', parentContact: '+91 98480 11223', attendancePct: 98.2, gpaPct: 96, gradeLetter: 'Grade A+', feeStatus: 'Paid', feeDue: 0, avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=120&q=80' },
     { id: 'std_104', name: 'K. Ananya', grade: 'Class X', section: 'Section B', rollNo: 'X-022', penId: 'PEN-36182100637-1022', parentName: 'K. Ramesh', parentContact: '+91 98480 44556', attendancePct: 91.0, gpaPct: 82, gradeLetter: 'Grade B+', feeStatus: 'Partial', feeDue: 2500, avatar: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=120&q=80' },
@@ -271,94 +187,912 @@ const MOCK_DATA = {
     { id: 'nt_4', title: 'Bus #1 Live GPS Status Update', message: 'Bus #1 (TG 12 Z 4091) arrived safely at School Gate from Cherial.', time: '5 hours ago', type: 'transport', unread: true, actionView: 'transport' }
   ],
 
-  // 11. SMS & WHATSAPP BROADCAST TEMPLATES & DISPATCH HISTORY
-  messageTemplates: [
+  // 13. STUDENT DAILY CLASS FEEDBACK (STUDENT -> PRINCIPAL)
+  studentClassFeedbacks: [
     {
-      id: 'tmpl_fee',
-      name: '💳 Fee Due Reminder Alert',
-      category: 'fees',
-      defaultChannel: 'both',
-      subject: 'Vikas Grammar School — Term 3 Fee Payment Reminder',
-      text: 'Dear Parent, this is an official reminder from Vikas Grammar School HS Cherial. The Term 3 tuition fee of ₹{amount} for your ward {student_name} ({class_sec}) is due by {due_date}. Kindly pay online via UPI (vikasschool@sbi) or visit school fee counter. Reg: 36182100637.'
+      id: 'sfb_01',
+      date: '2026-09-02',
+      formattedDate: 'Sep 02, 2026',
+      studentName: 'Rahul Reddy',
+      rollNo: 'VIII-014',
+      grade: 'Class VIII Section A',
+      subject: '📐 Mathematics',
+      teacher: 'Mrs. S. Radhika',
+      period: 'Period 1 (09:00 - 09:45 AM)',
+      rating: 5,
+      comprehensionPace: 'Paced Perfectly',
+      topic: 'Chapter 4: Congruence of Triangles & ASA Criterion',
+      comments: 'Understood congruent triangle criteria easily with practical blackboard diagrams. Solved 3 theorem proofs independently.',
+      doubts: 'None today. Clear on all proofs.',
+      principalStatus: 'Reviewed by Principal',
+      principalRemarks: 'Excellent student engagement noted in Math.'
     },
     {
-      id: 'tmpl_holiday',
-      name: '🌧️ Emergency Rain / Govt Holiday Circular',
-      category: 'announcement',
-      defaultChannel: 'both',
-      subject: 'Urgent Notice: School Holiday Declared for {date}',
-      text: 'Dear Parents, as per official orders from Siddipet District Collectorate / Telangana Education Dept, Vikas Grammar School HS Cherial will remain CLOSED on {date} due to heavy rainfall alerts. Online classes / homework will resume via ERP portal. Headmaster, Vikas Grammar School.'
+      id: 'sfb_02',
+      date: '2026-09-02',
+      formattedDate: 'Sep 02, 2026',
+      studentName: 'Rahul Reddy',
+      rollNo: 'VIII-014',
+      grade: 'Class VIII Section A',
+      subject: '🔬 Physical Science',
+      teacher: 'Mr. P. Srinivas',
+      period: 'Period 2 (09:50 - 10:35 AM)',
+      rating: 4,
+      comprehensionPace: 'Paced Perfectly',
+      topic: 'Reflection of Light & Concave Mirror Lab Work',
+      comments: 'The focal point experiment in Science Lab 1 was very interesting. Observed inverted images clearly.',
+      doubts: 'Need slight clarification on sign conventions in mirror formula.',
+      principalStatus: 'Reviewed by Principal',
+      principalRemarks: 'Science lab practicals proceeding on schedule.'
     },
     {
-      id: 'tmpl_ptm',
-      name: '👨‍👩‍👧 Parent-Teacher Meeting (PTM) Invitation',
-      category: 'announcement',
-      defaultChannel: 'whatsapp',
-      subject: 'Invitation for Term 1 Parent-Teacher Meeting (PTM)',
-      text: 'Dear Parent of {student_name}, you are cordially invited to attend the PTM on Saturday, 30th August 2026 between 10:00 AM to 01:30 PM at Vikas Grammar School Campus. Please meet the class mentor to review academic progress & BSE marks. Regards, Mrs. S. Radhika, Class Mentor.'
+      id: 'sfb_03',
+      date: '2026-09-02',
+      formattedDate: 'Sep 02, 2026',
+      studentName: 'Pooja Sharma',
+      rollNo: 'VIII-015',
+      grade: 'Class VIII Section A',
+      subject: '📖 English Literature',
+      teacher: 'Mr. K. Rajesham',
+      period: 'Period 3 (10:40 - 11:25 AM)',
+      rating: 5,
+      comprehensionPace: 'Paced Perfectly',
+      topic: 'Telangana Culture & Kakatiya Heritage Discussion',
+      comments: 'Inspiring explanation of historic Telangana architecture. Great interactive discussion in class.',
+      doubts: 'None.',
+      principalStatus: 'Reviewed by Principal',
+      principalRemarks: 'Strong interest in regional heritage.'
     },
     {
-      id: 'tmpl_exam',
-      name: '📝 Quarterly & Board Exam Timetable Release',
-      category: 'announcement',
-      defaultChannel: 'both',
-      subject: 'Quarterly Examination Schedule 2026-27 Announced',
-      text: 'Dear Parent, the Quarterly Examination schedule for Classes 1 to 10 has been published on the ERP portal. Exams commence from Sep 18, 2026. Hall tickets & syllabus are available in the Student & Parent ERP dashboards.'
-    },
-    {
-      id: 'tmpl_transport',
-      name: '🚌 School Bus Route & Timing Update',
-      category: 'transport',
-      defaultChannel: 'sms',
-      subject: 'Vikas School Transport Fleet Route Status',
-      text: 'Dear Parent, Bus #{bus_no} ({route_name}) has departed school campus on schedule. Live GPS tracking is active on your Vikas Parent ERP mobile portal. For queries call driver: {driver_phone}.'
+      id: 'sfb_04',
+      date: '2026-09-01',
+      formattedDate: 'Sep 01, 2026',
+      studentName: 'V. Sai Kumar',
+      rollNo: 'X-001',
+      grade: 'Class X Section A',
+      subject: '📐 Advanced Algebra',
+      teacher: 'Mrs. S. Radhika',
+      period: 'Period 2 (09:50 - 10:35 AM)',
+      rating: 5,
+      comprehensionPace: 'Paced Perfectly',
+      topic: 'Quadratic Equations & Board Prep Shortcuts',
+      comments: 'The quadratic formula shortcuts and discriminant analysis are very helpful for BSE board exams.',
+      doubts: 'None.',
+      principalStatus: 'Reviewed by Principal',
+      principalRemarks: 'Board exam preparation progressing satisfactorily.'
     }
   ],
 
-  broadcastMessages: [
+  // 14. TEACHER DAILY CLASSROOM FEEDBACK LOGS (TEACHER -> PRINCIPAL)
+  teacherDailyClassFeedbacks: [
     {
-      id: 'bc_01',
-      title: 'Term 3 Fee Due Reminder to 42 Defaulters',
-      category: 'Fee Reminder',
-      channel: 'WhatsApp + SMS',
-      channelIcon: 'messages-square',
-      audience: 'Fee Defaulters (Classes 1–10)',
-      recipientCount: 42,
-      date: 'Today, 11:30 AM',
-      sender: 'K. Rajesham (Headmaster)',
-      status: 'Delivered (100%)',
-      statusClass: 'badge-success',
-      content: 'Dear Parent, this is an official reminder from Vikas Grammar School. Term 3 tuition fee is due. Kindly clear dues via UPI or counter.'
+      id: 'tcf_01',
+      date: '2026-09-02',
+      formattedDate: 'Sep 02, 2026',
+      teacherName: 'Mrs. S. Radhika',
+      empId: 'EMP-VG-002',
+      grade: 'Class VIII Section A',
+      subject: '📐 Mathematics',
+      period: 'Period 1 (09:00 - 09:45 AM)',
+      room: 'Room 203',
+      topicTaught: 'Chapter 4: Congruence of Triangles (Exercise 4.2)',
+      classEngagementRating: 5,
+      homeworkAssigned: 'Solve Ex 4.2 Q1 to Q12 in homework notebook',
+      observations: 'Class was highly attentive. 28 out of 30 students answered oral theorem check questions accurately. Rahul Reddy and Pooja Sharma demonstrated proofs on the board.',
+      discipline: 'Excellent',
+      principalStatus: 'Acknowledged by Headmaster'
     },
     {
-      id: 'bc_02',
-      title: 'Parent-Teacher Meeting (PTM) Circular',
-      category: 'Announcement',
-      channel: 'WhatsApp Broadcast',
-      channelIcon: 'message-circle',
-      audience: 'All Parents (Classes 1 to 10)',
-      recipientCount: 384,
-      date: 'Yesterday, 04:15 PM',
-      sender: 'Mrs. S. Radhika (Mentor Lead)',
-      status: 'Delivered (98.4%)',
-      statusClass: 'badge-success',
-      content: 'Dear Parents, PTM scheduled for Saturday, 30th August 2026 from 10:00 AM to 01:30 PM. Please visit school campus to discuss ward progress.'
+      id: 'tcf_02',
+      date: '2026-09-02',
+      formattedDate: 'Sep 02, 2026',
+      teacherName: 'Mr. P. Srinivas',
+      empId: 'EMP-VG-003',
+      grade: 'Class VIII Section A',
+      subject: '🔬 Physical Science',
+      period: 'Period 2 (09:50 - 10:35 AM)',
+      room: 'Science Lab 1',
+      topicTaught: 'Reflection of Light: Concave Mirror Ray Tracing',
+      classEngagementRating: 4,
+      homeworkAssigned: 'Draw ray diagrams for object at F and C',
+      observations: 'Lab session conducted safely. Most students observed real vs virtual images accurately. Minor revision needed on Cartesian sign convention.',
+      discipline: 'Very Good',
+      principalStatus: 'Acknowledged by Headmaster'
     },
     {
-      id: 'bc_03',
-      title: 'Heavy Rain Alert & Special Assembly Notice',
-      category: 'Emergency Notice',
-      channel: 'SMS Gateway',
-      channelIcon: 'smartphone',
-      audience: 'All Parents & Staff',
-      recipientCount: 410,
-      date: '24 Aug 2026',
-      sender: 'Principal Office',
-      status: 'Delivered (100%)',
-      statusClass: 'badge-success',
-      content: 'Heavy rainfall advisory issued by Siddipet district administration. School timings will conclude at 03:30 PM today with prompt bus service.'
+      id: 'tcf_03',
+      date: '2026-09-02',
+      formattedDate: 'Sep 02, 2026',
+      teacherName: 'Mr. K. Rajesham',
+      empId: 'EMP-VG-001',
+      grade: 'Class VIII Section A',
+      subject: '📖 English Literature',
+      period: 'Period 3 (10:40 - 11:25 AM)',
+      room: 'Room 203',
+      topicTaught: 'Telangana Culture & Kakatiya Heritage Essay Reading',
+      classEngagementRating: 5,
+      homeworkAssigned: 'Write 250-word essay on historical monuments of Telangana',
+      observations: 'Students showed deep enthusiasm for regional history and Kakatiya architectural marvels. Pronunciation and vocabulary skills improving.',
+      discipline: 'Exemplary',
+      principalStatus: 'Acknowledged by Headmaster'
+    }
+  ],
+
+  // 15. TEACHER FEEDBACK ON INDIVIDUAL STUDENTS (TEACHER -> REFLECTS TO PARENT & PRINCIPAL)
+  teacherStudentFeedbacks: [
+    {
+      id: 'tsf_01',
+      date: '2026-09-02',
+      formattedDate: 'Sep 02, 2026',
+      studentId: 'std_101',
+      studentName: 'Rahul Reddy',
+      rollNo: 'VIII-014',
+      grade: 'Class VIII Section A',
+      subject: '📐 Mathematics',
+      teacherName: 'Mrs. S. Radhika',
+      teacherDesignation: 'Class VIII Mentor & Senior Math Lead',
+      empId: 'EMP-VG-002',
+      rating: 5,
+      performanceLevel: 'Outstanding',
+      conceptGrasp: 'Exceptional comprehension of Congruent Triangles theorem proofs today. Rahul volunteered to solve complex ASA & SAS problems on the blackboard with complete confidence.',
+      behaviorAndDiscipline: 'Very attentive, respectful, and collaborates constructively with peers in group problem-solving.',
+      strengths: 'Analytical reasoning, fast mental calculations, and structured proof writing.',
+      adviceForParents: 'Rahul is performing at the top tier in Math! Please ensure he spends 20 minutes daily reviewing geometry theorem steps at home to maintain this momentum.',
+      homeworkStatus: 'Completed on Time (Grade: A+)',
+      parentAcknowledged: true,
+      parentNote: 'Thank you Mrs. Radhika! We reviewed the theorem proofs together at home and Rahul solved all practice problems diligently.',
+      acknowledgedDate: 'Sep 02, 2026 at 02:15 PM',
+      principalStatus: 'Reviewed by Principal',
+      principalNote: 'Great feedback. Outstanding academic performance.'
+    },
+    {
+      id: 'tsf_02',
+      date: '2026-09-02',
+      formattedDate: 'Sep 02, 2026',
+      studentId: 'std_101',
+      studentName: 'Rahul Reddy',
+      rollNo: 'VIII-014',
+      grade: 'Class VIII Section A',
+      subject: '🔬 Physical Science',
+      teacherName: 'Mr. P. Srinivas',
+      teacherDesignation: 'Physical Science Lead',
+      empId: 'EMP-VG-003',
+      rating: 4,
+      performanceLevel: 'Very Good',
+      conceptGrasp: 'Understood concave mirror optics and image formation very well during practical lab demonstration today.',
+      behaviorAndDiscipline: 'Followed laboratory safety rules diligently and handled optical apparatus with high care.',
+      strengths: 'Hands-on experimentation enthusiasm and strong observation skills.',
+      adviceForParents: 'Help Rahul practice the Cartesian sign conventions (focal length +/- signs) from textbook page 48 before the upcoming quiz.',
+      homeworkStatus: 'Submitted (Grade: A)',
+      parentAcknowledged: false,
+      parentNote: '',
+      acknowledgedDate: '',
+      principalStatus: 'Reviewed by Principal',
+      principalNote: 'Noted for science lab progress.'
+    },
+    {
+      id: 'tsf_03',
+      date: '2026-09-01',
+      formattedDate: 'Sep 01, 2026',
+      studentId: 'std_102',
+      studentName: 'Pooja Sharma',
+      rollNo: 'VIII-015',
+      grade: 'Class VIII Section A',
+      subject: '📐 Mathematics',
+      teacherName: 'Mrs. S. Radhika',
+      teacherDesignation: 'Class VIII Mentor & Senior Math Lead',
+      empId: 'EMP-VG-002',
+      rating: 5,
+      performanceLevel: 'Outstanding',
+      conceptGrasp: 'Perfect accuracy in solving exercise questions. Guided classmates during peer tutoring session.',
+      behaviorAndDiscipline: 'Exemplary conduct, focused and highly motivated.',
+      strengths: 'Methodical documentation, leadership, precision in geometry.',
+      adviceForParents: 'Continue supporting her interest in competitive exams like Ramanujan Math Talent Search.',
+      homeworkStatus: 'Completed on Time (Grade: A+)',
+      parentAcknowledged: true,
+      parentNote: 'Thank you teacher for encouraging Pooja constantly!',
+      acknowledgedDate: 'Sep 01, 2026 at 06:40 PM',
+      principalStatus: 'Reviewed by Principal',
+      principalNote: 'Nominated for State Olympiad.'
+    },
+    {
+      id: 'tsf_04',
+      date: '2026-09-01',
+      formattedDate: 'Sep 01, 2026',
+      studentId: 'std_107',
+      studentName: 'G. Akhil',
+      rollNo: 'IX-005',
+      grade: 'Class IX Section A',
+      subject: '📜 Social Studies',
+      teacherName: 'Mr. B. Narsaiah',
+      teacherDesignation: 'Social Studies & History Lead',
+      empId: 'EMP-VG-004',
+      rating: 3,
+      performanceLevel: 'Needs Attention',
+      conceptGrasp: 'Struggling with chronology and key historical events of Telangana movement. Needs revision on map reading.',
+      behaviorAndDiscipline: 'Polite but reserved; rarely asks questions when in doubt.',
+      strengths: 'Good listening habits, neat handwriting.',
+      adviceForParents: 'Please supervise 20 minutes of daily textbook reading and map pointing exercises at home in the evening.',
+      homeworkStatus: 'Pending Submission',
+      parentAcknowledged: false,
+      parentNote: '',
+      acknowledgedDate: '',
+      principalStatus: 'Flagged for Mentor Follow-up',
+      principalNote: 'Class mentor requested to arrange remedial session.'
+    }
+  ],
+
+  /* ==========================================================================
+     11 INSTITUTIONAL FOUNDATION PILLARS (VIKAS GRAMMAR SCHOOL HS CHERIAL)
+     ========================================================================== */
+
+  // 1) BEHAVIOUR MATRIX (Co-students, Teachers, and Overall Conduct)
+  studentBehaviourRecords: [
+    {
+      studentId: 'std_101',
+      studentName: 'Rahul Reddy',
+      rollNo: 'VIII-014',
+      grade: 'Class VIII Section A',
+      mentorTeacher: 'Mrs. S. Radhika',
+      lastEvaluation: 'Sep 02, 2026',
+      coStudentsBehaviour: {
+        rating: 5,
+        level: 'Exemplary',
+        notes: 'Helpful and supportive in group work. Always shares study notes with peers. Zero instances of conflict or friction.'
+      },
+      teachersBehaviour: {
+        rating: 5,
+        level: 'Respectful & Attentive',
+        notes: 'Greets teachers cordially, attentive in class lectures, raises hand before speaking, executes assignments diligently.'
+      },
+      overallConduct: {
+        rating: 5,
+        level: 'Outstanding (A+)',
+        punctuality: '99% on-time arrival',
+        uniformEtiquette: 'Impeccable & compliant',
+        campusDiscipline: 'Member of School Discipline Committee'
+      },
+      commendations: ['Peer Mentor Badge', 'Mathematics Quiz Runner-up'],
+      areasToWatch: 'Encourage him to step forward in public speaking and assembly anchoring.'
+    },
+    {
+      studentId: 'std_102',
+      studentName: 'Pooja Sharma',
+      rollNo: 'VIII-008',
+      grade: 'Class VIII Section A',
+      mentorTeacher: 'Mrs. S. Radhika',
+      lastEvaluation: 'Sep 01, 2026',
+      coStudentsBehaviour: {
+        rating: 5,
+        level: 'Friendly & Collaborative',
+        notes: 'Leads study circles, well-liked by classmates, very inclusive during sports and lunch sessions.'
+      },
+      teachersBehaviour: {
+        rating: 5,
+        level: 'Enthusiastic & Inquisitive',
+        notes: 'Asks insightful conceptual questions in science and language classes. Highly respectful.'
+      },
+      overallConduct: {
+        rating: 5,
+        level: 'Outstanding (A+)',
+        punctuality: '100% on-time',
+        uniformEtiquette: 'Perfect adherence',
+        campusDiscipline: 'Class Prefect'
+      },
+      commendations: ['Star Student of the Month', 'Science Fair 1st Prize'],
+      areasToWatch: 'Balancing extracurricular responsibilities with rest time.'
+    },
+    {
+      studentId: 'std_103',
+      studentName: 'V. Sai Kumar',
+      rollNo: 'VIII-022',
+      grade: 'Class VIII Section A',
+      mentorTeacher: 'Mrs. S. Radhika',
+      lastEvaluation: 'Aug 31, 2026',
+      coStudentsBehaviour: {
+        rating: 4,
+        level: 'Good & Cooperative',
+        notes: 'Active in sports teams. Occasionally gets into playful chatter during quiet reading hours.'
+      },
+      teachersBehaviour: {
+        rating: 4,
+        level: 'Polite & Responsive',
+        notes: 'Follows instructions when reminded; polite in addressing staff.'
+      },
+      overallConduct: {
+        rating: 4,
+        level: 'Good (B+)',
+        punctuality: '95% attendance',
+        uniformEtiquette: 'Good',
+        campusDiscipline: 'Regular classroom participant'
+      },
+      commendations: ['Inter-House Kho-Kho Winner'],
+      areasToWatch: 'Needs to maintain silent focus during self-study periods without prompting.'
+    },
+    {
+      studentId: 'std_107',
+      studentName: 'G. Akhil',
+      rollNo: 'IX-005',
+      grade: 'Class IX Section A',
+      mentorTeacher: 'Mr. B. Narsaiah',
+      lastEvaluation: 'Aug 30, 2026',
+      coStudentsBehaviour: {
+        rating: 3,
+        level: 'Quiet & Reserved',
+        notes: 'Tends to stay isolated during lunch breaks. Teachers are fostering peer buddy pairings to encourage social bonding.'
+      },
+      teachersBehaviour: {
+        rating: 4,
+        level: 'Polite & Soft-Spoken',
+        notes: 'Very polite, but hesitant to raise hands even when struggling with concepts.'
+      },
+      overallConduct: {
+        rating: 4,
+        level: 'Satisfactory (B)',
+        punctuality: '91% attendance',
+        uniformEtiquette: 'Clean & neat',
+        campusDiscipline: 'Well-behaved'
+      },
+      commendations: ['Perfect Library Attendance'],
+      areasToWatch: 'Build classroom confidence; encourage speaking up during open discussions.'
+    }
+  ],
+
+  // 2) GPA GRADE & SUBJECT-WISE PARAMETERS & GAPS PLUGGING
+  gpaSubjectDiagnostics: [
+    {
+      studentId: 'std_101',
+      studentName: 'Rahul Reddy',
+      rollNo: 'VIII-014',
+      grade: 'Class VIII Section A',
+      overallGpa: 9.4,
+      overallRank: '2nd in Class',
+      subjects: [
+        {
+          subject: '📐 Mathematics',
+          teacher: 'Mrs. S. Radhika',
+          fa1: 19, fa2: 20, fa3: 18, fa4: 19, // out of 20
+          sa1: 76, // out of 80
+          slipTests: 95, // %
+          projectWork: '10/10 (Model on Pythagorean Theorem)',
+          totalScore: 94,
+          gpa: 9.6,
+          grade: 'A1',
+          strengths: 'Geometric proofs, algebraic equations, fast mental calculation.',
+          identifiedGap: 'Speed during 4-mark multi-step word problems involving surface areas.',
+          remedialAction: 'Plugged via 3 weekly worksheet speed drills on 3D geometry word problems.',
+          gapStatus: 'In Progress (80% Plugged)'
+        },
+        {
+          subject: '🔬 Physical Science',
+          teacher: 'Mr. P. Srinivas',
+          fa1: 18, fa2: 19, fa3: 18, fa4: 19,
+          sa1: 72,
+          slipTests: 91,
+          projectWork: '9.5/10 (Optics Ray Diagram Album)',
+          totalScore: 91,
+          gpa: 9.2,
+          grade: 'A1',
+          strengths: 'Optics, mirror formulas, conceptual ray diagrams.',
+          identifiedGap: 'Numerical calculations involving lens focal lengths and sign conventions.',
+          remedialAction: 'Provide formula cheat sheet with Cartesian sign convention diagrams.',
+          gapStatus: 'Plugged Successfully'
+        },
+        {
+          subject: '🌿 Biological Science',
+          teacher: 'Ms. K. Lavanya',
+          fa1: 19, fa2: 18, fa3: 19, fa4: 20,
+          sa1: 75,
+          slipTests: 93,
+          projectWork: '10/10 (Cell Organelle Herbarium)',
+          totalScore: 93,
+          gpa: 9.4,
+          grade: 'A1',
+          strengths: 'Cell structure labeling, botanical nomenclature.',
+          identifiedGap: 'Needs practice in drawing neat neat microscopic cross-section diagrams with proper scaling.',
+          remedialAction: 'Daily 10-minute sketching of plant/animal tissues in science workbook.',
+          gapStatus: 'In Progress'
+        },
+        {
+          subject: '📖 English Literature & Grammar',
+          teacher: 'Mr. M. Ramesh',
+          fa1: 19, fa2: 19, fa3: 18, fa4: 18,
+          sa1: 73,
+          slipTests: 90,
+          projectWork: '9/10 (Creative Short Story Anthology)',
+          totalScore: 90,
+          gpa: 9.1,
+          grade: 'A1',
+          strengths: 'Reading comprehension, narrative essay composition.',
+          identifiedGap: 'Active/passive voice transformations in complex compound sentences.',
+          remedialAction: 'Grammar practice module on sentence transformation given in homework binder.',
+          gapStatus: 'Plugged Successfully'
+        },
+        {
+          subject: '📜 Social Studies',
+          teacher: 'Mr. B. Narsaiah',
+          fa1: 19, fa2: 19, fa3: 19, fa4: 19,
+          sa1: 74,
+          slipTests: 92,
+          projectWork: '10/10 (Telangana River Basin & Irrigation Project)',
+          totalScore: 92,
+          gpa: 9.3,
+          grade: 'A1',
+          strengths: 'Cartography, climatic zones, civic rights and duties.',
+          identifiedGap: 'Long answer essay structuring under 15 minutes.',
+          remedialAction: 'Use bullet-point answer frameworks and chronological timelines.',
+          gapStatus: 'In Progress (70% Plugged)'
+        },
+        {
+          subject: '🖋️ Telugu (First Language)',
+          teacher: 'Mr. C. Venkataiah',
+          fa1: 20, fa2: 19, fa3: 19, fa4: 20,
+          sa1: 77,
+          slipTests: 96,
+          projectWork: '10/10 (Telangana Folk Poets Recitation)',
+          totalScore: 96,
+          gpa: 9.8,
+          grade: 'A1',
+          strengths: 'Classical poem recitation, Sandhi & Samasam grammar mastery.',
+          identifiedGap: 'Occasional spelling corrections in Ottu (compound consonants).',
+          remedialAction: 'Self-corrected via weekly Telugu dictation notebook review.',
+          gapStatus: 'Plugged Successfully'
+        },
+        {
+          subject: '🇮🇳 Hindi (Second Language)',
+          teacher: 'Mrs. D. Sunitha',
+          fa1: 18, fa2: 18, fa3: 18, fa4: 18,
+          sa1: 71,
+          slipTests: 88,
+          projectWork: '9/10 (Hindi Muhavare Chart)',
+          totalScore: 88,
+          gpa: 8.9,
+          grade: 'A2',
+          strengths: 'Story understanding, oral communication.',
+          identifiedGap: 'Gender agreement rules (Ling and Vachan) in past tense verbs.',
+          remedialAction: 'Daily reading of 1 Hindi editorial and writing 5 sentences with correct gender agreement.',
+          gapStatus: 'In Progress (60% Plugged)'
+        }
+      ]
+    }
+  ],
+
+  // 3) FEEDBACK METRICS (Subject-wise & Class-wise breakdown)
+  feedbackMetrics: {
+    overallSchoolSatisfaction: 94.2, // %
+    totalDailyFeedbacksSubmitted: 482,
+    averagePacingScore: 4.8, // out of 5
+    subjectWiseMetrics: [
+      { subject: 'Mathematics', avgRating: 4.9, totalReviews: 124, perfectPace: 92, doubtsReported: 8, satisfactionRate: 96 },
+      { subject: 'Physical Science', avgRating: 4.7, totalReviews: 98, perfectPace: 88, doubtsReported: 14, satisfactionRate: 93 },
+      { subject: 'Biological Science', avgRating: 4.8, totalReviews: 86, perfectPace: 91, doubtsReported: 6, satisfactionRate: 95 },
+      { subject: 'English', avgRating: 4.8, totalReviews: 76, perfectPace: 94, doubtsReported: 4, satisfactionRate: 96 },
+      { subject: 'Social Studies', avgRating: 4.6, totalReviews: 64, perfectPace: 85, doubtsReported: 11, satisfactionRate: 90 },
+      { subject: 'Telugu', avgRating: 4.9, totalReviews: 54, perfectPace: 96, doubtsReported: 3, satisfactionRate: 98 }
+    ],
+    classWiseMetrics: [
+      { grade: 'Class X Section A', avgRating: 4.9, attendancePct: 97.4, homeworkCompletion: 98, satisfaction: 96, status: 'Top Academic Benchmark' },
+      { grade: 'Class X Section B', avgRating: 4.7, attendancePct: 95.1, homeworkCompletion: 94, satisfaction: 92, status: 'Board Focus Class' },
+      { grade: 'Class IX Section A', avgRating: 4.8, attendancePct: 96.0, homeworkCompletion: 95, satisfaction: 94, status: 'High Performance' },
+      { grade: 'Class IX Section B', avgRating: 4.6, attendancePct: 93.8, homeworkCompletion: 91, satisfaction: 89, status: 'Remedial Support Active' },
+      { grade: 'Class VIII Section A', avgRating: 4.9, attendancePct: 98.2, homeworkCompletion: 97, satisfaction: 97, status: 'Model Classroom 2026' },
+      { grade: 'Class VIII Section B', avgRating: 4.7, attendancePct: 94.6, homeworkCompletion: 93, satisfaction: 91, status: 'Steady Progress' }
+    ]
+  },
+
+  // 4) TEACHING METHODOLOGY: OPINION COLLECTION -> GAPS -> WHAT IS TO BE DONE FOR IMPROVEMENT
+  teachingMethodologyData: [
+    {
+      id: 'tm_01',
+      subject: '📐 Mathematics (Class VIII & IX)',
+      teacher: 'Mrs. S. Radhika',
+      methodologyUsed: 'Visual Concept Board + Real-world Geometric Models + Interactive Formula Derivation',
+      studentOpinions: [
+        '“Visual proof of algebraic identities using square cutouts helped me understand why (a+b)² = a² + 2ab + b² without memorizing.” — Rahul Reddy',
+        '“Board handwriting is very neat. Request 5 more minutes at the end of class for solving doubts individually.” — Pooja Sharma'
+      ],
+      identifiedGaps: [
+        'Time crunch: In 45-minute periods, slower students need more time for step-by-step notebook copying.',
+        'Word problems require bilingual clarification (Telugu/English terms) for a few rural-background students.'
+      ],
+      improvementActionPlan: [
+        'Allocate 35 minutes for concept & practice, and reserve the final 10 minutes strictly for circulating and clearing individual doubts.',
+        'Provide bilingual glossary cards for geometric terms (e.g. Hypotenuse = కర్ణము, Congruent = సర్వసమానము).',
+        'Conduct Friday peer-tutoring circles where high-scoring students partner with peers.'
+      ],
+      status: 'Implemented & Active'
+    },
+    {
+      id: 'tm_02',
+      subject: '🔬 Physical Science (Class VIII & X)',
+      teacher: 'Mr. P. Srinivas',
+      methodologyUsed: 'Demonstration-First Approach + Laboratory Apparatus in Classroom + PPT Video Clips',
+      studentOpinions: [
+        '“Seeing the laser beam refract through the glass prism made refraction unforgettable!” — V. Sai Kumar',
+        '“Formulas are clear, but ray diagram drawing on paper takes me too long during slip tests.” — K. Divya'
+      ],
+      identifiedGaps: [
+        'Students can observe phenomena easily, but lag in mathematical derivation of lens and mirror formulas under timed test conditions.',
+        'Lack of individual hands-on apparatus handling due to 40 students per period.'
+      ],
+      improvementActionPlan: [
+        'Split the 40-student class into 4 lab rotation groups of 10 students each during Wednesday double-periods.',
+        'Distribute step-by-step ray diagram stencil practice sheets.',
+        'Upload 2-minute recap experiment video links for home revision.'
+      ],
+      status: 'In Progress (Target: Sep 10)'
+    },
+    {
+      id: 'tm_03',
+      subject: '📜 Social Studies (Class IX & X)',
+      teacher: 'Mr. B. Narsaiah',
+      methodologyUsed: 'Historical Storytelling + Wall Map Demonstrations + Group Debates on Current Affairs',
+      studentOpinions: [
+        '“The story of the freedom struggle is exciting, but memorizing exact treaty dates and constitutional amendment numbers is hard.” — G. Akhil',
+        '“Debates in class make civic rights very interesting.” — S. Ramu'
+      ],
+      identifiedGaps: [
+        'Too much textual lecturing; need more visual timelines and infographics on blackboard.',
+        'Map-pointing skills require tactile practice rather than just wall-map pointing.'
+      ],
+      improvementActionPlan: [
+        'Introduce printed blank outline maps for every student twice a week for instant hands-on practice.',
+        'Create a chronological timeline chart on the classroom side-wall for quick visual memory retention.',
+        'Implement "5-minute Daily Current Affairs Bulletin" led by rotation students.'
+      ],
+      status: 'Implemented'
+    }
+  ],
+
+  // 5) FACILITIES FOR STUDENTS (Toilets, Drinking Water, Maintenance, Hygiene Audit)
+  campusFacilitiesData: {
+    lastHygieneAudit: 'Sep 02, 2026 (08:30 AM by Health Committee)',
+    overallCampusHygieneScore: 95.8, // %
+    facilityNodes: [
+      {
+        id: 'fac_01',
+        name: 'RO Drinking Water Plant (Ground Floor)',
+        category: 'Drinking Water',
+        status: 'Operational & Excellent',
+        hygieneRating: 5,
+        lastCleaned: 'Today at 06:30 AM',
+        tdsLevel: '95 PPM (Ideal Drinking Standards)',
+        phLevel: '7.2 (Neutral Safe)',
+        chillerFunctioning: 'Active (20°C cool fresh water)',
+        maintenanceNotes: 'Filter cartridge replaced on Aug 25, 2026. Next service due Oct 25.'
+      },
+      {
+        id: 'fac_02',
+        name: 'RO Drinking Water Point (First Floor Secondary Wing)',
+        category: 'Drinking Water',
+        status: 'Operational',
+        hygieneRating: 5,
+        lastCleaned: 'Today at 07:00 AM',
+        tdsLevel: '102 PPM (Safe)',
+        phLevel: '7.1',
+        chillerFunctioning: 'Active',
+        maintenanceNotes: 'Clean surroundings, zero stagnant water puddles.'
+      },
+      {
+        id: 'fac_03',
+        name: 'Boys Restroom Complex (Ground Floor)',
+        category: 'Sanitation & Toilets',
+        status: 'Operational & Clean',
+        hygieneRating: 4.8,
+        lastCleaned: 'Today at 11:30 AM (Post-Break Clean)',
+        runningWaterSupply: '24/7 Overhead Tank Flow with Booster',
+        soapDispensers: '3 Units Filled (Dettol Antiseptic)',
+        ventilationFans: '2 Exhaust Fans Operational',
+        maintenanceNotes: 'Sanitized with phenyl solution three times daily (07:30 AM, 11:30 AM, 03:30 PM).'
+      },
+      {
+        id: 'fac_04',
+        name: 'Girls Restroom Complex (First Floor)',
+        category: 'Sanitation & Toilets',
+        status: 'Operational & Immaculate',
+        hygieneRating: 5.0,
+        lastCleaned: 'Today at 11:30 AM (Post-Break Clean)',
+        runningWaterSupply: 'Continuous 24/7 Flow',
+        soapDispensers: '4 Units Filled',
+        incineratorUnit: 'Electric Sanitary Incinerator Active & Serviced',
+        maintenanceNotes: 'Full privacy doors, mirrors clean, emergency sanitary pads available in staff room.'
+      },
+      {
+        id: 'fac_05',
+        name: 'Junior Science & Physics Laboratory',
+        category: 'Academic Facilities',
+        status: 'Operational',
+        hygieneRating: 4.9,
+        lastCleaned: 'Sep 01, 2026',
+        equipmentAudit: 'Optics benches, prisms, galvanic meters tested and calibrated',
+        fireExtinguisher: 'Valid till March 2027 (CO2 & Dry Powder)',
+        maintenanceNotes: 'First-aid box refilled with burnol, bandages, and antiseptic.'
+      },
+      {
+        id: 'fac_06',
+        name: 'Computer & ICT Lab (25 Systems)',
+        category: 'Digital Infrastructure',
+        status: 'Operational',
+        hygieneRating: 5.0,
+        lastCleaned: 'Today at 08:00 AM',
+        upsBackup: '10 KVA Online UPS (4 hours backup)',
+        internetBroadband: 'Bsnl Bharat Fiber 100 Mbps Optical',
+        maintenanceNotes: 'All 25 machines updated with educational scratch & python compilers.'
+      }
+    ],
+    maintenanceTickets: [
+      {
+        ticketId: 'TKT-2026-088',
+        facility: 'Boys Restroom - Ground Floor Tap 3',
+        reportedBy: 'Rahul Reddy (Student Class VIII A)',
+        date: 'Sep 02, 2026',
+        issue: 'Slow water pressure in Tap #3 sink.',
+        priority: 'Medium',
+        status: 'Resolved by Campus Electrician (Augmenter valve adjusted at 12:15 PM)',
+        assignedTo: 'Mr. Mallesh (Campus Caretaker)'
+      },
+      {
+        ticketId: 'TKT-2026-089',
+        facility: 'Room 204 (Class IX B) Tube Light',
+        reportedBy: 'Mr. B. Narsaiah (Teacher)',
+        date: 'Sep 01, 2026',
+        issue: 'One LED batten flickering near blackboard.',
+        priority: 'Low',
+        status: 'Resolved (LED batten replaced on Sep 01 04:30 PM)',
+        assignedTo: 'Electrician Team'
+      },
+      {
+        ticketId: 'TKT-2026-090',
+        facility: 'School Playground East Drinking Water Fountain',
+        reportedBy: 'Physical Education Teacher (Mr. Raju)',
+        date: 'Aug 31, 2026',
+        issue: 'Drainage pipe mesh accumulated dry fallen leaves.',
+        priority: 'Low',
+        status: 'Resolved (Mesh cleaned and washed)',
+        assignedTo: 'Grounds Maintenance Staff'
+      }
+    ]
+  },
+
+  // 6) UNUSUAL INCIDENTS LOG ("Anything unusual happened" - Safety, Medical, Discipline Anomaly)
+  unusualIncidents: [
+    {
+      id: 'inc_101',
+      date: '2026-09-02',
+      time: '11:45 AM (Short Recess)',
+      location: 'Primary School Ground Corner near Gulmohar Tree',
+      reportedBy: 'Mrs. S. Radhika (Teacher on Recess Duty)',
+      natureOfIncident: 'Minor Playground Scrape / First Aid',
+      severity: 'Low',
+      description: 'Master K. Harish (Class V B) tripped while playing tag and grazed his left knee on the lawn turf.',
+      immediateActionTaken: 'Immediately escorted to First Aid Room. Wound washed with Dettol, antiseptic Betadine ointment and sterile bandage applied by Duty Teacher. Student given water and rest for 15 minutes before returning to class happily.',
+      parentInformed: 'Yes (Mother telephoned via office intercom at 12:05 PM; assured that injury was minor).',
+      principalReviewed: true,
+      principalSignOff: 'Reviewed by Headmaster K. Rajesham. Good prompt handling by duty staff. Caretaker instructed to level the turf corner.'
+    },
+    {
+      id: 'inc_102',
+      date: '2026-09-01',
+      time: '02:30 PM (Period 6)',
+      location: 'Class X Section B Classroom',
+      reportedBy: 'Mr. P. Srinivas (Science Teacher)',
+      natureOfIncident: 'Weather / Power Anomaly & Safe Transition',
+      severity: 'Low',
+      description: 'Sudden thundershower caused momentary Cherial town feeder power surge triggering the school main circuit breaker.',
+      immediateActionTaken: '10 KVA Online UPS kicked in seamlessly. Natural daylight in high-ceiling classrooms kept students completely calm and focused. School generator started within 3 minutes by caretaker.',
+      parentInformed: 'No (Routine campus management, zero hazard).',
+      principalReviewed: true,
+      principalSignOff: 'Reviewed by Headmaster K. Rajesham. Commended smooth electrical auto-switch.'
+    },
+    {
+      id: 'inc_103',
+      date: '2026-08-28',
+      time: '08:45 AM (Morning Arrival)',
+      location: 'School Bus Route #2 (Mustabad-Cherial)',
+      reportedBy: 'Mr. Anjaiah (Bus Driver) & Conductor',
+      natureOfIncident: 'Traffic Detour / Mild Bus Delay',
+      severity: 'Medium',
+      description: 'Culvert maintenance near Pedda Cheru caused a 15-minute traffic bottleneck on the state highway.',
+      immediateActionTaken: 'Conductor sent automated SMS broadcast to all 28 onboard students\' parents explaining the route diversion. Bus arrived safely on campus at 08:52 AM with all children safe.',
+      parentInformed: 'Yes (Instant SMS broadcast dispatched to 28 parents).',
+      principalReviewed: true,
+      principalSignOff: 'Reviewed by Headmaster K. Rajesham. Route timing readjusted by 10 minutes during construction.'
+    }
+  ],
+
+  // 7) TEACHER-STUDENT RELATIONS IN ALL CLASSES
+  teacherStudentRelations: [
+    {
+      grade: 'Class VIII Section A',
+      classMentor: 'Mrs. S. Radhika',
+      totalStudents: 38,
+      rapportIndex: 9.8, // out of 10
+      approachabilityRating: 'Extremely High',
+      classroomClimate: 'Warm, highly participative, students feel safe asking doubts and volunteering answers.',
+      mentorComments: 'High trust environment. Students actively share both academic queries and personal aspirations.',
+      principalAudit: 'Model classroom rapport. Zero intimidation, encouraging pedagogy observed during Headmaster rounds.'
+    },
+    {
+      grade: 'Class X Section A',
+      classMentor: 'Mr. P. Srinivas',
+      totalStudents: 42,
+      rapportIndex: 9.6,
+      approachabilityRating: 'Very High',
+      classroomClimate: 'Focused, goal-oriented, supportive mentorship for upcoming SSC Board Examination.',
+      mentorComments: 'Students look up to teachers as mentors; evening study counseling well-received.',
+      principalAudit: 'Excellent mentor-student alignment. Stress-free board prep climate.'
+    },
+    {
+      grade: 'Class IX Section A',
+      classMentor: 'Mr. B. Narsaiah',
+      totalStudents: 36,
+      rapportIndex: 9.2,
+      approachabilityRating: 'High',
+      classroomClimate: 'Curious, lively discussions during social sciences and language hours.',
+      mentorComments: 'Working on encouraging 3 quieter students in middle rows to speak up freely.',
+      principalAudit: 'Good camaraderie. Teacher maintains a respectful and open dialogue.'
+    },
+    {
+      grade: 'Class IX Section B',
+      classMentor: 'Ms. K. Lavanya',
+      totalStudents: 35,
+      rapportIndex: 8.9,
+      approachabilityRating: 'Good & Improving',
+      classroomClimate: 'Disciplined; students requested more interactive quiz activities to build stronger connection.',
+      mentorComments: 'Organizing bi-weekly science quiz competitions to foster team bonding.',
+      principalAudit: 'Positive trend. Recommended interactive group activities.'
+    },
+    {
+      grade: 'Class VI Section A',
+      classMentor: 'Mr. M. Ramesh',
+      totalStudents: 32,
+      rapportIndex: 9.7,
+      approachabilityRating: 'Warm & Nurturing',
+      classroomClimate: 'Loving transition from primary to upper primary; students feel cared for and nurtured.',
+      mentorComments: 'Morning circle time helps students express feelings and build strong relationships.',
+      principalAudit: 'Exemplary foundational care.'
+    }
+  ],
+
+  // 8) HOW THE CLASSES ARE GOING ON (Pacing, Syllabus Coverage, Daily Progress)
+  classSyllabusPacing: [
+    {
+      grade: 'Class VIII Section A',
+      academicTerm: 'Term 1 (SCERT Telangana Syllabus)',
+      overallPacingStatus: 'On Track (100% Aligned with SCERT Calendar)',
+      syllabusProgressPct: 62.5, // %
+      targetForCurrentMonth: 60.0,
+      dailyDiaryToday: [
+        { period: 'Period 1 (09:00 - 09:45)', subject: '📐 Mathematics', topic: 'ASA & RHS Triangle Congruence Theorems', status: 'Completed with proof exercises in class workbook' },
+        { period: 'Period 2 (09:50 - 10:35)', subject: '🔬 Physical Science', topic: 'Concave Mirror Ray Diagrams & Focal Point', status: 'Practical mirror demonstration completed' },
+        { period: 'Period 3 (10:45 - 11:30)', subject: '📖 English', topic: 'Direct & Indirect Speech Conversion Practice', status: 'Workbook exercise questions 1 to 15 solved' },
+        { period: 'Period 4 (11:30 - 12:15)', subject: '🌿 Biological Science', topic: 'Plant vs Animal Cell Microscopic Examination', status: 'Slide mounting and labeling completed' },
+        { period: 'Period 5 (01:00 - 01:45)', subject: '💻 Computer Science', topic: 'Python Conditionals (if-else branching)', status: 'Hands-on lab programs executed' },
+        { period: 'Period 6 (01:45 - 02:30)', subject: '📜 Social Studies', topic: 'Telangana Physiography and Plateau Geology', status: 'Map work completed on Telangana outline' },
+        { period: 'Period 7 (02:40 - 03:20)', subject: '🖋️ Telugu', topic: 'Poem Comprehension & Grammar Sandhi', status: 'Recitation and word-break drill' },
+        { period: 'Period 8 (03:20 - 04:00)', subject: '⚽ Physical Education', topic: 'Kho-Kho & Volleyball Drills', status: 'Fitness drills and teamwork games' }
+      ]
+    },
+    {
+      grade: 'Class X Section A',
+      academicTerm: 'Term 1 SSC Board Preparation',
+      overallPacingStatus: 'Ahead of Schedule (+4% Buffer for Board Revision)',
+      syllabusProgressPct: 68.0,
+      targetForCurrentMonth: 64.0,
+      dailyDiaryToday: [
+        { period: 'Period 1', subject: '📐 Mathematics', topic: 'Quadratic Equations Word Problems (Speed & Distance)', status: '10 Board-pattern problems solved' },
+        { period: 'Period 2', subject: '🔬 Physical Science', topic: 'Refraction through Curved Surfaces & Lens Maker Formula', status: 'Derivations completed' },
+        { period: 'Period 3', subject: '📜 Social Studies', topic: 'National Movement in India (Partition & Independence)', status: 'Historical timeline completed' },
+        { period: 'Period 4', subject: '📖 English', topic: 'Letter Writing (Formal Application to Authorities)', status: 'Drafting format reviewed' }
+      ]
+    }
+  ],
+
+  // 9) LEVEL OF SATISFACTIONS OF STUDENTS ON SUBJECT / CLASS WISE
+  studentSatisfactionIndex: {
+    overallIndexScore: 94.6, // %
+    satisfactionBands: {
+      highlySatisfiedPct: 82,
+      satisfiedPct: 15,
+      neutralPct: 3,
+      dissatisfiedPct: 0
+    },
+    parameterRatings: [
+      { parameter: 'Conceptual Clarity in Class', score: 4.8, max: 5, status: 'Excellent' },
+      { parameter: 'Pacing & Speed of Lectures', score: 4.7, max: 5, status: 'Paced Well' },
+      { parameter: 'Teacher Encouragement & Warmth', score: 4.9, max: 5, status: 'Outstanding' },
+      { parameter: 'Doubt Resolution in Class', score: 4.8, max: 5, status: 'Very Responsive' },
+      { parameter: 'Homework Fairness & Workload', score: 4.6, max: 5, status: 'Balanced' },
+      { parameter: 'Lab Practical Demonstrations', score: 4.9, max: 5, status: 'Highly Engaging' },
+      { parameter: 'Fairness in Grading & Marks', score: 4.8, max: 5, status: 'Transparent' }
+    ]
+  },
+
+  // 10) WHERE WE STAND (Institutional Benchmarking & Diagnostic)
+  whereWeStand: {
+    schoolName: 'Vikas Grammar School High School Cherial',
+    udiseCode: '36182100637',
+    districtRank: 'Top 3 Schools in Siddipet District',
+    mandalRank: 'Rank #1 in Cherial Mandal',
+    institutionalHealthScore: 94.8, // out of 100
+    pillars: [
+      { pillar: 'Academic Excellence (SSC & FA Results)', schoolScore: 96, districtAvg: 81, stateBenchmark: 80, badge: 'Pacesetter' },
+      { pillar: 'Student Conduct & Campus Discipline', schoolScore: 97, districtAvg: 84, stateBenchmark: 82, badge: 'Exemplary' },
+      { pillar: 'Campus Facilities & Hygiene (Water/Toilets)', schoolScore: 95, districtAvg: 76, stateBenchmark: 78, badge: 'A+ Grade' },
+      { pillar: 'Teacher-Student Relations & Climate', schoolScore: 96, districtAvg: 80, stateBenchmark: 80, badge: 'High Rapport' },
+      { pillar: 'Syllabus Pacing & Timely Coverage', schoolScore: 98, districtAvg: 82, stateBenchmark: 85, badge: 'Ahead of Target' },
+      { pillar: 'Parent Trust & Communication Index', schoolScore: 94, districtAvg: 75, stateBenchmark: 75, badge: 'Active Partner' }
+    ],
+    accreditationBadges: [
+      '🏆 SCERT Telangana High Performance School 2025-26',
+      '💧 100% Pure RO Certified Safe Drinking Water Campus',
+      '🛡️ Clean Restroom & Child Hygiene Safety Verified',
+      '🎓 100% SSC Pass Record for 8 Consecutive Years'
+    ]
+  },
+
+  // 11) WHERE WE NEED TO IMPROVE (Actionable Improvement Matrix & Targeted Intervention Plan)
+  whereToImprove: [
+    {
+      id: 'imp_01',
+      category: 'Academic & Learning Gaps',
+      priority: 'High Priority',
+      area: 'Speed & Presentation in 4-Mark Mathematics & Science Word Problems',
+      currentIssue: 'While concepts are clear, about 15% of Class IX & X students run short of time on multi-step calculations.',
+      actionItem: 'Institute twice-weekly 20-minute timed speed worksheets and model answer sheet display on notice boards.',
+      targetOwner: 'Mrs. S. Radhika & Math Faculty',
+      dueDate: 'Sep 25, 2026',
+      progressPct: 75,
+      status: 'In Progress'
+    },
+    {
+      id: 'imp_02',
+      category: 'Campus Facilities',
+      priority: 'Medium Priority',
+      area: 'Solar Water Heater & Rainwater Harvesting Rejuvenation',
+      currentIssue: 'Groundwater recharge pit desilting required before next monsoon showers.',
+      actionItem: 'Contract grounds crew to desilt the 3 campus recharge pits and inspect pipe inlets.',
+      targetOwner: 'Campus Caretaker & Management Committee',
+      dueDate: 'Oct 05, 2026',
+      progressPct: 60,
+      status: 'In Progress'
+    },
+    {
+      id: 'imp_03',
+      category: 'Teaching Methodology',
+      priority: 'High Priority',
+      area: 'Bilingual Scientific Concept Bridging for Slower Learners',
+      currentIssue: 'A few students transitioning from rural feeder primary schools hesitate with English terminology in Physics.',
+      actionItem: 'Provide printed bilingual flash cards (Telugu-English) for all technical scientific definitions.',
+      targetOwner: 'Mr. P. Srinivas & Science Lead',
+      dueDate: 'Sep 15, 2026',
+      progressPct: 85,
+      status: 'Near Completion'
+    },
+    {
+      id: 'imp_04',
+      category: 'Student Development',
+      priority: 'Medium Priority',
+      area: 'Public Speaking & English Debating Confidence in Assemblies',
+      currentIssue: 'Students excel in written tests but show stage hesitation during morning assembly presentations.',
+      actionItem: 'Implement daily rotation 2-minute "Student Thought & Discovery Talk" during morning assembly.',
+      targetOwner: 'Mr. M. Ramesh (English Lead) & Cultural Committee',
+      dueDate: 'Sep 20, 2026',
+      progressPct: 70,
+      status: 'In Progress'
+    },
+    {
+      id: 'imp_05',
+      category: 'Incident & Safety Monitoring',
+      priority: 'Continuous',
+      area: 'School Bus Real-time GPS Tracker Parent Notification Gateway',
+      currentIssue: 'Parents requested automated SMS when school bus is 2 stops away in morning/evening.',
+      actionItem: 'Calibrate telematics SMS gateway with local cellular provider for route #1, #2, and #3.',
+      targetOwner: 'Transport In-charge & Tech Lead',
+      dueDate: 'Sep 30, 2026',
+      progressPct: 90,
+      status: 'Testing Stage'
     }
   ]
 };
-
 
