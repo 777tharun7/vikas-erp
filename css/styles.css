@@ -372,22 +372,55 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 24px;
+  padding: 0 16px;
   width: 100%;
   flex-shrink: 0;
   position: relative;
   z-index: 10;
+  gap: 12px;
+  box-sizing: border-box;
 }
 
 .nav-left {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 10px;
+  flex-shrink: 1;
+  min-width: 0;
+}
+
+.nav-website-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fffbeb;
+  color: #b45309;
+  border: 1px solid #fde68a;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.nav-website-btn:hover {
+  background: #fef3c7;
+  border-color: #f59e0b;
+  transform: translateY(-1px);
+}
+
+body.theme-dark .nav-website-btn {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fcd34d;
+  border-color: rgba(245, 158, 11, 0.3);
 }
 
 .icon-btn {
-  width: 38px;
-  height: 38px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -395,6 +428,7 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--text-secondary);
   transition: background-color 0.15s ease;
   position: relative;
+  flex-shrink: 0;
 }
 
 .icon-btn:hover {
@@ -404,9 +438,12 @@ h1, h2, h3, h4, h5, h6 {
 /* SEARCH BAR */
 .search-bar {
   position: relative;
-  width: 340px;
+  width: 200px;
+  max-width: 220px;
+  min-width: 130px;
   display: flex;
   align-items: center;
+  flex-shrink: 1;
 }
 
 .search-bar input {
@@ -414,9 +451,9 @@ h1, h2, h3, h4, h5, h6 {
   background-color: var(--bg-input);
   border: 1px solid var(--border-color);
   border-radius: 20px;
-  padding: 8px 36px 8px 36px;
+  padding: 7px 32px 7px 32px;
   color: var(--text-primary);
-  font-size: 0.83rem;
+  font-size: 0.8rem;
   outline: none;
   transition: all 0.2s ease;
 }
@@ -428,20 +465,20 @@ h1, h2, h3, h4, h5, h6 {
 
 .search-icon {
   position: absolute;
-  left: 12px;
-  width: 16px;
-  height: 16px;
+  left: 10px;
+  width: 15px;
+  height: 15px;
   color: var(--text-muted);
 }
 
 .kbd-badge {
   position: absolute;
-  right: 12px;
+  right: 10px;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 4px;
-  padding: 2px 6px;
-  font-size: 0.65rem;
+  padding: 2px 5px;
+  font-size: 0.62rem;
   color: var(--text-muted);
   font-weight: 700;
 }
@@ -449,23 +486,25 @@ h1, h2, h3, h4, h5, h6 {
 /* ROLE PERSONALITY SWITCHER PILLS */
 .role-personality-pills {
   background-color: var(--bg-card-sub);
-  padding: 4px;
+  padding: 3px;
   border-radius: 24px;
   display: flex;
-  gap: 4px;
+  gap: 2px;
   border: 1px solid var(--border-color);
+  flex-shrink: 0;
 }
 
 .role-pill {
-  padding: 6px 16px;
+  padding: 5px 11px;
   border-radius: 20px;
-  font-size: 0.8rem;
+  font-size: 0.76rem;
   font-weight: 700;
   color: var(--text-secondary);
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .role-pill.active {
@@ -477,7 +516,9 @@ h1, h2, h3, h4, h5, h6 {
 .nav-right {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
+  flex-shrink: 0;
+  margin-left: auto;
 }
 
 .badge-dot {
@@ -499,7 +540,10 @@ h1, h2, h3, h4, h5, h6 {
 .user-pill {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  flex-shrink: 0;
+  white-space: nowrap;
+  padding-right: 4px;
 }
 
 .user-avatar {
@@ -508,23 +552,46 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid var(--indigo);
+  flex-shrink: 0;
 }
 
 .user-info {
   display: flex;
   flex-direction: column;
+  white-space: nowrap;
 }
 
 .user-name {
-  font-size: 0.85rem;
+  font-size: 0.84rem;
   font-weight: 800;
-  line-height: 1.1;
+  line-height: 1.15;
   color: var(--text-primary);
+  white-space: nowrap;
 }
 
 .user-role {
   font-size: 0.7rem;
   color: var(--text-muted);
+  white-space: nowrap;
+}
+
+@media (max-width: 1280px) {
+  .search-bar {
+    width: 160px;
+  }
+  .role-pill {
+    padding: 4px 9px;
+    font-size: 0.74rem;
+  }
+}
+
+@media (max-width: 1100px) {
+  .nav-website-btn span {
+    display: none;
+  }
+  .search-bar {
+    width: 130px;
+  }
 }
 
 /* CONTENT VIEWPORT */
