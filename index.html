@@ -18,7 +18,10 @@
 </head>
 <body class="theme-light role-principal">
 
-  <div class="app-container">
+  <!-- PUBLIC SCHOOL WEBSITE CONTAINER (SHOWN TO NEW VISITORS) -->
+  <div id="publicWebsiteView" class="pub-site-wrapper" style="display:block;"></div>
+
+  <div class="app-container" id="appContainer" style="display:none;">
 
     <!-- LEFT SIDEBAR (DARK THEME ACCORDING TO MOCKUP) -->
     <aside class="sidebar" id="sidebar">
@@ -48,6 +51,13 @@
             <div class="school-udise-badge">UDISE: 36182100637</div>
           </div>
         </div>
+      </div>
+
+      <!-- PUBLIC WEBSITE JUMP BUTTON -->
+      <div style="padding: 10px 16px 4px 16px;">
+        <button type="button" onclick="window.showPublicWebsite()" style="width:100%; display:flex; align-items:center; justify-content:center; gap:8px; background:linear-gradient(135deg, #f59e0b, #d97706); color:#ffffff; border:none; padding:9px 12px; border-radius:10px; font-weight:700; font-size:0.8rem; cursor:pointer; box-shadow:0 4px 12px rgba(217,119,6,0.25);">
+          <i data-lucide="globe" style="width:15px; height:15px;"></i> 🌐 School Website / Home
+        </button>
       </div>
 
       <!-- SIDEBAR NAV LIST -->
@@ -84,6 +94,10 @@
             <i data-lucide="menu"></i>
           </button>
           
+          <button type="button" onclick="window.showPublicWebsite()" style="display:inline-flex; align-items:center; gap:6px; background:#fffbeb; color:#b45309; border:1px solid #fde68a; padding:6px 14px; border-radius:20px; font-weight:700; font-size:0.8rem; cursor:pointer; box-shadow:none; flex-shrink:0;">
+            <i data-lucide="globe" style="width:14px; height:14px;"></i> School Website
+          </button>
+
           <div class="search-bar">
             <i data-lucide="search" class="search-icon"></i>
             <input type="text" id="globalSearchInput" placeholder="Search students, staff, classes, enquiries..." autocomplete="off">

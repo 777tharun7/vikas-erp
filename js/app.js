@@ -22,11 +22,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const aiDrawerOverlay = document.getElementById('aiDrawerOverlay');
   const closeAiDrawerBtn = document.getElementById('closeAiDrawerBtn');
 
+  let pubCurrentSlide = 0;
+  let pubCarouselTimer = null;
+
   initApp();
 
   function initApp() {
     setupEventListeners();
-    switchRolePersonality('principal');
+    // Default entry for new visitors: show the Public Home Page!
+    showPublicWebsite();
   }
 
   function setupEventListeners() {
@@ -177,6 +181,13 @@ document.addEventListener('DOMContentLoaded', () => {
       showToast(`Logged weekly hygiene rating: ${parsedScore}%! Overall score updated.`);
       renderFacilitiesIncidentsScreen(activeRole);
     };
+
+    window.showPublicWebsite = showPublicWebsite;
+    window.enterErpPortal = enterErpPortal;
+    window.changeCarouselSlide = changeCarouselSlide;
+    window.setCarouselSlide = setCarouselSlide;
+    window.scrollToPubSection = scrollToPubSection;
+    window.submitPublicAdmissionInquiry = submitPublicAdmissionInquiry;
 
     // Role Pills Switcher in Top Navbar
     document.querySelectorAll('.role-pill').forEach(btn => {
@@ -525,6 +536,8 @@ document.addEventListener('DOMContentLoaded', () => {
       renderLeaveRequestFormScreen();
     } else if (viewId === 'child_attendance') {
       renderChildAttendanceScreen();
+    } else if (viewId === 'public_home') {
+      showPublicWebsite();
     } else {
       renderGenericView(viewId);
     }
@@ -4520,6 +4533,523 @@ document.addEventListener('DOMContentLoaded', () => {
     refreshLucideIcons();
   }
 
+  /* ==========================================================================
+     PUBLIC WEBSITE RENDERER & INTERACTIVE CAROUSEL CONTROLLER
+     ========================================================================== */
+
+  function showPublicWebsite() {
+    const pubView = document.getElementById('publicWebsiteView');
+    const appCont = document.getElementById('appContainer');
+    if (pubView && appCont) {
+      pubView.style.display = 'block';
+      appCont.style.display = 'none';
+      renderPublicHomeScreen();
+      if (typeof window.scrollTo === 'function') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+  }
+
+  function enterErpPortal(role) {
+    if (pubCarouselTimer && typeof clearInterval !== 'undefined') {
+      clearInterval(pubCarouselTimer);
+      pubCarouselTimer = null;
+    }
+    const pubView = document.getElementById('publicWebsiteView');
+    const appCont = document.getElementById('appContainer');
+    if (pubView && appCont) {
+      pubView.style.display = 'none';
+      appCont.style.display = 'flex';
+      if (role) {
+        activeRole = role;
+        document.querySelectorAll('.role-pill').forEach(btn => {
+          btn.classList.toggle('active', btn.getAttribute('data-role') === role);
+        });
+        switchRolePersonality(role);
+      } else {
+        switchRolePersonality(activeRole || 'principal');
+      }
+      showToast(`Welcome to Vikas Grammar School ERP (${(role || activeRole).toUpperCase()} Portal)`);
+    }
+  }
+
+  function changeCarouselSlide(direction) {
+    const slides = MOCK_DATA.publicSchoolData.carouselSlides;
+    pubCurrentSlide = (pubCurrentSlide + direction + slides.length) % slides.length;
+    updateCarouselDom();
+    resetCarouselTimer();
+  }
+
+  function setCarouselSlide(index) {
+    pubCurrentSlide = index;
+    updateCarouselDom();
+    resetCarouselTimer();
+  }
+
+  function updateCarouselDom() {
+    const slideElements = document.querySelectorAll('.hero-slide');
+    const dotElements = document.querySelectorAll('.carousel-dot');
+    slideElements.forEach((s, idx) => {
+      s.classList.toggle('active', idx === pubCurrentSlide);
+    });
+    dotElements.forEach((d, idx) => {
+      d.classList.toggle('active', idx === pubCurrentSlide);
+    });
+  }
+
+  function resetCarouselTimer() {
+    if (typeof setInterval !== 'undefined') {
+      if (pubCarouselTimer && typeof clearInterval !== 'undefined') clearInterval(pubCarouselTimer);
+      pubCarouselTimer = setInterval(() => {
+        changeCarouselSlide(1);
+      }, 5500);
+    }
+  }
+
+  function scrollToPubSection(sectionId) {
+    const sec = document.getElementById(sectionId);
+    if (sec) {
+      sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  function submitPublicAdmissionInquiry(e) {
+    if (e) e.preventDefault();
+    const sName = document.getElementById('inqStudentName')?.value || 'Prospective Student';
+    const pClass = document.getElementById('inqGrade')?.value || 'Class VIII';
+    const pPhone = document.getElementById('inqPhone')?.value || '';
+    const inqId = `INQ-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+    showToast(`🎉 Admission inquiry #${inqId} registered for ${sName} (${pClass})! Admissions desk will call ${pPhone} shortly.`);
+    const form = document.getElementById('publicInquiryForm');
+    if (form) form.reset();
+  }
+
+  function renderPublicHomeScreen() {
+    const pubView = document.getElementById('publicWebsiteView');
+    if (!pubView) return;
+
+    const pData = MOCK_DATA.publicSchoolData;
+    const sch = pData.schoolIdentity;
+    const slides = pData.carouselSlides;
+    const slog = pData.slogansAndNecessity;
+    const abt = pData.aboutUs;
+    const progs = pData.programs;
+    const facils = pData.facilities;
+    const faculties = pData.facultyProfiles;
+
+    pubView.innerHTML = `
+      <!-- TOP STICKY PUBLIC HEADER -->
+      <header class="pub-navbar">
+        <div class="pub-brand" onclick="window.scrollToPubSection('heroCarouselSection')">
+          <div class="pub-brand-logo">🏫</div>
+          <div class="pub-brand-text">
+            <h1>${sch.name}</h1>
+            <p>${sch.location} • UDISE: ${sch.udiseCode}</p>
+          </div>
+        </div>
+
+        <nav>
+          <ul class="pub-nav-links">
+            <li><a class="pub-nav-link" onclick="window.scrollToPubSection('heroCarouselSection')">Home</a></li>
+            <li><a class="pub-nav-link" onclick="window.scrollToPubSection('pubAboutSection')">About Us</a></li>
+            <li><a class="pub-nav-link" onclick="window.scrollToPubSection('pubSlogansSection')">Why Schooling?</a></li>
+            <li><a class="pub-nav-link" onclick="window.scrollToPubSection('pubProgramsSection')">Programs</a></li>
+            <li><a class="pub-nav-link" onclick="window.scrollToPubSection('pubFacilitiesSection')">Facilities</a></li>
+            <li><a class="pub-nav-link" onclick="window.scrollToPubSection('pubFacultySection')">Faculty & Bios</a></li>
+            <li><a class="pub-nav-link" onclick="window.scrollToPubSection('pubAdmissionsSection')">Admissions</a></li>
+          </ul>
+        </nav>
+
+        <div style="display:flex; align-items:center; gap:10px;">
+          <button type="button" onclick="window.enterErpPortal('principal')" class="pub-login-btn">
+            <i data-lucide="lock" style="width:15px; height:15px;"></i> ERP Portal Login
+          </button>
+        </div>
+      </header>
+
+      <!-- HERO CAROUSEL BANNER SECTION (STYLED AS IN REFERENCE IMAGE) -->
+      <section class="hero-carousel-wrapper" id="heroCarouselSection">
+        <div class="hero-carousel-container">
+          ${slides.map((s, idx) => `
+            <div class="hero-slide ${idx === pubCurrentSlide ? 'active' : ''}" style="background-image: url('${s.image}');">
+              <!-- ORGANIC CURVED YELLOW BLOB CONTAINER (LEFT SIDE) -->
+              <div class="hero-organic-blob">
+                <span class="hero-blob-badge">${s.badge}</span>
+                <h2 class="hero-blob-title">${s.title}</h2>
+                <span class="hero-blob-slogan">${s.slogan}</span>
+                <div style="font-size:0.86rem; font-style:italic; color:#fef9c3; margin-bottom:12px; border-left:3px solid #ffffff; padding-left:10px;">
+                  ${s.quote}
+                </div>
+                <p class="hero-blob-desc">${s.description}</p>
+                <div class="hero-blob-actions">
+                  <button type="button" onclick="window.scrollToPubSection('${s.ctaAction === 'programs' ? 'pubProgramsSection' : s.ctaAction === 'facilities' ? 'pubFacilitiesSection' : 'pubFacultySection'}')" class="btn-blob-primary">
+                    ${s.ctaText} →
+                  </button>
+                  <button type="button" onclick="window.enterErpPortal('principal')" class="btn-blob-secondary">
+                    ${s.ctaSecText}
+                  </button>
+                </div>
+              </div>
+            </div>
+          `).join('')}
+
+          <!-- CHEVRON CONTROLS -->
+          <button type="button" class="carousel-btn prev" onclick="window.changeCarouselSlide(-1)" title="Previous Slide">
+            <i data-lucide="chevron-left" style="width:26px; height:26px;"></i>
+          </button>
+          <button type="button" class="carousel-btn next" onclick="window.changeCarouselSlide(1)" title="Next Slide">
+            <i data-lucide="chevron-right" style="width:26px; height:26px;"></i>
+          </button>
+
+          <!-- DOTS INDICATORS -->
+          <div class="carousel-dots">
+            ${slides.map((_, idx) => `
+              <button type="button" class="carousel-dot ${idx === pubCurrentSlide ? 'active' : ''}" onclick="window.setCarouselSlide(${idx})" title="Go to slide ${idx + 1}"></button>
+            `).join('')}
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION: THE SACRED NECESSITY OF SCHOOLING & MOTTO SLOGANS -->
+      <section class="pub-section" id="pubSlogansSection">
+        <div class="slogans-banner">
+          <div class="slogans-banner-telugu">${slog.centralSloganTelugu}</div>
+          <div class="slogans-banner-eng">${slog.centralSloganEnglish}</div>
+          <p style="font-size:0.9rem; color:#92400e; max-width:850px; margin:0 auto; line-height:1.5;">
+            At Vikas Grammar School, we believe that education is not a transactional service, but a lifelong empowerment that unlocks every child's moral, intellectual, and athletic potential.
+          </p>
+
+          <!-- INSPIRATIONAL QUOTES ROW -->
+          <div class="quotes-carousel-grid">
+            ${slog.inspirationalQuotes.map(q => `
+              <div class="quote-pill-card">
+                <div class="quote-pill-text">${q.quote}</div>
+                <div class="quote-pill-author">— ${q.author}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <div class="pub-section-header">
+          <span class="pub-section-badge">Core Foundation</span>
+          <h2 class="pub-section-title">${slog.heading}</h2>
+          <p class="pub-section-subtitle">${slog.subheading}</p>
+        </div>
+
+        <div class="pillars-grid">
+          ${slog.pillars.map(p => `
+            <div class="pillar-card">
+              <div class="pillar-icon-box">
+                <i data-lucide="${p.icon}"></i>
+              </div>
+              <h3 class="pillar-title">${p.title}</h3>
+              <p class="pillar-desc">${p.desc}</p>
+            </div>
+          `).join('')}
+        </div>
+      </section>
+
+      <!-- SECTION: ABOUT US -->
+      <section class="pub-section" id="pubAboutSection">
+        <div class="pub-section-header">
+          <span class="pub-section-badge">Our Heritage & Leadership</span>
+          <h2 class="pub-section-title">${abt.title}</h2>
+          <p class="pub-section-subtitle">${abt.established}</p>
+        </div>
+
+        <div class="about-grid">
+          <div class="about-card-left">
+            <h3 style="font-size:1.3rem; font-weight:800; color:#0f172a; margin-bottom:12px;">22 Years of Rural Educational Excellence</h3>
+            <p style="font-size:0.9rem; color:#475569; line-height:1.6; margin-bottom:16px;">
+              ${abt.overview}
+            </p>
+            <div style="font-size:0.86rem; color:#334155; line-height:1.5; margin-bottom:12px;">
+              <strong>🎯 Institutional Vision:</strong> ${abt.vision}
+            </div>
+            <div style="font-size:0.86rem; color:#334155; line-height:1.5;">
+              <strong>⭐ Institutional Mission:</strong> ${abt.mission}
+            </div>
+
+            <!-- STATS COUNTER -->
+            <div class="about-stats-grid">
+              ${abt.stats.map(st => `
+                <div class="about-stat-box">
+                  <div class="about-stat-val">${st.value}</div>
+                  <div class="about-stat-lbl">${st.label}</div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <!-- HEADMASTER'S MESSAGE BOX -->
+          <div class="about-card-left" style="border:2px solid #fde68a; background:linear-gradient(135deg, #ffffff 0%, #fffbeb 100%);">
+            <div style="display:flex; align-items:center; gap:16px; margin-bottom:16px;">
+              <div style="width:68px; height:68px; border-radius:50%; overflow:hidden; border:2px solid #f59e0b; flex-shrink:0; background:#f1f5f9;">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="Headmaster" style="width:100%; height:100%; object-fit:cover;">
+              </div>
+              <div>
+                <h4 style="font-size:1.15rem; font-weight:800; color:#0f172a; margin:0;">${abt.headmasterMessage.name}</h4>
+                <div style="font-size:0.82rem; font-weight:700; color:#d97706;">${abt.headmasterMessage.title}</div>
+                <div style="font-size:0.75rem; color:#059669; font-weight:600; margin-top:2px;">${abt.headmasterMessage.awards}</div>
+              </div>
+            </div>
+            <p style="font-size:0.92rem; font-style:italic; color:#334155; line-height:1.6; margin-bottom:16px; border-left:3px solid #f59e0b; padding-left:14px;">
+              ${abt.headmasterMessage.quote}
+            </p>
+            <div style="font-size:0.82rem; color:#64748b; line-height:1.5;">
+              Vikas Grammar School adheres rigorously to the Telangana State SCERT continuous and comprehensive evaluation (CCE) framework while pioneering modern digital infrastructure and inclusive community values.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION: ACADEMIC PROGRAMS -->
+      <section class="pub-section" id="pubProgramsSection">
+        <div class="pub-section-header">
+          <span class="pub-section-badge">Academic Curriculum</span>
+          <h2 class="pub-section-title">Comprehensive Learning Pathways</h2>
+          <p class="pub-section-subtitle">Structured from foundational primary literacy to rigorous secondary board exam mastery</p>
+        </div>
+
+        <div class="programs-grid">
+          ${progs.map(pr => `
+            <div class="program-card">
+              <div>
+                <span class="program-badge">${pr.badge}</span>
+                <h3 class="program-level">${pr.level}</h3>
+                <div class="program-grades">${pr.grades} • <em>${pr.focus}</em></div>
+                <ul class="program-list">
+                  ${pr.highlights.map(h => `<li>${h}</li>`).join('')}
+                </ul>
+              </div>
+              <button type="button" onclick="window.scrollToPubSection('pubAdmissionsSection')" class="btn-blob-primary" style="width:100%; border-radius:10px; background:#fef3c7; color:#92400e; box-shadow:none;">
+                Enquire for ${pr.level} →
+              </button>
+            </div>
+          `).join('')}
+        </div>
+      </section>
+
+      <!-- SECTION: CAMPUS FACILITIES & AMENITIES -->
+      <section class="pub-section" id="pubFacilitiesSection">
+        <div class="pub-section-header">
+          <span class="pub-section-badge">Safe & Modern Campus</span>
+          <h2 class="pub-section-title">Campus Facilities & Amenities</h2>
+          <p class="pub-section-subtitle">100% WHO-standard drinking water, sanitized restrooms, STEM labs, and safe transportation</p>
+        </div>
+
+        <div class="pub-facilities-grid">
+          ${facils.map(f => `
+            <div class="pub-facility-card">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <div style="width:46px; height:46px; border-radius:12px; background:#f0fdf4; color:#059669; display:flex; align-items:center; justify-content:center; font-size:1.3rem;">
+                  <i data-lucide="${f.icon}"></i>
+                </div>
+                <span class="facility-metric-pill">${f.metric}</span>
+              </div>
+              <h3 style="font-size:1.15rem; font-weight:800; color:#0f172a; margin:14px 0 2px 0;">${f.title}</h3>
+              <div style="font-size:0.78rem; font-weight:700; color:#059669; margin-bottom:8px;">${f.subtitle}</div>
+              <p style="font-size:0.84rem; color:#475569; line-height:1.5; margin:0;">${f.desc}</p>
+            </div>
+          `).join('')}
+        </div>
+      </section>
+
+      <!-- SECTION: DISTINGUISHED FACULTY & TEACHER BIOS -->
+      <section class="pub-section" id="pubFacultySection">
+        <div class="pub-section-header">
+          <span class="pub-section-badge">Our Mentors</span>
+          <h2 class="pub-section-title">Distinguished Faculty & Leadership</h2>
+          <p class="pub-section-subtitle">Passionate educators dedicated to nurturing intellectual curiosity and moral character</p>
+        </div>
+
+        <div class="faculty-grid">
+          ${faculties.map(t => `
+            <div class="faculty-card">
+              <div class="faculty-photo-wrap">
+                <img src="${t.photo}" alt="${t.name}" class="faculty-photo">
+                <span class="faculty-exp-badge">${t.experience}</span>
+              </div>
+              <div class="faculty-body">
+                <div>
+                  <h3 class="faculty-name">${t.name}</h3>
+                  <div class="faculty-role">${t.role}</div>
+                  <div class="faculty-qual">${t.qualification} • <strong>${t.subject}</strong></div>
+                  <p class="faculty-bio">${t.bio}</p>
+                </div>
+                <div class="faculty-quote">${t.quote}</div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </section>
+
+      <!-- SECTION: ADMISSIONS INQUIRY & VISITING -->
+      <section class="pub-section" id="pubAdmissionsSection">
+        <div class="admissions-inquiry-box">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:36px;">
+            <div>
+              <span class="pub-section-badge">Admissions Open 2026 – 2027</span>
+              <h2 style="font-size:1.8rem; font-weight:900; color:#0f172a; margin:8px 0 10px 0;">Begin Your Child's Journey at Vikas Grammar School</h2>
+              <p style="font-size:0.88rem; color:#475569; line-height:1.5; margin-bottom:20px;">
+                We welcome admissions for Classes I to X. Experience our personalized student mentorship, 100% board exam track record, and inclusive girl child merit scholarships.
+              </p>
+
+              <div style="display:flex; flex-direction:column; gap:10px; font-size:0.85rem; color:#334155;">
+                <div>📍 <strong>Campus Address:</strong> Cheriyal Mandal Headquarters, Siddipet District, Telangana – 506223</div>
+                <div>📞 <strong>Phone:</strong> ${sch.phone}</div>
+                <div>✉️ <strong>Email:</strong> ${sch.email}</div>
+                <div>⏰ <strong>Office Hours:</strong> ${sch.timing}</div>
+                <div>🏛️ <strong>Government Code:</strong> UDISE ${sch.udiseCode}</div>
+              </div>
+            </div>
+
+            <!-- ADMISSION INQUIRY FORM -->
+            <div>
+              <form id="publicInquiryForm" onsubmit="window.submitPublicAdmissionInquiry(event)" style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:18px; padding:24px;">
+                <h3 style="font-size:1.05rem; font-weight:800; color:#0f172a; margin-bottom:14px;">📝 Register Admission Inquiry</h3>
+                
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+                  <div>
+                    <label style="font-size:0.75rem; font-weight:700; color:#475569; display:block; margin-bottom:4px;">Student Name *</label>
+                    <input type="text" id="inqStudentName" required placeholder="Full name of student" style="width:100%; padding:9px 12px; border:1px solid #cbd5e1; border-radius:8px; font-size:0.82rem;">
+                  </div>
+                  <div>
+                    <label style="font-size:0.75rem; font-weight:700; color:#475569; display:block; margin-bottom:4px;">Class Applying For *</label>
+                    <select id="inqGrade" required style="width:100%; padding:9px 12px; border:1px solid #cbd5e1; border-radius:8px; font-size:0.82rem;">
+                      <option>Class I</option>
+                      <option>Class II</option>
+                      <option>Class III</option>
+                      <option>Class IV</option>
+                      <option>Class V</option>
+                      <option>Class VI</option>
+                      <option>Class VII</option>
+                      <option selected>Class VIII</option>
+                      <option>Class IX</option>
+                      <option>Class X</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+                  <div>
+                    <label style="font-size:0.75rem; font-weight:700; color:#475569; display:block; margin-bottom:4px;">Parent / Guardian Phone *</label>
+                    <input type="tel" id="inqPhone" required placeholder="+91 Mobile number" style="width:100%; padding:9px 12px; border:1px solid #cbd5e1; border-radius:8px; font-size:0.82rem;">
+                  </div>
+                  <div>
+                    <label style="font-size:0.75rem; font-weight:700; color:#475569; display:block; margin-bottom:4px;">Village / Town *</label>
+                    <input type="text" id="inqLocation" placeholder="Cherial, Komuravelli, etc." style="width:100%; padding:9px 12px; border:1px solid #cbd5e1; border-radius:8px; font-size:0.82rem;">
+                  </div>
+                </div>
+
+                <div style="margin-bottom:16px;">
+                  <label style="font-size:0.75rem; font-weight:700; color:#475569; display:block; margin-bottom:4px;">Special Inquiries / Questions</label>
+                  <textarea rows="2" placeholder="Bus facility inquiry, girl child scholarship, etc." style="width:100%; padding:8px 12px; border:1px solid #cbd5e1; border-radius:8px; font-size:0.82rem;"></textarea>
+                </div>
+
+                <button type="submit" class="pub-login-btn" style="width:100%; justify-content:center; border-radius:10px; padding:11px; font-size:0.9rem;">
+                  ✓ Submit Admission Inquiry
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION: QUICK ERP PORTAL ACCESS BAR -->
+      <section class="pub-section">
+        <div class="erp-access-banner">
+          <span style="font-size:0.78rem; font-weight:800; color:#fbbf24; text-transform:uppercase; letter-spacing:1px;">Internal ERP Cloud Portal</span>
+          <h2 style="font-size:1.8rem; font-weight:900; margin:6px 0 10px 0;">Instant Portal Access for School Community</h2>
+          <p style="font-size:0.88rem; color:#94a3b8; max-width:650px; margin:0 auto;">
+            Choose your role to access continuous feedback monitoring, CCE grade sheets, digital homework turn-in, and institutional benchmarking.
+          </p>
+
+          <div class="erp-role-cards-grid">
+            <div class="erp-role-quick-card" onclick="window.enterErpPortal('principal')">
+              <div style="font-size:1.8rem; margin-bottom:8px;">🏛️</div>
+              <strong style="font-size:1rem; display:block;">Principal Portal</strong>
+              <span style="font-size:0.76rem; color:#94a3b8;">11 Pillars & Benchmarks</span>
+            </div>
+
+            <div class="erp-role-quick-card" onclick="window.enterErpPortal('teacher')">
+              <div style="font-size:1.8rem; margin-bottom:8px;">👨‍🏫</div>
+              <strong style="font-size:1rem; display:block;">Teacher Portal</strong>
+              <span style="font-size:0.76rem; color:#94a3b8;">Syllabus, Feedback, Proxies</span>
+            </div>
+
+            <div class="erp-role-quick-card" onclick="window.enterErpPortal('student')">
+              <div style="font-size:1.8rem; margin-bottom:8px;">🎓</div>
+              <strong style="font-size:1rem; display:block;">Student Portal</strong>
+              <span style="font-size:0.76rem; color:#94a3b8;">Homework, Vault, Olympiad</span>
+            </div>
+
+            <div class="erp-role-quick-card" onclick="window.enterErpPortal('parent')">
+              <div style="font-size:1.8rem; margin-bottom:8px;">👨‍👩‍👦</div>
+              <strong style="font-size:1rem; display:block;">Parent Portal</strong>
+              <span style="font-size:0.76rem; color:#94a3b8;">Marks, Attendance, Safety</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PUBLIC FOOTER -->
+      <footer class="pub-footer">
+        <div class="pub-footer-inner">
+          <div>
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+              <div class="pub-brand-logo" style="width:36px; height:36px; font-size:1rem;">🏫</div>
+              <strong style="font-size:1.05rem; color:#0f172a;">${sch.name}</strong>
+            </div>
+            <p style="line-height:1.5; margin-bottom:12px;">
+              Recognized High School under Government of Telangana School Education Department. Committed to academic distinction, girl child education, and ethical citizenship since 2004.
+            </p>
+            <div>UDISE Code: <strong>${sch.udiseCode}</strong> • Cheriyal Mandal, Siddipet Dist</div>
+          </div>
+
+          <div>
+            <h4 style="font-size:0.88rem; font-weight:800; color:#0f172a; margin-bottom:12px;">Quick Links</h4>
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <a onclick="window.scrollToPubSection('heroCarouselSection')" style="cursor:pointer;">Home</a>
+              <a onclick="window.scrollToPubSection('pubAboutSection')" style="cursor:pointer;">About Us</a>
+              <a onclick="window.scrollToPubSection('pubProgramsSection')" style="cursor:pointer;">Academic Wings</a>
+              <a onclick="window.scrollToPubSection('pubFacilitiesSection')" style="cursor:pointer;">Campus Facilities</a>
+              <a onclick="window.scrollToPubSection('pubFacultySection')" style="cursor:pointer;">Faculty Team</a>
+            </div>
+          </div>
+
+          <div>
+            <h4 style="font-size:0.88rem; font-weight:800; color:#0f172a; margin-bottom:12px;">Key Programs</h4>
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <span>Beti Bachao Girl Scholarships</span>
+              <span>SCERT Board Prep Clinics</span>
+              <span>NMMS & NTSE Coaching</span>
+              <span>Science & Robotics Lab</span>
+              <span>Yoga & Athletics Training</span>
+            </div>
+          </div>
+
+          <div>
+            <h4 style="font-size:0.88rem; font-weight:800; color:#0f172a; margin-bottom:12px;">ERP Portals</h4>
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <a onclick="window.enterErpPortal('principal')" style="color:#d97706; font-weight:700; cursor:pointer;">Headmaster Portal →</a>
+              <a onclick="window.enterErpPortal('teacher')" style="color:#d97706; font-weight:700; cursor:pointer;">Teacher Portal →</a>
+              <a onclick="window.enterErpPortal('student')" style="color:#d97706; font-weight:700; cursor:pointer;">Student Portal →</a>
+              <a onclick="window.enterErpPortal('parent')" style="color:#d97706; font-weight:700; cursor:pointer;">Parent Portal →</a>
+            </div>
+          </div>
+        </div>
+
+        <div style="max-width:1320px; margin:24px auto 0 auto; border-top:1px solid #e2e8f0; padding-top:16px; text-align:center; font-size:0.78rem; color:#94a3b8;">
+          © 2004 – 2026 Vikas Grammar School High School Cherial. All rights reserved. Registered UDISE 36182100637.
+        </div>
+      </footer>
+    `;
+
+    refreshLucideIcons();
+    resetCarouselTimer();
+  }
+
   /* 22. GENERIC FALLBACK */
   function renderGenericView(viewName) {
     contentViewport.innerHTML = `
@@ -4559,7 +5089,10 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
       toast.style.opacity = '0';
       toast.style.transition = 'opacity 0.3s ease';
-      setTimeout(() => toast.remove(), 300);
+      setTimeout(() => {
+        if (typeof toast.remove === 'function') toast.remove();
+        else if (toast.parentNode) toast.parentNode.removeChild(toast);
+      }, 300);
     }, 3000);
   }
 });

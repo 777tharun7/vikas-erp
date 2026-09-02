@@ -1440,6 +1440,324 @@ const MOCK_DATA = {
       'Electronic gadgets, mobile phones, and calculators are strictly prohibited inside the hall.',
       'Carry this Hall Ticket along with school ID card on all exam days.'
     ]
+  },
+
+  // PUBLIC SCHOOL WEBSITE DATA (LANDING PAGE, CAROUSEL, SLOGANS, ABOUT, PROGRAMS, FACILITIES, FACULTY)
+  publicSchoolData: {
+    schoolIdentity: {
+      name: 'Vikas Grammar School High School',
+      shortName: 'Vikas Grammar School',
+      location: 'Cheriyal, Siddipet District, Telangana – 506223',
+      udiseCode: '36182100637',
+      establishedYear: 2004,
+      affiliation: 'Recognized by Govt. of Telangana (BSE & SCERT Framework)',
+      mottoTelugu: 'తమసోమా జ్యోతిర్గమయ',
+      mottoEnglish: 'Lead Us From Darkness unto Light',
+      phone: '+91 870 248 9963 / +91 94401 23456',
+      email: 'admissions@vikasgrammar.edu.in',
+      timing: 'Mon – Sat: 08:45 AM – 04:30 PM'
+    },
+    carouselSlides: [
+      {
+        id: 'slide_1',
+        image: 'assets/beti_padhao_hero.jpg',
+        badge: '✦ Beti Bachao, Beti Padhao • Girl Child Education',
+        title: 'Educate a Girl Child.<br>Empower the Whole Nation.',
+        slogan: 'తమసోమా జ్యోతిర్గమయ — Lead Us From Darkness unto Light',
+        quote: '“When you educate a girl, you educate a family, a community, and a nation.”',
+        description: 'At Vikas Grammar School, we uphold the sacred mission of Beti Bachao, Beti Padhao with 100% merit scholarships, safe modern campus facilities, and dedicated encouragement in Science and Mathematics for every girl student.',
+        ctaText: 'Explore Academic Programs',
+        ctaAction: 'programs',
+        ctaSecText: 'Access ERP Portal 🔐',
+        ctaSecAction: 'erp_portal'
+      },
+      {
+        id: 'slide_2',
+        image: 'assets/campus_stem_lab.jpg',
+        badge: '🔬 State-of-the-Art Science & STEM Labs',
+        title: 'Hands-on Inquiry.<br>Excellence in Board Exams.',
+        slogan: 'Think Clearly • Experiment Daily • Excel Always',
+        quote: '“Science is not just a subject in a book; it is the courage to question and the joy of discovering truth.”',
+        description: 'With modern physics, chemistry, and biological labs, our students learn by doing. 100% SSC pass rate for 8 consecutive years with Cherial Mandal Rank #1 and Top 3 District Honors.',
+        ctaText: 'View Campus Facilities',
+        ctaAction: 'facilities',
+        ctaSecText: 'Admission Inquiries 📝',
+        ctaSecAction: 'admissions'
+      },
+      {
+        id: 'slide_3',
+        image: 'assets/sports_and_values.jpg',
+        badge: '🏆 Sportsmanship & Moral Character Formation',
+        title: 'Building Leaders with<br>Discipline & Compassion.',
+        slogan: 'Physical Vitality • Mental Resilience • Moral Integrity',
+        quote: '“Intelligence plus character — that is the true goal of genuine education.”',
+        description: 'Balancing rigorous academics with daily yoga, 200m athletic track sports, cultural heritage, and moral character education that prepares students for life, not just examinations.',
+        ctaText: 'Meet Our Faculty & Bios',
+        ctaAction: 'faculty',
+        ctaSecText: 'Student Life & Values',
+        ctaSecAction: 'necessity'
+      }
+    ],
+    slogansAndNecessity: {
+      heading: 'The Sacred Necessity of Schooling',
+      subheading: 'Why holistic education at Vikas Grammar School builds the foundational bedrock for lifelong dignity and success',
+      centralSloganTelugu: 'విద్యా దానం సర్వ దాన ప్రధానం — తమసోమా జ్యోతిర్గమయ',
+      centralSloganEnglish: 'Education is the light that dispels darkness, ignorance, and despair.',
+      inspirationalQuotes: [
+        {
+          quote: '“Education is the most powerful weapon which you can use to change the world.”',
+          author: 'Nelson Mandela'
+        },
+        {
+          quote: '“Beti Bachao, Beti Padhao — Educating our daughters is the greatest investment in the destiny of India.”',
+          author: 'National Mission for Girl Child Empowerment'
+        },
+        {
+          quote: '“Vidya Dadati Vinayam (True learning bestows humility, nobility of mind, and moral courage).”',
+          author: 'Ancient Indian Wisdom'
+        },
+        {
+          quote: '“A school is a sanctuary where curiosity is nurtured, discipline is forged, and dreams take flight.”',
+          author: 'K. Rajesham, Headmaster'
+        }
+      ],
+      pillars: [
+        {
+          icon: 'graduation-cap',
+          title: 'Intellectual Rigor & Conceptual Clarity',
+          desc: 'Moving far beyond rote cramming. We teach students to understand foundational concepts in STEM, solve real-world problems, and master language communication.'
+        },
+        {
+          icon: 'heart-handshake',
+          title: 'Beti Bachao, Beti Padhao Empowerment',
+          desc: 'Special scholarship initiatives, dignified private restrooms with sanitary hygiene, and equal leadership roles that make our girl students academic champions.'
+        },
+        {
+          icon: 'shield-check',
+          title: 'Moral Compass & Cultural Values',
+          desc: 'Inculcating deep respect for elders, empathy towards fellow humans, environmental stewardship, and pride in Indian constitutional ideals and Telangana heritage.'
+        },
+        {
+          icon: 'activity',
+          title: 'Physical Health, Yoga & Athletics',
+          desc: 'Daily physical training, 100% pure RO drinking water (95 PPM), yoga meditation, and competitive sports that keep body and mind in peak harmony.'
+        }
+      ]
+    },
+    aboutUs: {
+      title: 'About Vikas Grammar School HS Cherial',
+      established: 'Established in 2004 • Cheriyal, Siddipet Dist',
+      overview: 'Founded in 2004, Vikas Grammar School High School was born out of a profound vision: to provide urban-caliber English medium education to students in Cheriyal Mandal while retaining our cherished cultural values. For over two decades, our campus has stood as a beacon of academic excellence, discipline, and community trust.',
+      headmasterMessage: {
+        name: 'Mr. K. Rajesham',
+        title: 'Headmaster & Correspondent (M.A., M.Ed.)',
+        quote: '“Education is not the mere filling of a pail, but the lighting of a fire. Every child in Cherial has boundless potential. Our sacred mission is to provide the warmth, guidance, and academic rigor needed for that spark to illuminate the world.”',
+        awards: 'District Best Teacher Awardee • 22+ Years Educational Leadership'
+      },
+      vision: 'To nurture ethically grounded, intellectually fearless, and socially compassionate young citizens who lead India into an enlightened future.',
+      mission: 'To deliver accessible, high-standard holistic schooling with a focus on girl child empowerment, STEM innovation, and moral character development.',
+      stats: [
+        { label: 'Enrolled Students', value: '832+' },
+        { label: 'SSC Board Pass Rate', value: '100%' },
+        { label: 'Years of Trust', value: '22 Yrs' },
+        { label: 'Expert Faculty', value: '19+' },
+        { label: 'Cherial Mandal Rank', value: 'Rank #1' }
+      ]
+    },
+    programs: [
+      {
+        id: 'prog_primary',
+        level: 'Primary Wing',
+        grades: 'Classes I – V (Ages 6 – 10)',
+        focus: 'Foundational Literacy & Numeracy',
+        badge: 'Activity-Based',
+        highlights: [
+          'Phonics-based English reading and handwriting mastery',
+          'Vedic mental arithmetic and basic geometry concepts',
+          'Mother-tongue (Telugu) cultural stories & ethical tales',
+          'Interactive art, music, nature walks, and physical play'
+        ]
+      },
+      {
+        id: 'prog_middle',
+        level: 'Middle School Wing',
+        grades: 'Classes VI – VIII (Ages 11 – 13)',
+        focus: 'Conceptual STEM & Multi-Language Fluency',
+        badge: 'Inquiry-Driven',
+        highlights: [
+          'Junior physics, chemistry & biology laboratory experiments',
+          'Trilingual proficiency: Telugu, Hindi, and English literature',
+          'National Means-cum-Merit Scholarship (NMMS) foundation coaching',
+          'Computer fundamentals, typing, and digital literacy classes'
+        ]
+      },
+      {
+        id: 'prog_high',
+        level: 'Secondary High School',
+        grades: 'Classes IX – X (Ages 14 – 16)',
+        focus: 'SSC Board Examination & Career Launchpad',
+        badge: 'Board Excellence',
+        highlights: [
+          'Telangana SCERT CCE Curriculum with comprehensive FA/SA tracking',
+          'Special speed drills for 4-mark math & science word problems',
+          '5-year solved board papers revision and doubt-clearing clinics',
+          'Olympiad preparation and career counseling guidance'
+        ]
+      },
+      {
+        id: 'prog_cocurricular',
+        level: 'Co-Curricular & Personality',
+        grades: 'All Classes (I – X)',
+        focus: 'Holistic Development & Health',
+        badge: 'All-Round Growth',
+        highlights: [
+          'Morning assembly yoga sessions and athletic track tournaments',
+          'Science fair project mentorship and inter-school debate club',
+          'Cultural festivals, Bathukamma, National Days celebration',
+          'Life skills, environmental eco-club, and tree plantation drives'
+        ]
+      }
+    ],
+    facilities: [
+      {
+        id: 'fac_water',
+        title: 'RO Drinking Water Plant',
+        subtitle: '100% Safe, Chilled & Mineral-Balanced',
+        metric: '95 PPM TDS • 7.2 pH Neutral',
+        desc: 'Dedicated commercial RO plant supplying continuous, chilled drinking water to all corridors. Tested and certified safe according to WHO standards.',
+        icon: 'droplets'
+      },
+      {
+        id: 'fac_labs',
+        title: 'Composite Science Laboratories',
+        subtitle: 'Hands-on Experiments for Physics, Chemistry & Biology',
+        metric: 'Calibrated Optics & Microscopes',
+        desc: 'Fully equipped laboratory with demonstration benches, prisms, galvanic apparatus, anatomical charts, and certified fire safety.',
+        icon: 'flask-conical'
+      },
+      {
+        id: 'fac_ict',
+        title: 'Digital ICT Computer Center',
+        subtitle: '25 Modern Desktop Systems & Broadband',
+        metric: '1:1 Student-to-PC Access',
+        desc: 'Air-cooled computer laboratory teaching keyboard mastery, office software, internet safety, and algorithmic thinking.',
+        icon: 'monitor'
+      },
+      {
+        id: 'fac_sanitation',
+        title: 'Hygienic Restroom Complexes',
+        subtitle: '3x Daily Sanitization & Dedicated Privacy',
+        metric: 'Continuous Water & Dettol Dispensers',
+        desc: 'Separate spacious washroom blocks for boys and girls with continuous running water, automatic exhaust ventilation, and sanitary incinerator.',
+        icon: 'sparkles'
+      },
+      {
+        id: 'fac_transport',
+        title: 'School Bus Transport Fleet',
+        subtitle: 'Safe Rural Connectivity Across 14 Villages',
+        metric: 'GPS Tracked & Verified Drivers',
+        desc: 'Safe, punctual bus routes connecting Cherial, Komuravelli, Maddur, and neighboring rural habitations with experienced staff.',
+        icon: 'bus'
+      },
+      {
+        id: 'fac_sports',
+        title: 'Sprawling Sports Complex',
+        subtitle: 'Athletics, Volleyball, Kabaddi & Kho-Kho',
+        metric: '200m Track & Open Playgrounds',
+        desc: 'Expansive outdoor grounds encouraging competitive athletics, team sports, daily physical training, and annual sports days.',
+        icon: 'trophy'
+      }
+    ],
+    facultyProfiles: [
+      {
+        id: 'fac_01',
+        name: 'Mr. K. Rajesham',
+        role: 'Headmaster & Correspondent',
+        qualification: 'M.A., M.Ed. (Gold Medalist)',
+        experience: '22+ Years Leadership',
+        photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
+        bio: 'A visionary educational administrator who has steered Vikas Grammar School to the apex of Cherial Mandal. Has mentored over 4,500 students to distinguished careers in civil services, engineering, medicine, and academia.',
+        subject: 'Educational Administration & Moral Philosophy',
+        quote: '“Integrity, perseverance, and curiosity are the greatest legacies we can bestow upon our children.”'
+      },
+      {
+        id: 'fac_02',
+        name: 'Mrs. S. Radhika',
+        role: 'Senior Mathematics Faculty & Mentor',
+        qualification: 'M.Sc. Mathematics, B.Ed.',
+        experience: '14 Years Experience',
+        photo: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=300&q=80',
+        bio: 'Renowned across Siddipet district for demystifying geometry, algebra, and trigonometry. Expert in conducting remedial speed drills and mentoring students for the National Mathematics Olympiad.',
+        subject: 'Mathematics & Mental Arithmetic',
+        quote: '“Mathematics is not about memorizing formulas; it is the art of logical, fearless thinking.”'
+      },
+      {
+        id: 'fac_03',
+        name: 'Mr. P. Ramesh',
+        role: 'Head of Department, Physical Science',
+        qualification: 'M.Sc. Physics, B.Ed.',
+        experience: '12 Years Experience',
+        photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80',
+        bio: 'Brings abstract physics principles to life with tabletop demonstrations, ray optics, and electromagnetism kits. Has guided 6 student exhibits to the Telangana State Science Fair.',
+        subject: 'Physical Science & Chemistry',
+        quote: '“Every child is a natural scientist. We only need to provide the questions and laboratory tools.”'
+      },
+      {
+        id: 'fac_04',
+        name: 'Mrs. V. Latha',
+        role: 'Senior Biological Science Faculty',
+        qualification: 'M.Sc. Botany, B.Ed.',
+        experience: '10 Years Experience',
+        photo: 'https://images.unsplash.com/photo-1580894732454-defa4f2ab058?auto=format&fit=crop&w=300&q=80',
+        bio: 'Specialist in plant physiology, cell biology, and environmental ecosystems. Spearheads the school eco-club, campus gardening, and student nutrition health audits.',
+        subject: 'Biological Science & Ecology',
+        quote: '“Nature is the supreme teacher. Understanding biology inspires reverence for all living beings.”'
+      },
+      {
+        id: 'fac_05',
+        name: 'Mr. N. Srinivas',
+        role: 'Senior Faculty, Social Studies & Civics',
+        qualification: 'M.A. History, B.Ed.',
+        experience: '11 Years Experience',
+        photo: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80',
+        bio: 'Passionate historian and cartographer who enlivens ancient civilizations, Indian independence history, and the Telangana movement. Fosters deep civic responsibility in young minds.',
+        subject: 'Social Studies, Geography & Civics',
+        quote: '“When children know their history, they grow roots of pride and wings of progress.”'
+      },
+      {
+        id: 'fac_06',
+        name: 'Mr. M. Venkat',
+        role: 'Faculty, English Language & Literature',
+        qualification: 'M.A. English Literature, CELTA Certified',
+        experience: '9 Years Experience',
+        photo: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=300&q=80',
+        bio: 'Transforms rural students into confident, articulate English communicators through daily phonetics drills, public speaking workshops, and literary storytelling.',
+        subject: 'English Communication & Grammar',
+        quote: '“Language is the bridge to global opportunity. Speak with conviction and write with clarity.”'
+      },
+      {
+        id: 'fac_07',
+        name: 'Mrs. K. Sunitha',
+        role: 'Head of Department, Telugu Literature',
+        qualification: 'M.A. Telugu, Telugu Pandit Training',
+        experience: '15 Years Experience',
+        photo: 'https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?auto=format&fit=crop&w=300&q=80',
+        bio: 'Respected scholar of Telugu classical poetry and folk traditions. Instills profound love for the mother tongue, moral stories from Vemana and Sumati Shatakas, and flawless writing.',
+        subject: 'Telugu Language & Literature',
+        quote: '“మాతృభాష మన శ్వాస — మన సంస్కృతి మన ఆత్మగౌరవం.”'
+      },
+      {
+        id: 'fac_08',
+        name: 'Mr. G. Raju',
+        role: 'Director of Physical Education & Athletics',
+        qualification: 'B.P.Ed., M.P.Ed. (State Level Sprinter)',
+        experience: '8 Years Experience',
+        photo: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=300&q=80',
+        bio: 'Trains student athletic teams in 100m sprint, relay, volleyball, and Kho-Kho. Champions daily morning yoga and posture correction across all primary and secondary classes.',
+        subject: 'Physical Education & Athletics',
+        quote: '“Discipline on the playground translates into unshakeable character in life.”'
+      }
+    ]
   }
 };
 
