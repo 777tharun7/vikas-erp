@@ -2054,4 +2054,244 @@ body.theme-dark .period-badge-tag {
   flex-shrink: 0;
 }
 
+/* ==========================================================================
+   NEW HIGH-IMPACT MODULES: STUDY VAULT, OLYMPIAD, PROXY & CCE REPORT CARD
+   ========================================================================== */
+
+/* 1. Study Vault & Homework Hub */
+.vault-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+  margin-top: 14px;
+}
+
+.vault-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.vault-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--indigo);
+}
+
+.vault-badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 12px;
+  background: #ede9fe;
+  color: #6366f1;
+}
+
+body.theme-dark .vault-badge {
+  background: rgba(99, 102, 241, 0.2);
+  color: #a5b4fc;
+}
+
+.download-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--indigo);
+  color: white;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.download-pill-btn:hover {
+  opacity: 0.9;
+}
+
+/* Homework Turn-In Cards */
+.hw-turnin-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hw-status-badge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 12px;
+}
+
+.hw-status-badge.pending { background: #fef3c7; color: #b45309; }
+.hw-status-badge.submitted { background: #dbeafe; color: #1d4ed8; }
+.hw-status-badge.graded { background: #d1fae5; color: #047857; }
+
+/* 2. Competitive Exam & Olympiad Corner */
+.olympiad-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  margin-bottom: 14px;
+}
+
+.scholarship-badge {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+  font-weight: 800;
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.quiz-container {
+  background: var(--bg-card-sub);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  margin-top: 14px;
+}
+
+.quiz-option-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.quiz-option-btn:hover {
+  background: var(--bg-card-sub);
+  border-color: var(--indigo);
+}
+
+.quiz-option-btn.correct {
+  background: #d1fae5 !important;
+  color: #047857 !important;
+  border-color: #10b981 !important;
+  font-weight: 800;
+}
+
+.quiz-option-btn.wrong {
+  background: #fee2e2 !important;
+  color: #b91c1c !important;
+  border-color: #ef4444 !important;
+}
+
+/* 3. Teacher Proxy & Timetable Substitution */
+.proxy-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  margin-bottom: 12px;
+}
+
+.proxy-status-pill {
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 12px;
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.free-teacher-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: var(--bg-card-sub);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+/* 4. CCE Report Card & Hall Ticket */
+.cce-sheet-container {
+  background: #ffffff;
+  color: #0f172a;
+  border: 2px solid #334155;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+  margin-top: 14px;
+  font-family: 'Inter', sans-serif;
+}
+
+.cce-header-banner {
+  text-align: center;
+  border-bottom: 2px solid #0f172a;
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+.cce-data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+  font-size: 0.85rem;
+}
+
+.cce-data-table th, .cce-data-table td {
+  border: 1px solid #cbd5e1;
+  padding: 8px 10px;
+  text-align: center;
+}
+
+.cce-data-table th {
+  background: #f1f5f9;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.cce-data-table td:nth-child(2) {
+  text-align: left;
+}
+
+.hall-ticket-box {
+  background: #ffffff;
+  color: #0f172a;
+  border: 2px solid #1e293b;
+  border-radius: 8px;
+  padding: 24px;
+  margin-top: 14px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+.barcode-font {
+  font-family: monospace;
+  letter-spacing: 3px;
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+
+
 

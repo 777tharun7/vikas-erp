@@ -1093,6 +1093,315 @@ const MOCK_DATA = {
       progressPct: 90,
       status: 'Testing Stage'
     }
-  ]
+  ],
+
+  /* ==========================================================================
+     STUDENT HIGH-IMPACT MODULES: STUDY VAULT & HOMEWORK
+     ========================================================================== */
+  studyVault: [
+    {
+      id: 'vault_01',
+      subject: '📐 Mathematics',
+      title: 'Mensuration & 3D Geometry Formula Reference & 5-Yr Solved Problems',
+      standard: 'Class VIII & IX',
+      chapter: 'Ch 9: Area and Volumes',
+      fileType: 'PDF Document',
+      size: '2.4 MB',
+      downloads: 148,
+      verifiedBy: 'Mrs. S. Radhika (HOD Maths)',
+      badge: 'High Yield',
+      description: 'Comprehensive formula cheat-sheet with step-by-step solutions for 4-mark word problems on cylinders, cones, and spheres.'
+    },
+    {
+      id: 'vault_02',
+      subject: '🔬 Physical Science',
+      title: 'Ray Optics: Mirror & Lens Diagram Construction Master Guide',
+      standard: 'Class VIII & X',
+      chapter: 'Ch 5: Reflection of Light',
+      fileType: 'PDF Document',
+      size: '3.1 MB',
+      downloads: 192,
+      verifiedBy: 'Mr. P. Ramesh (Physics)',
+      badge: 'Board Favorite',
+      description: 'Precise ray diagrams for concave and convex mirrors with focal length calculation formulas and sign convention rules.'
+    },
+    {
+      id: 'vault_03',
+      subject: '🌿 Biological Science',
+      title: 'Plant Tissue & Human Organ Systems Visual Diagrams with Labels',
+      standard: 'Class VIII',
+      chapter: 'Ch 4: Plant & Animal Tissues',
+      fileType: 'PDF Document',
+      size: '4.2 MB',
+      downloads: 110,
+      verifiedBy: 'Mrs. V. Latha (Biology)',
+      badge: 'Diagram Bank',
+      description: 'High-resolution histology diagrams with exact Telangana SCERT labeling guidelines for SA1 5-mark diagram questions.'
+    },
+    {
+      id: 'vault_04',
+      subject: '🏛️ Social Studies',
+      title: 'Telangana Rivers, Projects & Mineral Resources Map Work Kit',
+      standard: 'Class VIII–X',
+      chapter: 'Ch 3: Rivers of Telangana',
+      fileType: 'PDF Document',
+      size: '1.8 MB',
+      downloads: 215,
+      verifiedBy: 'Mr. N. Srinivas (Social Studies)',
+      badge: 'Map Kit',
+      description: 'Complete blank and solved Telangana outline maps detailing Godavari, Krishna rivers, and major irrigation projects.'
+    },
+    {
+      id: 'vault_05',
+      subject: '📖 English Language',
+      title: 'Formal Letter Writing, Notice & Diary Entry Formats with Examples',
+      standard: 'Class VIII',
+      chapter: 'Unit 2: Creative Writing',
+      fileType: 'PDF Document',
+      size: '1.2 MB',
+      downloads: 176,
+      verifiedBy: 'Mr. M. Venkat (English)',
+      badge: 'Grammar Guide',
+      description: 'Standard SCERT evaluation rubrics, high-scoring vocabulary, and sample essays on Telangana heritage and environmental conservation.'
+    }
+  ],
+
+  studentHomeworkList: [
+    {
+      id: 'hw_01',
+      subject: '📐 Mathematics',
+      title: 'Exercise 9.2: Surface Area of Combination Solids (Q 1 to 8)',
+      assignedDate: 'Sep 01, 2026',
+      dueDate: 'Sep 03, 2026 (Tomorrow, 9:00 AM)',
+      teacher: 'Mrs. S. Radhika',
+      status: 'Pending Submission',
+      maxMarks: 10,
+      instructions: 'Solve all 8 word problems in your homework notebook showing given data, formula, and units clearly.'
+    },
+    {
+      id: 'hw_02',
+      subject: '🔬 Physical Science',
+      title: 'Lab Record Writeup: Concave Mirror Focal Length by UV Method',
+      assignedDate: 'Aug 31, 2026',
+      dueDate: 'Sep 02, 2026 (Today, 4:00 PM)',
+      teacher: 'Mr. P. Ramesh',
+      status: 'Submitted Online',
+      submissionTime: 'Sep 02, 2026 at 11:15 AM',
+      maxMarks: 10,
+      instructions: 'Submit clear photos of tabular columns with 5 observation readings and focal length graph.'
+    },
+    {
+      id: 'hw_03',
+      subject: '🏛️ Social Studies',
+      title: 'Map Plotting: 10 Major Dam Projects in Telangana & Andhra',
+      assignedDate: 'Aug 28, 2026',
+      dueDate: 'Aug 30, 2026',
+      teacher: 'Mr. N. Srinivas',
+      status: 'Graded (10/10)',
+      gradedDate: 'Aug 31, 2026',
+      maxMarks: 10,
+      score: 10,
+      feedback: 'Exemplary cartographic precision! Legend and labeling are exceptionally neat.'
+    }
+  ],
+
+  /* ==========================================================================
+     COMPETITIVE EXAMS & OLYMPIAD CORNER
+     ========================================================================== */
+  olympiadExams: [
+    {
+      id: 'olympiad_01',
+      name: 'NMMS (National Means-cum-Merit Scholarship)',
+      body: 'State Council of Educational Research & Training (SCERT Telangana)',
+      eligibility: 'Class VIII Students (Scored 55%+ in Class VII)',
+      scholarship: '₹12,000 per year (₹1,000/month from Class IX to XII)',
+      examDate: 'Nov 22, 2026',
+      deadline: 'Oct 15, 2026',
+      pattern: 'Paper 1: Mental Ability Test (MAT 90 Qs) • Paper 2: Scholastic Aptitude Test (SAT 90 Qs)',
+      status: 'Registrations Open at School Office'
+    },
+    {
+      id: 'olympiad_02',
+      name: 'TSSTSE (Telangana State Science Talent Search)',
+      body: 'Telangana Academy of Sciences & Dept of School Education',
+      eligibility: 'Classes VIII, IX, and X',
+      scholarship: 'Gold Medal + ₹5,000 Cash Grant + Free Science Lab Mentorship',
+      examDate: 'Dec 14, 2026',
+      deadline: 'Nov 05, 2026',
+      pattern: '60 Objective MCQs (Physics 20, Chemistry 20, Biology 20)',
+      status: 'Mock Training Ongoing'
+    },
+    {
+      id: 'olympiad_03',
+      name: 'SOF International Mathematics Olympiad (IMO)',
+      body: 'Science Olympiad Foundation (SOF)',
+      eligibility: 'Classes 1 to 10',
+      scholarship: 'International Rank Medals + Cash Awards up to ₹50,000',
+      examDate: 'Dec 03, 2026',
+      deadline: 'Oct 30, 2026',
+      pattern: '50 Questions: Logical Reasoning, Mathematical Reasoning, Everyday Math, Achievers Section',
+      status: 'Open for Enrollment'
+    }
+  ],
+
+  olympiadQuizPractice: [
+    {
+      id: 'q1',
+      question: 'Find the next number in the series: 3, 7, 15, 31, 63, ?',
+      options: ['125', '127', '129', '131'],
+      correctIndex: 1,
+      explanation: 'Pattern is (previous number × 2) + 1. (63 × 2) + 1 = 126 + 1 = 127.'
+    },
+    {
+      id: 'q2',
+      question: 'Which of the following is the longest river flowing entirely within Telangana?',
+      options: ['Krishna', 'Manjeera', 'Musi', 'Godavari tributary'],
+      correctIndex: 1,
+      explanation: 'Manjeera is a major tributary of the Godavari that flows extensively across Telangana and supplies drinking water to Singur.'
+    },
+    {
+      id: 'q3',
+      question: 'A solid metallic sphere of radius 6 cm is melted and recast into small spheres of radius 2 cm. How many small spheres are formed?',
+      options: ['9', '18', '27', '36'],
+      correctIndex: 2,
+      explanation: 'Volume ratio = (R / r)³ = (6 / 2)³ = 3³ = 27 small spheres.'
+    }
+  ],
+
+  /* ==========================================================================
+     SCHOOL MANAGEMENT: TEACHER PROXY & TIMETABLE SUBSTITUTION ENGINE
+     ========================================================================== */
+  proxySubstitutionSystem: {
+    todayDate: 'Wednesday, September 02, 2026',
+    teachersOnLeave: [
+      {
+        id: 'staff_leave_01',
+        teacherName: 'Mr. N. Srinivas',
+        subject: 'Social Studies',
+        periodsAffected: [
+          { period: 'Period 3 (11:00 AM - 11:45 AM)', class: 'Class VIII Section A', room: 'Room 204' },
+          { period: 'Period 6 (02:00 PM - 02:45 PM)', class: 'Class IX Section B', room: 'Room 302' }
+        ],
+        reason: 'Attending MEO Workshop at Siddipet Collectorate'
+      },
+      {
+        id: 'staff_leave_02',
+        teacherName: 'Mrs. K. Sunitha',
+        subject: 'Telugu',
+        periodsAffected: [
+          { period: 'Period 5 (01:15 PM - 02:00 PM)', class: 'Class VII Section A', room: 'Room 105' }
+        ],
+        reason: 'Casual Medical Leave'
+      }
+    ],
+    allocatedProxies: [
+      {
+        id: 'proxy_01',
+        period: 'Period 3',
+        time: '11:00 AM - 11:45 AM',
+        targetClass: 'Class VIII Section A',
+        originalTeacher: 'Mr. N. Srinivas (Social)',
+        assignedProxyTeacher: 'Mrs. S. Radhika (Maths/Class Teacher)',
+        topicCovered: 'Mathematics Speed Drill & Remedial Worksheet on Surface Areas',
+        status: 'Duty Confirmed',
+        notifiedVia: 'In-App & SMS'
+      },
+      {
+        id: 'proxy_02',
+        period: 'Period 5',
+        time: '01:15 PM - 02:00 PM',
+        targetClass: 'Class VII Section A',
+        originalTeacher: 'Mrs. K. Sunitha (Telugu)',
+        assignedProxyTeacher: 'Mr. P. Ramesh (Physical Science)',
+        topicCovered: 'Science Quiz & Interactive Library Reading',
+        status: 'Duty Confirmed',
+        notifiedVia: 'In-App'
+      },
+      {
+        id: 'proxy_03',
+        period: 'Period 6',
+        time: '02:00 PM - 02:45 PM',
+        targetClass: 'Class IX Section B',
+        originalTeacher: 'Mr. N. Srinivas (Social)',
+        assignedProxyTeacher: 'Mr. M. Venkat (English)',
+        topicCovered: 'Creative Writing & Spell Bee Elimination Round',
+        status: 'Standby / Scheduled',
+        notifiedVia: 'Pending Confirmation'
+      }
+    ],
+    availableFreeTeachersToday: [
+      { name: 'Mrs. S. Radhika', subject: 'Maths', freePeriods: ['Period 3', 'Period 7'] },
+      { name: 'Mr. P. Ramesh', subject: 'Physics', freePeriods: ['Period 4', 'Period 5'] },
+      { name: 'Mr. M. Venkat', subject: 'English', freePeriods: ['Period 2', 'Period 6'] },
+      { name: 'Mrs. V. Latha', subject: 'Biology', freePeriods: ['Period 1', 'Period 8'] }
+    ]
+  },
+
+  /* ==========================================================================
+     SCHOOL MANAGEMENT: CCE REPORT CARD & EXAM HALL TICKET TEMPLATES
+     ========================================================================== */
+  cceReportCardData: {
+    schoolName: 'VIKAS GRAMMAR SCHOOL HS CHERIAL',
+    schoolAddress: 'Cheriyal Mandal, Siddipet District, Telangana — 506223',
+    udiseCode: '36182100637',
+    affiliation: 'Telangana State Board of Secondary Education (BSE Telangana)',
+    academicYear: '2026–2027',
+    term: 'Summative Assessment - I (SA 1)',
+    student: {
+      name: 'Rahul Reddy',
+      admissionNo: 'VGS-2022-084',
+      rollNo: 'VIII-014',
+      classSection: 'Class VIII Section A',
+      dob: '14-08-2012',
+      fatherName: 'Mr. R. Ramachandra Reddy',
+      motherName: 'Mrs. R. Lakshmi',
+      attendanceDays: '82 / 85 Days (96.5%)'
+    },
+    subjectMarks: [
+      { subject: 'First Language (Telugu)', fa1: 19, fa2: 19, fa3: 18, fa4: 19, sa1: 74, total100: 93, gpa: 9.3, grade: 'A1' },
+      { subject: 'Second Language (Hindi)', fa1: 18, fa2: 17, fa3: 19, fa4: 18, sa1: 72, total100: 90, gpa: 9.0, grade: 'A1' },
+      { subject: 'Third Language (English)', fa1: 19, fa2: 19, fa3: 19, fa4: 20, sa1: 75, total100: 94, gpa: 9.4, grade: 'A1' },
+      { subject: 'Mathematics', fa1: 19, fa2: 20, fa3: 18, fa4: 19, sa1: 76, total100: 96, gpa: 9.6, grade: 'A1' },
+      { subject: 'Physical Science', fa1: 19, fa2: 18, fa3: 19, fa4: 19, sa1: 75, total100: 95, gpa: 9.5, grade: 'A1' },
+      { subject: 'Biological Science', fa1: 18, fa2: 19, fa3: 19, fa4: 18, sa1: 74, total100: 93, gpa: 9.3, grade: 'A1' },
+      { subject: 'Social Studies', fa1: 19, fa2: 18, fa3: 18, fa4: 19, sa1: 73, total100: 92, gpa: 9.2, grade: 'A1' }
+    ],
+    coCurricular: [
+      { area: 'Value Education & Life Skills', grade: 'A+' },
+      { area: 'Art & Cultural Education', grade: 'A' },
+      { area: 'Work & Computer Education', grade: 'A+' },
+      { area: 'Physical, Health & Yoga Education', grade: 'A+' }
+    ],
+    overallGpa: 9.33,
+    overallGrade: 'A1 (Outstanding)',
+    classRank: '2nd in Class VIII A (out of 42 students)',
+    classTeacherRemarks: 'Exceptionally diligent student with strong analytical skills in STEM. Cooperative and humble in peer interactions.',
+    headmasterRemarks: 'Exemplary academic and moral track record. Highly recommended for National Means-cum-Merit Scholarship (NMMS).'
+  },
+
+  hallTicketData: {
+    examTitle: 'BSE TELANGANA STATE BOARD PREP / SA-I EXAMINATION 2026',
+    schoolName: 'Vikas Grammar School HS Cherial',
+    hallTicketNo: 'HT-2026-VIII-014',
+    studentName: 'RAHUL REDDY',
+    fatherName: 'R. RAMACHANDRA REDDY',
+    class: 'Class VIII Section A',
+    examinationCenter: 'VGS Main Campus Hall #2, Cheriyal (Code: 637)',
+    photoUrl: 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=150&q=80',
+    barcode: '|||||||||||||||||||||||||||||||||||||||||',
+    schedule: [
+      { date: 'Sep 14, 2026', day: 'Monday', time: '09:30 AM - 12:15 PM', subject: 'First Language (Telugu)' },
+      { date: 'Sep 15, 2026', day: 'Tuesday', time: '09:30 AM - 12:15 PM', subject: 'Second Language (Hindi)' },
+      { date: 'Sep 16, 2026', day: 'Wednesday', time: '09:30 AM - 12:15 PM', subject: 'Third Language (English)' },
+      { date: 'Sep 17, 2026', day: 'Thursday', time: '09:30 AM - 12:15 PM', subject: 'Mathematics' },
+      { date: 'Sep 18, 2026', day: 'Friday', time: '09:30 AM - 12:15 PM', subject: 'General Science (Physical & Bio)' },
+      { date: 'Sep 19, 2026', day: 'Saturday', time: '09:30 AM - 12:15 PM', subject: 'Social Studies' }
+    ],
+    instructions: [
+      'Candidates must be present in the examination room 15 minutes before commencement.',
+      'Electronic gadgets, mobile phones, and calculators are strictly prohibited inside the hall.',
+      'Carry this Hall Ticket along with school ID card on all exam days.'
+    ]
+  }
 };
 

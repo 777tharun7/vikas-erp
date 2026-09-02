@@ -6,6 +6,8 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   let activeRole = 'principal';
+  let activeCceTab = 'report_card';
+  let activeVaultSubject = 'All';
 
   const sidebar = document.getElementById('sidebar');
   const sidebarNavList = document.getElementById('sidebarNavList');
@@ -92,6 +94,72 @@ document.addEventListener('DOMContentLoaded', () => {
     window.switchFacilitiesTab = function(tab) {
       activeFacilitiesTab = tab;
       renderFacilitiesIncidentsScreen(activeRole);
+    };
+    window.switchCceTab = function(tab) {
+      activeCceTab = tab;
+      renderCceReportCardScreen();
+    };
+    window.filterVaultSubject = function(subj) {
+      activeVaultSubject = subj;
+      renderStudyVaultScreen();
+    };
+    window.downloadVaultMaterial = function(id) {
+      const item = MOCK_DATA.studyVault.find(x => x.id === id);
+      if (item) {
+        item.downloads += 1;
+        showToast(`Downloading "${item.title}" (${item.size}). File saved!`);
+        renderStudyVaultScreen();
+      }
+    };
+    window.submitHomeworkOnline = function(id) {
+      const item = MOCK_DATA.studentHomeworkList.find(x => x.id === id);
+      if (item) {
+        item.status = 'Submitted Online';
+        const now = new Date();
+        item.submissionTime = `Sep 02, 2026 at ${now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}`;
+        showToast(`Homework for ${item.subject} submitted successfully! Teacher notified.`);
+        renderStudentHomeworkScreen();
+      }
+    };
+    window.selectOlympiadOption = function(qId, selectedIdx) {
+      const q = MOCK_DATA.olympiadQuizPractice.find(x => x.id === qId);
+      if (!q) return;
+      const opts = document.querySelectorAll(`[data-quiz-opt="${qId}"]`);
+      opts.forEach((btn, idx) => {
+        btn.disabled = true;
+        if (idx === q.correctIndex) {
+          btn.classList.add('correct');
+        } else if (idx === selectedIdx) {
+          btn.classList.add('wrong');
+        }
+      });
+      const expDiv = document.getElementById(`quizExp_${qId}`);
+      if (expDiv) {
+        expDiv.style.display = 'block';
+      }
+      if (selectedIdx === q.correctIndex) {
+        showToast('🎯 Correct answer! +4 Marks awarded.');
+      } else {
+        showToast('Incorrect option. Review the detailed explanation below.');
+      }
+    };
+    window.assignProxyTeacher = function(leaveId, periodStr, proxyTeacherName) {
+      MOCK_DATA.proxySubstitutionSystem.allocatedProxies.push({
+        id: `proxy_${Date.now()}`,
+        period: periodStr,
+        time: 'Today',
+        targetClass: 'Class Covered',
+        originalTeacher: 'Staff on Leave',
+        assignedProxyTeacher: proxyTeacherName,
+        topicCovered: 'Classroom Mentoring & Revision Worksheets',
+        status: 'Duty Confirmed',
+        notifiedVia: 'Automated In-App SMS'
+      });
+      showToast(`Proxy duty confirmed! ${proxyTeacherName} assigned to cover ${periodStr}.`);
+      renderProxySubstitutionScreen();
+    };
+    window.printCceCard = function() {
+      window.print();
     };
 
     // Role Pills Switcher in Top Navbar
@@ -273,8 +341,11 @@ document.addEventListener('DOMContentLoaded', () => {
       items = [
         { id: 'dashboard', label: 'Dashboard', icon: 'layout-grid' },
         { id: 'institutional_diagnostic', label: 'Where We Stand & Improve', icon: 'trending-up' },
+        { id: 'cce_report_cards', label: 'SCERT CCE Report & Hall Ticket', icon: 'file-text' },
+        { id: 'proxy_substitution', label: 'Teacher Proxy & Substitution', icon: 'shuffle' },
         { id: 'feedback_oversight', label: 'Daily Feedback Oversight', icon: 'message-square' },
         { id: 'principal_gpa_analytics', label: 'GPA & Academic Gaps', icon: 'award' },
+        { id: 'study_vault', label: 'Curriculum & Study Vault', icon: 'folder-down' },
         { id: 'methodology_satisfaction', label: 'Methodology & Satisfaction', icon: 'sparkles' },
         { id: 'relations_climate', label: 'Teacher-Student Relations & Conduct', icon: 'heart-handshake' },
         { id: 'facilities_incidents', label: 'Facilities & Safety Incidents', icon: 'shield-alert' },
@@ -292,6 +363,9 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (role === 'teacher') {
       items = [
         { id: 'dashboard', label: 'Teacher Workspace', icon: 'layout-grid' },
+        { id: 'proxy_substitution', label: 'Proxy Duty & Substitutions', icon: 'shuffle' },
+        { id: 'student_homework', label: 'Homework & Submissions', icon: 'check-square' },
+        { id: 'study_vault', label: 'Study Vault & Resources', icon: 'folder-down' },
         { id: 'teacher_feedback', label: 'Daily Class & Student Feedback', icon: 'message-square' },
         { id: 'teacher_behaviour', label: 'Student 360° Conduct & Behaviour', icon: 'heart-handshake' },
         { id: 'teacher_gpa_gaps', label: 'GPA & Learning Gaps Plugging', icon: 'award' },
@@ -300,7 +374,6 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'teacher_report_incident', label: 'Facilities & Safety Incidents', icon: 'shield-alert' },
         { id: 'my_students', label: 'My Class Students (360°)', icon: 'users' },
         { id: 'teacher_attendance', label: 'My Teacher Attendance', icon: 'check-circle' },
-        { id: 'homework', label: 'Homework & Assignments', icon: 'book-open' },
         { id: 'timetable', label: 'My Teaching Schedule', icon: 'clock' },
         { id: 'student_leave_approvals', label: 'Student Leave Approvals', icon: 'file-text' },
         { id: 'teacher_salary', label: 'My Salary & Payslips', icon: 'indian-rupee' },
@@ -309,6 +382,10 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (role === 'student') {
       items = [
         { id: 'dashboard', label: 'Student Portal', icon: 'layout-grid' },
+        { id: 'study_vault', label: 'Digital Study Vault & Notes', icon: 'folder-down' },
+        { id: 'student_homework', label: 'My Homework & Turn-In', icon: 'check-square' },
+        { id: 'olympiad_corner', label: 'Scholarships & Olympiad Prep', icon: 'trophy' },
+        { id: 'my_cce_card', label: 'My CCE Grade Card & Hall Ticket', icon: 'file-text' },
         { id: 'student_daily_feedback', label: 'Daily Class Feedback', icon: 'message-square-plus' },
         { id: 'student_gpa_gaps', label: 'My GPA & Learning Gaps', icon: 'award' },
         { id: 'student_methodology_opinion', label: 'Teaching Method Opinion', icon: 'sparkles' },
@@ -316,7 +393,6 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'student_facilities_feedback', label: 'Campus Amenities & Facilities', icon: 'coffee' },
         { id: 'student_report_incident', label: 'Safety & Incident Report', icon: 'shield-alert' },
         { id: 'timetable', label: 'My Class Timetable', icon: 'calendar' },
-        { id: 'homework', label: 'Today\'s Homework', icon: 'book-open' },
         { id: 'my_fees', label: 'My Fee Breakdown', icon: 'indian-rupee' },
         { id: 'student_apply_leave', label: 'Submit Leave Request', icon: 'file-text' },
         { id: 'bus_info', label: 'My Bus Route & Timing', icon: 'bus' },
@@ -325,13 +401,15 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (role === 'parent') {
       items = [
         { id: 'dashboard', label: 'Child Overview', icon: 'layout-grid' },
+        { id: 'my_cce_card', label: 'Child CCE Report & Hall Ticket', icon: 'file-text' },
+        { id: 'student_homework', label: 'Homework Submissions', icon: 'check-square' },
+        { id: 'olympiad_corner', label: 'Scholarships & Olympiad Corner', icon: 'trophy' },
         { id: 'teacher_feedback_parent', label: "Teacher's Daily Feedback", icon: 'message-circle' },
         { id: 'parent_child_behaviour', label: 'Child 360° Conduct & Behaviour', icon: 'heart-handshake' },
         { id: 'parent_gpa_gaps', label: 'Subject GPA & Learning Gaps', icon: 'award' },
         { id: 'pacing_diary', label: 'Class Pacing & Syllabus Coverage', icon: 'clock' },
         { id: 'parent_facilities_safety', label: 'Campus Hygiene & Safety Log', icon: 'shield-alert' },
         { id: 'child_attendance', label: 'Child Attendance & Performance', icon: 'user-check' },
-        { id: 'child_homework', label: 'Child Homework', icon: 'book-open' },
         { id: 'parent_apply_leave', label: 'Apply Child Leave', icon: 'file-text' },
         { id: 'pay_fee', label: 'Pay School Fee', icon: 'indian-rupee' },
         { id: 'bus_tracking', label: 'Child Bus Tracking', icon: 'bus' },
@@ -389,6 +467,16 @@ document.addEventListener('DOMContentLoaded', () => {
       renderFacilitiesIncidentsScreen(activeRole);
     } else if (viewId === 'pacing_diary' || viewId === 'teacher_syllabus_pacing') {
       renderClassPacingDiaryScreen(activeRole);
+    } else if (viewId === 'study_vault') {
+      renderStudyVaultScreen();
+    } else if (viewId === 'student_homework' || viewId === 'homework' || viewId === 'child_homework') {
+      renderStudentHomeworkScreen();
+    } else if (viewId === 'olympiad_corner') {
+      renderOlympiadScreen();
+    } else if (viewId === 'proxy_substitution') {
+      renderProxySubstitutionScreen();
+    } else if (viewId === 'cce_report_cards' || viewId === 'my_cce_card') {
+      renderCceReportCardScreen();
     } else if (viewId === 'admissions' || viewId === 'admissions_enquiries' || viewId === 'admissions_forms' || viewId === 'admissions_tests') {
       renderAdmissionsScreen();
     } else if (viewId === 'students' || viewId === 'student_directory' || viewId === 'my_students' || viewId === 'student_lifecycle' || viewId === 'student_documents') {
@@ -3901,6 +3989,450 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
     `;
 
+    refreshLucideIcons();
+  }
+
+  /* ==========================================================================
+     NEW STRATEGIC HIGH-IMPACT SCREENS
+     ========================================================================== */
+
+  /* 23. DIGITAL STUDY VAULT & CURRICULUM REPOSITORY */
+  function renderStudyVaultScreen() {
+    const list = activeVaultSubject === 'All'
+      ? MOCK_DATA.studyVault
+      : MOCK_DATA.studyVault.filter(x => x.subject.includes(activeVaultSubject));
+
+    const subjects = ['All', 'Mathematics', 'Physical Science', 'Biological Science', 'Social Studies', 'English'];
+
+    contentViewport.innerHTML = `
+      <div class="panel-card" style="margin-bottom:20px;">
+        <div class="panel-header">
+          <div>
+            <h2 style="font-size:1.3rem; font-weight:800; display:flex; align-items:center; gap:8px;">
+              <i data-lucide="folder-down" style="color:var(--indigo);"></i> Digital Study Vault & SCERT Curriculum Repository
+            </h2>
+            <p style="color:var(--text-secondary); font-size:0.85rem; margin-top:4px;">Vikas Grammar School HS Cherial (UDISE: 36182100637) • Download verified question banks, formula cheat-sheets, and 5-year solved board papers.</p>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin:16px 0 6px 0;">
+          ${subjects.map(s => `
+            <button class="filter-pill ${activeVaultSubject === s ? 'active' : ''}" onclick="window.filterVaultSubject('${s}')" style="padding:6px 14px; font-size:0.8rem; border-radius:20px; font-weight:700; cursor:pointer; border:1px solid var(--border-color); background:${activeVaultSubject === s ? 'var(--indigo)' : 'var(--bg-card-sub)'}; color:${activeVaultSubject === s ? '#ffffff' : 'var(--text-primary)'};">
+              ${s}
+            </button>
+          `).join('')}
+        </div>
+
+        <div class="vault-grid">
+          ${list.map(v => `
+            <div class="vault-card">
+              <div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                  <span class="vault-badge">${v.badge}</span>
+                  <span style="font-size:0.75rem; color:var(--text-muted); font-weight:700;">${v.size}</span>
+                </div>
+                <h4 style="font-size:0.95rem; font-weight:800; margin-bottom:4px;">${v.title}</h4>
+                <div style="font-size:0.78rem; color:var(--indigo); font-weight:700; margin-bottom:6px;">${v.subject} • ${v.chapter} (${v.standard})</div>
+                <p style="font-size:0.8rem; color:var(--text-secondary); line-height:1.4;">${v.description}</p>
+              </div>
+              <div style="border-top:1px solid var(--border-color); padding-top:10px; display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:0.72rem; color:var(--text-muted);">Verified: ${v.verifiedBy}</span>
+                <button class="download-pill-btn" onclick="window.downloadVaultMaterial('${v.id}')">
+                  <i data-lucide="download"></i> Download (${v.downloads})
+                </button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    refreshLucideIcons();
+  }
+
+  /* 24. DIGITAL HOMEWORK HUB & SUBMISSIONS */
+  function renderStudentHomeworkScreen() {
+    const list = MOCK_DATA.studentHomeworkList;
+    const pendingCount = list.filter(x => x.status.includes('Pending')).length;
+    const submittedCount = list.filter(x => x.status.includes('Submitted')).length;
+    const gradedCount = list.filter(x => x.status.includes('Graded')).length;
+
+    contentViewport.innerHTML = `
+      <div class="panel-card" style="margin-bottom:20px;">
+        <div class="panel-header">
+          <div>
+            <h2 style="font-size:1.3rem; font-weight:800; display:flex; align-items:center; gap:8px;">
+              <i data-lucide="check-square" style="color:var(--emerald);"></i> Digital Homework Hub & Submission Ledger
+            </h2>
+            <p style="color:var(--text-secondary); font-size:0.85rem; margin-top:4px;">Track class task deadlines, submit notebook photos or digital copies, and view teacher marks and corrections.</p>
+          </div>
+        </div>
+
+        <div class="stats-grid-4" style="margin:16px 0 20px 0;">
+          <div class="stat-card">
+            <div class="stat-title">Total Tasks Assigned</div>
+            <div class="stat-value">${list.length}</div>
+            <span class="trend-badge trend-up-blue">Active Term</span>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Pending Turn-In</div>
+            <div class="stat-value">${pendingCount}</div>
+            <span class="trend-badge trend-orange">${pendingCount > 0 ? 'Action Required' : 'All Clear'}</span>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Submitted Online</div>
+            <div class="stat-value">${submittedCount}</div>
+            <span class="trend-badge trend-purple">Awaiting Review</span>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Graded & Completed</div>
+            <div class="stat-value">${gradedCount}</div>
+            <span class="trend-badge trend-up-green">100% Avg Score</span>
+          </div>
+        </div>
+
+        <div style="margin-top:14px;">
+          ${list.map(hw => `
+            <div class="hw-turnin-card">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px;">
+                <div>
+                  <span style="font-size:0.8rem; font-weight:800; color:var(--indigo);">${hw.subject}</span>
+                  <h4 style="font-size:1rem; font-weight:800; margin:4px 0;">${hw.title}</h4>
+                  <div style="font-size:0.78rem; color:var(--text-muted);">Assigned by ${hw.teacher} on ${hw.assignedDate} • Due: <strong>${hw.dueDate}</strong></div>
+                </div>
+                <span class="hw-status-badge ${hw.status.includes('Pending') ? 'pending' : hw.status.includes('Submitted') ? 'submitted' : 'graded'}">${hw.status}</span>
+              </div>
+              <p style="font-size:0.82rem; color:var(--text-secondary);">${hw.instructions}</p>
+              ${hw.feedback ? `
+                <div style="background:rgba(16,185,129,0.1); border-left:3px solid #10b981; padding:8px 12px; border-radius:4px; font-size:0.82rem; color:#065f46;">
+                  <strong>Teacher Evaluation (${hw.score}/${hw.maxMarks}):</strong> ${hw.feedback}
+                </div>
+              ` : ''}
+              ${hw.status.includes('Pending') ? `
+                <div style="display:flex; justify-content:flex-end;">
+                  <button class="download-pill-btn" onclick="window.submitHomeworkOnline('${hw.id}')" style="background:#10b981;">
+                    <i data-lucide="upload-cloud"></i> Turn In Online (Submit Notebook Photo)
+                  </button>
+                </div>
+              ` : `
+                <div style="font-size:0.75rem; color:var(--text-muted); text-align:right;">
+                  ✓ Turn-in registered on: ${hw.submissionTime || hw.gradedDate}
+                </div>
+              `}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    refreshLucideIcons();
+  }
+
+  /* 25. COMPETITIVE EXAMS & OLYMPIAD CORNER */
+  function renderOlympiadScreen() {
+    contentViewport.innerHTML = `
+      <div class="panel-card" style="margin-bottom:20px;">
+        <div class="panel-header">
+          <div>
+            <h2 style="font-size:1.3rem; font-weight:800; display:flex; align-items:center; gap:8px;">
+              <i data-lucide="trophy" style="color:#f59e0b;"></i> Competitive Exams, Olympiad & Scholarship Corner
+            </h2>
+            <p style="color:var(--text-secondary); font-size:0.85rem; margin-top:4px;">National Means-cum-Merit Scholarship (NMMS), Telangana Science Talent Search, and daily practice drills.</p>
+          </div>
+        </div>
+
+        <div style="margin-top:14px;">
+          <h3 style="font-size:1rem; font-weight:800; margin-bottom:12px;">🌟 Upcoming State & National Scholarships</h3>
+          ${MOCK_DATA.olympiadExams.map(o => `
+            <div class="olympiad-card">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px;">
+                <div>
+                  <h3 style="font-size:1.05rem; font-weight:800; color:var(--text-primary);">${o.name}</h3>
+                  <div style="font-size:0.8rem; color:var(--text-muted);">${o.body} • Target: <strong>${o.eligibility}</strong></div>
+                </div>
+                <span class="scholarship-badge"><i data-lucide="award"></i> ${o.scholarship}</span>
+              </div>
+              <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:10px; margin:12px 0; background:var(--bg-card-sub); padding:10px 14px; border-radius:8px; font-size:0.82rem;">
+                <div><strong>Exam Date:</strong> ${o.examDate}</div>
+                <div><strong>Reg. Deadline:</strong> ${o.deadline}</div>
+                <div><strong>Pattern:</strong> ${o.pattern}</div>
+                <div><strong>Status:</strong> <span style="color:#059669; font-weight:700;">${o.status}</span></div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+
+        <div class="quiz-container">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <h3 style="font-size:1.05rem; font-weight:800; margin:0;"><i data-lucide="target" style="color:var(--indigo);"></i> 🎯 Daily 3-Question Scholarship Practice Drill</h3>
+            <span style="font-size:0.75rem; font-weight:700; background:#ede9fe; color:#6366f1; padding:3px 10px; border-radius:12px;">NMMS & SAT Level</span>
+          </div>
+          ${MOCK_DATA.olympiadQuizPractice.map((q, qIdx) => `
+            <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:8px; padding:14px; margin-bottom:12px;">
+              <div style="font-size:0.88rem; font-weight:700; margin-bottom:10px;">Q${qIdx + 1}. ${q.question}</div>
+              <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:8px;">
+                ${q.options.map((opt, optIdx) => `
+                  <button class="quiz-option-btn" data-quiz-opt="${q.id}" onclick="window.selectOlympiadOption('${q.id}', ${optIdx})">
+                    ${String.fromCharCode(65 + optIdx)}) ${opt}
+                  </button>
+                `).join('')}
+              </div>
+              <div id="quizExp_${q.id}" class="quiz-explanation" style="display:none; margin-top:10px; padding:8px 12px; background:rgba(99,102,241,0.08); border-left:3px solid var(--indigo); border-radius:4px; font-size:0.8rem; color:var(--text-secondary);">
+                <strong>💡 Detailed Solution:</strong> ${q.explanation}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    refreshLucideIcons();
+  }
+
+  /* 26. TEACHER PROXY & TIMETABLE SUBSTITUTION */
+  function renderProxySubstitutionScreen() {
+    const sys = MOCK_DATA.proxySubstitutionSystem;
+    contentViewport.innerHTML = `
+      <div class="panel-card" style="margin-bottom:20px;">
+        <div class="panel-header">
+          <div>
+            <h2 style="font-size:1.3rem; font-weight:800; display:flex; align-items:center; gap:8px;">
+              <i data-lucide="shuffle" style="color:var(--indigo);"></i> Teacher Proxy & Timetable Substitution Engine
+            </h2>
+            <p style="color:var(--text-secondary); font-size:0.85rem; margin-top:4px;">Live staff absence audit, period conflict resolution, and 1-click proxy duty assignment for zero lost instructional hours.</p>
+          </div>
+        </div>
+
+        <div class="stats-grid-4" style="margin:16px 0 20px 0;">
+          <div class="stat-card">
+            <div class="stat-title">Staff on Leave Today</div>
+            <div class="stat-value">${sys.teachersOnLeave.length}</div>
+            <span class="trend-badge trend-orange">Documented Leave</span>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Periods Affected</div>
+            <div class="stat-value">3</div>
+            <span class="trend-badge trend-purple">Timetable Gaps</span>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Proxies Confirmed</div>
+            <div class="stat-value">${sys.allocatedProxies.length}</div>
+            <span class="trend-badge trend-up-green">100% Covered</span>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Free Teachers Available</div>
+            <div class="stat-value">${sys.availableFreeTeachersToday.length}</div>
+            <span class="trend-badge trend-up-blue">Standby Pool</span>
+          </div>
+        </div>
+
+        <div style="margin-bottom:20px;">
+          <h3 style="font-size:1rem; font-weight:800; margin-bottom:10px;">📋 Today's Staff Leave & Covered Classes</h3>
+          ${sys.teachersOnLeave.map(tl => `
+            <div style="background:var(--bg-card-sub); border:1px solid var(--border-color); border-radius:8px; padding:12px 16px; margin-bottom:10px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+                <span style="font-weight:800; font-size:0.9rem;">${tl.teacherName} (${tl.subject})</span>
+                <span style="font-size:0.75rem; color:var(--text-muted);">Reason: ${tl.reason}</span>
+              </div>
+              <div style="font-size:0.8rem; color:var(--text-secondary); margin-top:6px;">
+                Affected Periods: ${tl.periodsAffected.map(p => `<span style="background:var(--bg-card); border:1px solid var(--border-color); padding:2px 8px; border-radius:4px; margin-right:6px;">${p.period} (${p.class})</span>`).join('')}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+
+        <div style="margin-bottom:20px;">
+          <h3 style="font-size:1rem; font-weight:800; margin-bottom:10px;">⚡ Active Proxy Allocations</h3>
+          ${sys.allocatedProxies.map(p => `
+            <div class="proxy-card">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                  <span class="proxy-status-pill">${p.period} (${p.time})</span>
+                  <strong style="margin-left:8px;">${p.targetClass}</strong>
+                </div>
+                <span style="font-size:0.75rem; color:#10b981; font-weight:700;">✓ ${p.status}</span>
+              </div>
+              <div style="font-size:0.82rem; margin-top:6px;">
+                Teacher on Leave: <del style="color:var(--text-muted);">${p.originalTeacher}</del> ➔ 
+                <strong>Assigned Proxy: <span style="color:var(--indigo);">${p.assignedProxyTeacher}</span></strong>
+              </div>
+              <div style="font-size:0.78rem; color:var(--text-secondary); margin-top:4px;">
+                Class Activity: ${p.topicCovered} • <span style="color:#059669;">Notified via ${p.notifiedVia}</span>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+
+        <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:12px; padding:16px;">
+          <h4 style="font-size:0.9rem; font-weight:800; margin-bottom:8px;">👨‍🏫 Available Teachers Right Now (Free Period Standby)</h4>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            ${sys.availableFreeTeachersToday.map(ft => `
+              <div class="free-teacher-chip">
+                <i data-lucide="user-check" style="width:14px; height:14px; color:#10b981;"></i>
+                <span>${ft.name} (${ft.subject}) — Free in ${ft.freePeriods.join(', ')}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    `;
+    refreshLucideIcons();
+  }
+
+  /* 27. SCERT CCE REPORT CARD & HALL TICKET */
+  function renderCceReportCardScreen() {
+    const card = MOCK_DATA.cceReportCardData;
+    const ht = MOCK_DATA.hallTicketData;
+
+    contentViewport.innerHTML = `
+      <div class="panel-card" style="margin-bottom:20px;">
+        <div class="panel-header">
+          <div>
+            <h2 style="font-size:1.3rem; font-weight:800; display:flex; align-items:center; gap:8px;">
+              <i data-lucide="file-text" style="color:var(--indigo);"></i> Telangana SCERT CCE Progress Card & Board Hall Ticket
+            </h2>
+            <p style="color:var(--text-secondary); font-size:0.85rem; margin-top:4px;">Vikas Grammar School HS Cherial (UDISE: 36182100637) • Official Continuous and Comprehensive Evaluation (CCE) and Examination Admit Card.</p>
+          </div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="filter-pill ${activeCceTab === 'report_card' ? 'active' : ''}" onclick="window.switchCceTab('report_card')" style="padding:6px 14px; border-radius:20px; font-weight:700; cursor:pointer; border:1px solid var(--border-color); background:${activeCceTab === 'report_card' ? 'var(--indigo)' : 'var(--bg-card-sub)'}; color:${activeCceTab === 'report_card' ? '#ffffff' : 'var(--text-primary)'};">
+              📊 CCE Progress Card
+            </button>
+            <button class="filter-pill ${activeCceTab === 'hall_ticket' ? 'active' : ''}" onclick="window.switchCceTab('hall_ticket')" style="padding:6px 14px; border-radius:20px; font-weight:700; cursor:pointer; border:1px solid var(--border-color); background:${activeCceTab === 'hall_ticket' ? 'var(--indigo)' : 'var(--bg-card-sub)'}; color:${activeCceTab === 'hall_ticket' ? '#ffffff' : 'var(--text-primary)'};">
+              🎫 Exam Hall Ticket
+            </button>
+            <button class="download-pill-btn" onclick="window.printCceCard()" style="background:#0f172a;">
+              <i data-lucide="printer"></i> Print Document
+            </button>
+          </div>
+        </div>
+
+        ${activeCceTab === 'report_card' ? `
+          <div class="cce-sheet-container">
+            <div class="cce-header-banner">
+              <h2 style="font-size:1.25rem; font-weight:900; margin:0; text-transform:uppercase;">${card.schoolName}</h2>
+              <p style="font-size:0.82rem; margin:3px 0;">${card.schoolAddress} • UDISE: <strong>${card.udiseCode}</strong></p>
+              <div style="display:inline-block; background:#0f172a; color:#ffffff; font-size:0.75rem; font-weight:800; padding:3px 12px; border-radius:4px; margin-top:4px;">
+                ${card.term} PROGRESS REPORT — ACADEMIC YEAR ${card.academicYear}
+              </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:8px; margin-bottom:14px; font-size:0.82rem; background:#f8fafc; padding:12px; border-radius:6px; border:1px solid #cbd5e1;">
+              <div><strong>Student Name:</strong> ${card.student.name}</div>
+              <div><strong>Admission No:</strong> ${card.student.admissionNo}</div>
+              <div><strong>Roll No:</strong> ${card.student.rollNo}</div>
+              <div><strong>Class & Section:</strong> ${card.student.classSection}</div>
+              <div><strong>Father's Name:</strong> ${card.student.fatherName}</div>
+              <div><strong>Attendance:</strong> <span style="color:#047857; font-weight:700;">${card.student.attendanceDays}</span></div>
+            </div>
+
+            <table class="cce-data-table">
+              <thead>
+                <tr>
+                  <th>S.No</th>
+                  <th>Curricular Subject</th>
+                  <th>FA 1 (20)</th>
+                  <th>FA 2 (20)</th>
+                  <th>FA 3 (20)</th>
+                  <th>FA 4 (20)</th>
+                  <th>SA 1 (80)</th>
+                  <th>Total (100)</th>
+                  <th>GPA</th>
+                  <th>Grade</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${card.subjectMarks.map((sm, idx) => `
+                  <tr>
+                    <td>${idx + 1}</td>
+                    <td><strong>${sm.subject}</strong></td>
+                    <td>${sm.fa1}</td>
+                    <td>${sm.fa2}</td>
+                    <td>${sm.fa3}</td>
+                    <td>${sm.fa4}</td>
+                    <td>${sm.sa1}</td>
+                    <td><strong>${sm.total100}</strong></td>
+                    <td><strong>${sm.gpa}</strong></td>
+                    <td><span style="background:#d1fae5; color:#047857; font-weight:800; padding:2px 8px; border-radius:4px;">${sm.grade}</span></td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:14px; margin-top:14px;">
+              <div style="border:1px solid #cbd5e1; border-radius:6px; padding:10px;">
+                <h4 style="font-size:0.85rem; font-weight:800; margin-bottom:6px; text-transform:uppercase;">Co-Curricular Evaluation</h4>
+                ${card.coCurricular.map(cc => `
+                  <div style="display:flex; justify-content:space-between; font-size:0.8rem; padding:4px 0; border-bottom:1px dashed #e2e8f0;">
+                    <span>${cc.area}</span>
+                    <strong style="color:#047857;">Grade ${cc.grade}</strong>
+                  </div>
+                `).join('')}
+              </div>
+              <div style="background:#f1f5f9; border:1px solid #cbd5e1; border-radius:6px; padding:12px; text-align:center; display:flex; flex-direction:column; justify-content:center;">
+                <div style="font-size:0.8rem; text-transform:uppercase; font-weight:700; color:#475569;">Cumulative Grade Point Average (CGPA)</div>
+                <div style="font-size:2.2rem; font-weight:900; color:#0f172a; margin:4px 0;">${card.overallGpa} / 10</div>
+                <div style="font-size:0.85rem; font-weight:800; color:#047857;">OVERALL RESULT: ${card.overallGrade} • ${card.classRank}</div>
+              </div>
+            </div>
+
+            <div style="margin-top:16px; padding:10px; background:#fafafa; border:1px solid #e2e8f0; border-radius:6px; font-size:0.8rem;">
+              <div><strong>Class Teacher Remarks:</strong> ${card.classTeacherRemarks}</div>
+              <div style="margin-top:4px;"><strong>Headmaster Sign-off:</strong> ${card.headmasterRemarks}</div>
+            </div>
+          </div>
+        ` : `
+          <div class="hall-ticket-box">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid #0f172a; padding-bottom:12px; flex-wrap:wrap; gap:8px;">
+              <div>
+                <h2 style="font-size:1.15rem; font-weight:900; margin:0; text-transform:uppercase;">${ht.schoolName}</h2>
+                <div style="font-size:0.85rem; font-weight:800; color:#4338ca; margin-top:2px;">${ht.examTitle}</div>
+                <div style="font-size:0.75rem; color:#64748b;">Examination Center: ${ht.examinationCenter}</div>
+              </div>
+              <div style="text-align:right;">
+                <div class="barcode-font">${ht.barcode}</div>
+                <div style="font-size:0.78rem; font-weight:800;">HT NO: ${ht.hallTicketNo}</div>
+              </div>
+            </div>
+
+            <div style="display:flex; gap:16px; align-items:center; margin:16px 0; background:#f8fafc; padding:12px; border-radius:6px; border:1px solid #e2e8f0; flex-wrap:wrap;">
+              <img src="${ht.photoUrl}" alt="Student" style="width:72px; height:84px; object-fit:cover; border:1px solid #94a3b8; border-radius:4px;">
+              <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:8px; font-size:0.83rem; flex:1;">
+                <div><strong>Candidate Name:</strong> ${ht.studentName}</div>
+                <div><strong>Father's Name:</strong> ${ht.fatherName}</div>
+                <div><strong>Class & Section:</strong> ${ht.class}</div>
+                <div><strong>Center Code:</strong> 637 (Cheriyal Main)</div>
+              </div>
+            </div>
+
+            <h4 style="font-size:0.85rem; font-weight:800; margin-bottom:8px; text-transform:uppercase;">Examination Timetable & Seating Plan</h4>
+            <table class="cce-data-table">
+              <thead>
+                <tr>
+                  <th>Exam Date</th>
+                  <th>Day</th>
+                  <th>Reporting Time</th>
+                  <th>Subject</th>
+                  <th>Invigilator Signature</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${ht.schedule.map(s => `
+                  <tr>
+                    <td><strong>${s.date}</strong></td>
+                    <td>${s.day}</td>
+                    <td>${s.time}</td>
+                    <td><strong>${s.subject}</strong></td>
+                    <td style="color:#94a3b8;">__________________</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+
+            <div style="margin-top:12px; font-size:0.75rem; color:#475569; border-top:1px solid #cbd5e1; padding-top:8px;">
+              <strong>Statutory Instructions:</strong>
+              ${ht.instructions.map((ins, i) => `<div>${i + 1}. ${ins}</div>`).join('')}
+            </div>
+          </div>
+        `}
+      </div>
+    `;
     refreshLucideIcons();
   }
 
