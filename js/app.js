@@ -198,6 +198,12 @@ document.addEventListener('DOMContentLoaded', () => {
     window.pingBusDriverGps = pingBusDriverGps;
     window.renderLibraryRouterScreen = renderLibraryRouterScreen;
     window.renewLibraryBookOnline = renewLibraryBookOnline;
+    window.openLogManagementExpenseModal = openLogManagementExpenseModal;
+    window.closeLogManagementExpenseModal = closeLogManagementExpenseModal;
+    window.submitManagementExpenseVoucher = submitManagementExpenseVoucher;
+    window.downloadExpenseVoucherPdf = downloadExpenseVoucherPdf;
+    window.exportFinancialAuditReport = exportFinancialAuditReport;
+    window.renderPrincipalFeeLedgerScreen = renderPrincipalFeeLedgerScreen;
 
     // Role Pills Switcher in Top Navbar
     document.querySelectorAll('.role-pill').forEach(btn => {
@@ -1525,48 +1531,171 @@ document.addEventListener('DOMContentLoaded', () => {
     refreshLucideIcons();
   }
 
-  /* 10C. PRINCIPAL SCHOOL-WIDE FINANCIAL LEDGER */
+  /* 10C. PRINCIPAL SCHOOL-WIDE FINANCIAL & MANAGEMENT INVESTMENT LEDGER */
   function renderPrincipalFeeLedgerScreen() {
     const list = MOCK_DATA.feeLedgerFullList;
+    const mgmt = MOCK_DATA.managementExpenditureData;
+
+    // Recalculate dynamic totals from mock data
+    const totalSpent = mgmt.categoriesSummary.reduce((sum, c) => sum + c.spentAmount, 0);
+    mgmt.totalExpensesAndInvestments = totalSpent;
+    mgmt.operatingSurplus = Math.max(0, mgmt.totalInflow - totalSpent);
+
     contentViewport.innerHTML = `
       <div class="panel-card" style="background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border-color: #a7f3d0; margin-bottom:20px;">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
           <div>
-            <h2><i data-lucide="indian-rupee" style="color:var(--emerald);"></i> Institutional Fee Collection & Financial Ledger</h2>
-            <p style="color:var(--text-secondary); margin-top:4px;">Headmaster Overview • Academic Year 2026-2027 • Vikas Grammar School Cherial (UDISE: 36182100637)</p>
+            <h2><i data-lucide="indian-rupee" style="color:var(--emerald);"></i> Institutional Financial Ledger, Fee Collections & Management Investments</h2>
+            <p style="color:var(--text-secondary); margin-top:4px;">
+              Headmaster Overview • ${mgmt.financialYear} • Vikas Grammar School HS Cherial (UDISE: 36182100637)
+            </p>
           </div>
-          <button class="btn-primary" onclick="showToast('Dispatched Automated Fee Reminder SMS to all 42 Defaulters!')" style="padding:8px 16px; background:var(--emerald); color:white; border-radius:10px; font-weight:700; border:none; cursor:pointer;">
-            <i data-lucide="send"></i> Send Fee Reminder SMS (All Classes)
-          </button>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn-primary" onclick="window.openLogManagementExpenseModal()" style="padding:9px 18px; background:linear-gradient(135deg, #059669, #10b981); color:white; border-radius:10px; font-weight:800; border:none; cursor:pointer; box-shadow:0 4px 12px rgba(16,185,129,0.3); display:inline-flex; align-items:center; gap:6px;">
+              <i data-lucide="plus-circle"></i> + Log Management Expense / Investment
+            </button>
+            <button class="btn-primary" onclick="window.exportFinancialAuditReport()" style="padding:9px 16px; background:var(--indigo); color:white; border-radius:10px; font-weight:700; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+              <i data-lucide="file-text"></i> Export Audit PDF
+            </button>
+            <button class="btn-primary" onclick="showToast('Dispatched Automated Fee Reminder SMS to all 42 Defaulters!')" style="padding:9px 16px; background:#ea580c; color:white; border-radius:10px; font-weight:700; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+              <i data-lucide="send"></i> Send Fee SMS
+            </button>
+          </div>
         </div>
       </div>
 
+      <!-- MASTER CASH FLOW & P&L FINANCIAL CARDS -->
       <div class="stats-grid-4" style="margin-bottom:20px;">
-        <div class="stat-card">
-          <div class="stat-title">Total School Target (Q2)</div>
-          <div class="stat-value">₹15.50 L</div>
-          <span class="trend-badge trend-up-green">Classes 1–10</span>
+        <div class="stat-card" style="border-left:4px solid #10b981;">
+          <div class="stat-title">Total Revenue Inflow (Q2)</div>
+          <div class="stat-value" style="color:#10b981;">₹${(mgmt.totalInflow / 100000).toFixed(2)} L</div>
+          <span class="trend-badge trend-up-green">91.9% of ₹15.50L Target</span>
         </div>
-        <div class="stat-card">
-          <div class="stat-title">Fee Collected</div>
-          <div class="stat-value" style="color:#10b981;">₹14.25 L</div>
-          <span class="trend-badge trend-up-green">91.9% Collected</span>
+
+        <div class="stat-card" style="border-left:4px solid #ef4444;">
+          <div class="stat-title">Management Expenses & Investments</div>
+          <div class="stat-value" style="color:#ef4444;">₹${(mgmt.totalExpensesAndInvestments / 100000).toFixed(2)} L</div>
+          <span class="trend-badge trend-orange">Sanitization, Labs, Fleet, Grants</span>
         </div>
-        <div class="stat-card">
-          <div class="stat-title">Outstanding Dues</div>
-          <div class="stat-value" style="color:#ef4444;">₹1.25 L</div>
-          <span class="trend-badge trend-orange">42 Defaulters</span>
+
+        <div class="stat-card" style="border-left:4px solid #6366f1;">
+          <div class="stat-title">Net Operating Reserve / Surplus</div>
+          <div class="stat-value" style="color:#6366f1;">₹${(mgmt.operatingSurplus / 100000).toFixed(2)} L</div>
+          <span class="trend-badge trend-purple">Allocated for Digital Expansion</span>
         </div>
-        <div class="stat-card">
-          <div class="stat-title">Online Payment Ratio</div>
-          <div class="stat-value">78%</div>
-          <span class="trend-badge trend-purple">UPI & Netbanking</span>
+
+        <div class="stat-card" style="border-left:4px solid #f59e0b;">
+          <div class="stat-title">Outstanding Student Fee Dues</div>
+          <div class="stat-value" style="color:#f59e0b;">₹1.25 L</div>
+          <span class="trend-badge trend-orange">42 Defaulters (All Classes)</span>
         </div>
       </div>
 
+      <!-- MANAGEMENT INVESTMENT & EXPENDITURE BREAKDOWN (BY CATEGORY) -->
+      <div class="panel-card" style="margin-bottom:20px;">
+        <div class="panel-header">
+          <div>
+            <h3 class="panel-title"><i data-lucide="pie-chart" style="color:var(--indigo);"></i> Management Capital Investments & Operational Cost Centers</h3>
+            <p style="color:var(--text-secondary); font-size:0.8rem; margin:2px 0 0 0;">
+              Audited allocation for campus hygiene, lab upgrades, girl scholarships, bus maintenance, and academic materials.
+            </p>
+          </div>
+          <span class="badge badge-success" style="font-size:0.75rem; font-weight:800;">Q2 Audit Certified</span>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:16px; margin-top:10px;">
+          ${mgmt.categoriesSummary.map(c => {
+            const pct = ((c.spentAmount / c.allocatedBudget) * 100).toFixed(1);
+            return `
+              <div style="background:var(--bg-card-sub); border:1px solid var(--border-color); border-radius:14px; padding:16px; position:relative; overflow:hidden;">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;">
+                  <div style="display:flex; align-items:center; gap:10px;">
+                    <div style="width:36px; height:36px; border-radius:10px; background:${c.color}20; color:${c.color}; display:flex; align-items:center; justify-content:center; font-weight:800;">
+                      <i data-lucide="${c.icon}" style="width:18px; height:18px;"></i>
+                    </div>
+                    <div>
+                      <h4 style="font-size:0.92rem; font-weight:800; color:var(--text-primary); margin:0;">${c.name}</h4>
+                      <span style="font-size:0.72rem; color:var(--text-muted);">Budget: ₹${c.allocatedBudget.toLocaleString()}</span>
+                    </div>
+                  </div>
+                  <span style="font-size:0.75rem; font-weight:800; color:${c.color}; background:${c.color}15; padding:3px 8px; border-radius:12px;">
+                    ${pct}% Used
+                  </span>
+                </div>
+
+                <div style="margin-bottom:10px;">
+                  <div style="display:flex; justify-content:space-between; font-size:0.76rem; font-weight:700; color:var(--text-secondary); margin-bottom:4px;">
+                    <span>Utilized: <strong style="color:var(--text-primary);">₹${c.spentAmount.toLocaleString()}</strong></span>
+                    <span>Remaining: <strong style="color:#10b981;">₹${(c.allocatedBudget - c.spentAmount).toLocaleString()}</strong></span>
+                  </div>
+                  <div style="height:6px; background:#e2e8f0; border-radius:6px; overflow:hidden;">
+                    <div style="width:${Math.min(100, pct)}%; height:100%; background:${c.color}; border-radius:6px;"></div>
+                  </div>
+                </div>
+
+                <p style="font-size:0.75rem; color:var(--text-muted); line-height:1.4; margin:0;">
+                  ${c.description}
+                </p>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+
+      <!-- RECENT MANAGEMENT EXPENSE VOUCHERS AUDIT TABLE -->
+      <div class="panel-card" style="margin-bottom:20px;">
+        <div class="panel-header">
+          <h3 class="panel-title"><i data-lucide="receipt" style="color:var(--emerald);"></i> Recent Management Expense & Investment Vouchers</h3>
+          <span style="font-size:0.8rem; color:var(--text-muted);">${mgmt.vouchersList.length} Recorded Vouchers</span>
+        </div>
+
+        <div class="table-container">
+          <table class="data-table" style="width:100%; border-collapse:collapse; text-align:left; font-size:0.88rem;">
+            <thead>
+              <tr style="color:var(--text-muted); font-size:0.78rem; text-transform:uppercase; background:var(--bg-card-sub);">
+                <th style="padding:12px;">Voucher # & Date</th>
+                <th>Category & Purpose</th>
+                <th>Vendor / Contractor</th>
+                <th>Amount</th>
+                <th>Payment Mode</th>
+                <th>Approved By</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${mgmt.vouchersList.map(v => `
+                <tr style="border-bottom:1px solid var(--border-color);">
+                  <td style="padding:12px;">
+                    <code>${v.voucherNo}</code><br>
+                    <span style="font-size:0.74rem; color:var(--text-muted);">${v.date}</span>
+                  </td>
+                  <td>
+                    <strong>${v.category}</strong><br>
+                    <span style="font-size:0.78rem; color:var(--text-secondary);">${v.description}</span>
+                  </td>
+                  <td style="font-size:0.82rem; font-weight:600;">${v.vendor}</td>
+                  <td style="color:#ef4444; font-weight:800;">₹${v.amount.toLocaleString()}</td>
+                  <td><span class="badge badge-indigo">${v.paidVia}</span></td>
+                  <td style="font-size:0.78rem;">${v.approvedBy}</td>
+                  <td><span class="badge badge-success">${v.status}</span></td>
+                  <td>
+                    <button onclick="window.downloadExpenseVoucherPdf('${v.voucherNo}')" style="padding:4px 10px; font-size:0.75rem; background:var(--indigo); color:white; border-radius:6px; font-weight:700; border:none; cursor:pointer;">
+                      Voucher PDF
+                    </button>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- INSTITUTIONAL STUDENT FEE ACCOUNTS & INSTALLMENT STATUS -->
       <div class="panel-card">
         <div class="panel-header">
-          <h3 class="panel-title">Institutional Student Fee Accounts & Installments</h3>
+          <h3 class="panel-title"><i data-lucide="users" style="color:var(--indigo);"></i> Institutional Student Fee Accounts & Installment Status</h3>
+          <span style="font-size:0.8rem; color:var(--text-muted);">Classes 1 to 10 Roster</span>
         </div>
         <div class="table-container">
           <table class="data-table" style="width:100%; border-collapse:collapse; text-align:left; font-size:0.88rem;">
@@ -1605,6 +1734,148 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
     `;
     refreshLucideIcons();
+  }
+
+  /* 10C-1. MANAGEMENT EXPENSE LOGGING MODAL */
+  function openLogManagementExpenseModal() {
+    const existingModal = document.getElementById('logManagementExpenseModal');
+    if (existingModal) existingModal.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'logManagementExpenseModal';
+    modal.style.cssText = `
+      position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(4px); display: flex; align-items: center;
+      justify-content: center; z-index: 10000; padding: 20px; animation: fadeIn 0.2s ease;
+    `;
+
+    modal.innerHTML = `
+      <div style="background: white; border-radius: 20px; max-width: 580px; width: 100%; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3); overflow: hidden; animation: slideUp 0.3s ease;">
+        <div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding: 20px 24px; color: white; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <span style="font-size:0.75rem; font-weight:800; text-transform:uppercase; letter-spacing:1px; color:#fbbf24;">Management Financial Authority</span>
+            <h3 style="font-size:1.25rem; font-weight:900; margin:4px 0 0 0;">Log Management Expense / Investment</h3>
+          </div>
+          <button onclick="window.closeLogManagementExpenseModal()" style="background: rgba(255,255,255,0.2); border:none; color:white; width:32px; height:32px; border-radius:50%; font-weight:900; cursor:pointer; font-size:1rem;">✕</button>
+        </div>
+
+        <form onsubmit="window.submitManagementExpenseVoucher(event)" style="padding: 24px;">
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+            <div>
+              <label style="font-size:0.78rem; font-weight:800; color:#334155; display:block; margin-bottom:4px;">Expense Category</label>
+              <select id="expCategory" required style="width:100%; padding:9px 12px; border:1px solid #cbd5e1; border-radius:8px; font-size:0.85rem; font-weight:600;">
+                <option value="Campus Hygiene & Sanitization">🧹 Campus Hygiene & Sanitization</option>
+                <option value="Infrastructure & Facility Upgrades">🔬 Infrastructure & Lab Upgrades</option>
+                <option value="Beti Bachao & Merit Scholarships">🌸 Beti Bachao & Merit Scholarships</option>
+                <option value="School Transport Fleet & Fuel">🚌 School Transport Fleet & Fuel</option>
+                <option value="Teaching Materials & Exam Printing">📚 Teaching Materials & Printing</option>
+                <option value="Staff & Non-Teaching Payroll Allocation">👥 Staff & Support Honorarium</option>
+              </select>
+            </div>
+
+            <div>
+              <label style="font-size:0.78rem; font-weight:800; color:#334155; display:block; margin-bottom:4px;">Amount (₹)</label>
+              <input type="number" id="expAmount" min="100" placeholder="e.g. 15000" required style="width:100%; padding:9px 12px; border:1px solid #cbd5e1; border-radius:8px; font-size:0.85rem; font-weight:700;">
+            </div>
+          </div>
+
+          <div style="margin-bottom: 14px;">
+            <label style="font-size:0.78rem; font-weight:800; color:#334155; display:block; margin-bottom:4px;">Expense Description / Itemized Detail</label>
+            <input type="text" id="expDesc" placeholder="e.g. Monthly Phenyl, Floor Bleach, Restroom Sanitizers & Cleaning Staff Allowance" required style="width:100%; padding:9px 12px; border:1px solid #cbd5e1; border-radius:8px; font-size:0.85rem;">
+          </div>
+
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+            <div>
+              <label style="font-size:0.78rem; font-weight:800; color:#334155; display:block; margin-bottom:4px;">Vendor / Contractor / Beneficiary</label>
+              <input type="text" id="expVendor" placeholder="e.g. Sri Sai Chemicals Cherial" required style="width:100%; padding:9px 12px; border:1px solid #cbd5e1; border-radius:8px; font-size:0.85rem;">
+            </div>
+
+            <div>
+              <label style="font-size:0.78rem; font-weight:800; color:#334155; display:block; margin-bottom:4px;">Payment Mode</label>
+              <select id="expMode" style="width:100%; padding:9px 12px; border:1px solid #cbd5e1; border-radius:8px; font-size:0.85rem;">
+                <option value="Bank Transfer (SBI)">Bank Transfer (SBI)</option>
+                <option value="UPI / Online Gateway">UPI / Online Gateway</option>
+                <option value="Cheque Payment">Cheque Payment</option>
+                <option value="Corporate Fleet Card">Corporate Fleet Card</option>
+                <option value="Cash Voucher">Cash Voucher</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 20px;">
+            <label style="font-size:0.78rem; font-weight:800; color:#334155; display:block; margin-bottom:4px;">Approving Authority</label>
+            <input type="text" id="expApprovedBy" value="Headmaster K. Rajesham" required style="width:100%; padding:9px 12px; border:1px solid #cbd5e1; border-radius:8px; font-size:0.85rem; font-weight:600; background:#f8fafc;">
+          </div>
+
+          <div style="display:flex; gap:10px;">
+            <button type="button" onclick="window.closeLogManagementExpenseModal()" style="flex:1; padding:12px; border:1px solid #cbd5e1; background:white; color:#475569; border-radius:10px; font-weight:700; cursor:pointer;">
+              Cancel
+            </button>
+            <button type="submit" style="flex:2; padding:12px; border:none; background:linear-gradient(135deg, #059669 0%, #10b981 100%); color:white; border-radius:10px; font-weight:800; font-size:0.92rem; cursor:pointer; box-shadow:0 4px 14px rgba(16,185,129,0.35);">
+              ✓ Record & Approve Voucher
+            </button>
+          </div>
+        </form>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+  }
+
+  function closeLogManagementExpenseModal() {
+    const modal = document.getElementById('logManagementExpenseModal');
+    if (modal) modal.remove();
+  }
+
+  function submitManagementExpenseVoucher(event) {
+    if (event && event.preventDefault) event.preventDefault();
+    const cat = document.getElementById('expCategory')?.value || 'Campus Hygiene & Sanitization';
+    const amt = parseFloat(document.getElementById('expAmount')?.value || '0');
+    const desc = document.getElementById('expDesc')?.value || 'General Campus Sanitization & Maintenance';
+    const vendor = document.getElementById('expVendor')?.value || 'Local Vendor Cherial';
+    const mode = document.getElementById('expMode')?.value || 'Bank Transfer (SBI)';
+    const approvedBy = document.getElementById('expApprovedBy')?.value || 'Headmaster K. Rajesham';
+
+    if (amt <= 0) {
+      showToast('Please enter a valid expense amount in ₹.');
+      return;
+    }
+
+    const mgmt = MOCK_DATA.managementExpenditureData;
+    const newVoucherNo = `VCH-2026-${Math.floor(100 + Math.random() * 900)}`;
+    const todayStr = 'Sep 03, 2026';
+
+    // Update category spent amount
+    const foundCat = mgmt.categoriesSummary.find(c => c.name === cat);
+    if (foundCat) {
+      foundCat.spentAmount += amt;
+    }
+
+    // Prepend new voucher to list
+    mgmt.vouchersList.unshift({
+      voucherNo: newVoucherNo,
+      category: cat,
+      categoryTag: cat.split(' ')[0],
+      description: desc,
+      vendor: vendor,
+      amount: amt,
+      date: todayStr,
+      paidVia: mode,
+      approvedBy: approvedBy,
+      status: 'Approved & Settled'
+    });
+
+    closeLogManagementExpenseModal();
+    showToast(`✓ Logged Management Expense Voucher #${newVoucherNo} (₹${amt.toLocaleString()}) for ${cat}!`);
+    renderPrincipalFeeLedgerScreen();
+  }
+
+  function downloadExpenseVoucherPdf(voucherNo) {
+    showToast(`Downloaded Official School Expenditure Voucher PDF [${voucherNo}]!`);
+  }
+
+  function exportFinancialAuditReport() {
+    showToast('Exported Comprehensive Q2 Financial Audit & P&L Report PDF with School Seal!');
   }
 
   /* 10D. ONLINE PAYMENT MODAL CONTROLLERS */

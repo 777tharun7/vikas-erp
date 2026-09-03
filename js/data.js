@@ -259,6 +259,144 @@ const MOCK_DATA = {
     emergencyContact: '08716-242001 (School Main Office)'
   },
 
+  // MANAGEMENT INVESTMENT & OPERATIONAL EXPENDITURE LEDGER
+  managementExpenditureData: {
+    financialYear: '2026 – 2027 (Q2)',
+    totalInflow: 1425000,
+    totalExpensesAndInvestments: 980000,
+    operatingSurplus: 445000,
+    categoriesSummary: [
+      {
+        id: 'cat_hygiene',
+        name: 'Campus Hygiene & Sanitization',
+        icon: 'sparkles',
+        allocatedBudget: 120000,
+        spentAmount: 98500,
+        color: '#10b981',
+        description: 'Daily phenyl, Lizol, Restroom deep cleaning, Pest control, Water tank wash, Cleaning staff wages'
+      },
+      {
+        id: 'cat_infra',
+        name: 'Infrastructure & Facility Upgrades',
+        icon: 'tool',
+        allocatedBudget: 250000,
+        spentAmount: 215000,
+        color: '#6366f1',
+        description: 'RO plant membrane service, Science lab equipment, ICT Computer upgrades, LED lighting, Classroom desks'
+      },
+      {
+        id: 'cat_scholarships',
+        name: 'Beti Bachao & Merit Scholarships',
+        icon: 'award',
+        allocatedBudget: 180000,
+        spentAmount: 150000,
+        color: '#f59e0b',
+        description: '100% tuition scholarships for 12 rural girl students, Board topper incentives, Olympiad exam subsidies'
+      },
+      {
+        id: 'cat_transport',
+        name: 'School Transport Fleet & Fuel',
+        icon: 'bus',
+        allocatedBudget: 280000,
+        spentAmount: 245000,
+        color: '#ea580c',
+        description: 'Diesel fuel ledger for 3 buses, RTO annual fitness certificate, AIS-140 GPS SIM renewals, Bus #2 tires'
+      },
+      {
+        id: 'cat_academic',
+        name: 'Teaching Materials & Exam Printing',
+        icon: 'book-open',
+        allocatedBudget: 150000,
+        spentAmount: 125000,
+        color: '#8b5cf6',
+        description: 'SCERT CCE diagnostic paper printing, Pedagogical training workshops, 45 new library reference books'
+      },
+      {
+        id: 'cat_payroll',
+        name: 'Staff & Non-Teaching Payroll Allocation',
+        icon: 'users',
+        allocatedBudget: 160000,
+        spentAmount: 146500,
+        color: '#0284c7',
+        description: 'Administrative support, Attenders, Security watchman, IT network technician stipend'
+      }
+    ],
+    vouchersList: [
+      {
+        voucherNo: 'VCH-2026-088',
+        category: 'Campus Hygiene & Sanitization',
+        categoryTag: 'Hygiene & Cleaning',
+        description: 'Quarterly Phenyl, Floor Disinfectant, Restroom Bleach & Cleaning Staff Monthly Allowance',
+        vendor: 'Sri Sai Sanitization & Chemicals, Cherial',
+        amount: 28500,
+        date: 'Aug 28, 2026',
+        paidVia: 'Bank Transfer (SBI)',
+        approvedBy: 'Headmaster K. Rajesham',
+        status: 'Approved & Settled'
+      },
+      {
+        voucherNo: 'VCH-2026-082',
+        category: 'Infrastructure & Facility Upgrades',
+        categoryTag: 'Water & RO Plant',
+        description: 'RO Drinking Water Plant (500 LPH) Multi-Grade Sand Filter & Membrane Overhaul (Calibrated to 95 PPM TDS)',
+        vendor: 'AquaPure Systems, Siddipet',
+        amount: 32000,
+        date: 'Aug 22, 2026',
+        paidVia: 'Cheque #881902',
+        approvedBy: 'Correspondent K. Rajesham',
+        status: 'Approved & Settled'
+      },
+      {
+        voucherNo: 'VCH-2026-079',
+        category: 'Beti Bachao & Merit Scholarships',
+        categoryTag: 'Girl Scholarships',
+        description: 'Direct Tuition Fee Grant for 6 Meritorious Rural Girl Students under Beti Bachao Scheme (Q2)',
+        vendor: 'VGS Student Welfare Trust',
+        amount: 45000,
+        date: 'Aug 15, 2026',
+        paidVia: 'Internal Fee Ledger Credit',
+        approvedBy: 'Management Board',
+        status: 'Disbursed'
+      },
+      {
+        voucherNo: 'VCH-2026-074',
+        category: 'Infrastructure & Facility Upgrades',
+        categoryTag: 'STEM Lab',
+        description: 'Composite Science Laboratory Apparatus & Chemicals Restock (Microscopes, Reagents, Titration Kits)',
+        vendor: 'Scientific Supplies Hyderabad',
+        amount: 42000,
+        date: 'Aug 10, 2026',
+        paidVia: 'NEFT / RTGS',
+        approvedBy: 'Mr. P. Ramesh (HOD Science) & Principal',
+        status: 'Approved & Settled'
+      },
+      {
+        voucherNo: 'VCH-2026-068',
+        category: 'School Transport Fleet & Fuel',
+        categoryTag: 'Bus Diesel & Fitness',
+        description: 'Diesel Fuel Monthly Supply (Buses 1, 2, 3) & Annual RTO Mechanical Roadworthiness Certification',
+        vendor: 'HPCL Fuel Station, Cherial Main Road',
+        amount: 58000,
+        date: 'Aug 04, 2026',
+        paidVia: 'Corporate Fleet Card',
+        approvedBy: 'Headmaster K. Rajesham',
+        status: 'Approved & Settled'
+      },
+      {
+        voucherNo: 'VCH-2026-061',
+        category: 'Teaching Materials & Exam Printing',
+        categoryTag: 'CCE Exam Printing',
+        description: 'Telangana SCERT CCE Formative Assessment (FA-1 & FA-2) Master Question Papers & Answer Books Printing',
+        vendor: 'Sri Lakshmi Offset Printers, Jangaon',
+        amount: 24500,
+        date: 'Jul 26, 2026',
+        paidVia: 'UPI Gateway',
+        approvedBy: 'Academic In-Charge Mrs. S. Radhika',
+        status: 'Approved & Settled'
+      }
+    ]
+  },
+
   // 7. TRANSPORT FLEET
   transportFleetList: [
     { busNo: 'Bus #1 (TG 12 Z 4091)', route: 'Route 1 — Cherial to Nagapuri Line', driver: 'B. Venkatesh', phone: '+91 98480 12345', pickupStop: 'Cherial Main Junction', pickupTime: '07:45 AM', schoolArrival: '08:15 AM', dropTime: '04:45 PM', studentsCount: 38, gpsStatus: '🟢 On Route • Near Cherial Market', speed: '35 km/h' },
