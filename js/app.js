@@ -204,6 +204,8 @@ document.addEventListener('DOMContentLoaded', () => {
     window.downloadExpenseVoucherPdf = downloadExpenseVoucherPdf;
     window.exportFinancialAuditReport = exportFinancialAuditReport;
     window.renderPrincipalFeeLedgerScreen = renderPrincipalFeeLedgerScreen;
+    window.openManagementExpenseReceiptModal = openManagementExpenseReceiptModal;
+    window.closeManagementExpenseReceiptModal = closeManagementExpenseReceiptModal;
 
     // Role Pills Switcher in Top Navbar
     document.querySelectorAll('.role-pill').forEach(btn => {
@@ -1680,8 +1682,8 @@ document.addEventListener('DOMContentLoaded', () => {
                   <td style="font-size:0.78rem;">${v.approvedBy}</td>
                   <td><span class="badge badge-success">${v.status}</span></td>
                   <td>
-                    <button onclick="window.downloadExpenseVoucherPdf('${v.voucherNo}')" style="padding:4px 10px; font-size:0.75rem; background:var(--indigo); color:white; border-radius:6px; font-weight:700; border:none; cursor:pointer;">
-                      Voucher PDF
+                    <button onclick="window.openManagementExpenseReceiptModal('${v.voucherNo}')" style="padding:4px 10px; font-size:0.75rem; background:var(--indigo); color:white; border-radius:6px; font-weight:700; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:4px;">
+                      <i data-lucide="receipt" style="width:12px; height:12px;"></i> View Receipt
                     </button>
                   </td>
                 </tr>
@@ -1812,7 +1814,7 @@ document.addEventListener('DOMContentLoaded', () => {
               Cancel
             </button>
             <button type="submit" style="flex:2; padding:12px; border:none; background:linear-gradient(135deg, #059669 0%, #10b981 100%); color:white; border-radius:10px; font-weight:800; font-size:0.92rem; cursor:pointer; box-shadow:0 4px 14px rgba(16,185,129,0.35);">
-              ✓ Record & Approve Voucher
+              ✓ Record & Generate Receipt
             </button>
           </div>
         </form>
@@ -1824,6 +1826,147 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function closeLogManagementExpenseModal() {
     const modal = document.getElementById('logManagementExpenseModal');
+    if (modal) modal.remove();
+  }
+
+  /* 10C-2. OFFICIAL MANAGEMENT EXPENSE RECEIPT MODAL */
+  function openManagementExpenseReceiptModal(voucherRef) {
+    const mgmt = MOCK_DATA.managementExpenditureData;
+    let v = typeof voucherRef === 'object' ? voucherRef : mgmt.vouchersList.find(item => item.voucherNo === voucherRef);
+    if (!v) v = mgmt.vouchersList[0];
+
+    const existingModal = document.getElementById('managementExpenseReceiptModal');
+    if (existingModal) existingModal.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'managementExpenseReceiptModal';
+    modal.style.cssText = `
+      position: fixed; inset: 0; background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(5px); display: flex; align-items: center;
+      justify-content: center; z-index: 10001; padding: 20px; animation: fadeIn 0.2s ease;
+    `;
+
+    modal.innerHTML = `
+      <div style="background: white; border-radius: 20px; max-width: 620px; width: 100%; box-shadow: 0 25px 60px -15px rgba(0,0,0,0.4); overflow: hidden; animation: slideUp 0.3s ease; border: 1px solid #e2e8f0;">
+        <!-- RECEIPT TOP ACTION BAR -->
+        <div style="background: #0f172a; padding: 14px 20px; color: white; display: flex; justify-content: space-between; align-items: center;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="background:#10b981; color:white; font-size:0.7rem; font-weight:900; padding:3px 8px; border-radius:6px; letter-spacing:0.5px;">OFFICIAL RECEIPT</span>
+            <span style="font-size:0.85rem; font-weight:700; color:#cbd5e1;">Expenditure Voucher #${v.voucherNo}</span>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button onclick="window.print()" style="background:#334155; border:none; color:white; padding:6px 12px; border-radius:8px; font-size:0.76rem; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px;">
+              🖨️ Print
+            </button>
+            <button onclick="showToast('Receipt PDF Downloaded!')" style="background:#059669; border:none; color:white; padding:6px 12px; border-radius:8px; font-size:0.76rem; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px;">
+              ⬇️ PDF
+            </button>
+            <button onclick="window.closeManagementExpenseReceiptModal()" style="background: rgba(255,255,255,0.2); border:none; color:white; width:28px; height:28px; border-radius:50%; font-weight:900; cursor:pointer;">✕</button>
+          </div>
+        </div>
+
+        <!-- PRINTABLE RECEIPT BODY -->
+        <div style="padding: 28px; background: #fafafa; position: relative;">
+          <!-- Watermark -->
+          <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; opacity: 0.03; pointer-events: none; font-size: 4rem; font-weight: 900; transform: rotate(-25deg); color: #0f172a;">
+            VIKAS GRAMMAR SCHOOL
+          </div>
+
+          <!-- SCHOOL HEADER -->
+          <div style="text-align: center; border-bottom: 2px dashed #cbd5e1; padding-bottom: 16px; margin-bottom: 18px;">
+            <div style="display:inline-flex; align-items:center; gap:8px; margin-bottom:4px;">
+              <span style="font-size:1.4rem;">🎓</span>
+              <h2 style="font-size: 1.35rem; font-weight: 900; color: #0f172a; margin: 0; letter-spacing: -0.5px;">VIKAS GRAMMAR HIGH SCHOOL</h2>
+            </div>
+            <p style="font-size: 0.78rem; color: #475569; margin: 2px 0 0 0; font-weight: 600;">
+              Cherial, Siddipet District, Telangana – 506223 • UDISE: 36182100637 • Estd. 2004
+            </p>
+            <div style="margin-top: 8px;">
+              <span style="background: #e0f2fe; color: #0369a1; font-size: 0.72rem; font-weight: 800; padding: 3px 10px; border-radius: 12px; border: 1px solid #bae6fd;">
+                MANAGEMENT EXPENDITURE & DISBURSEMENT VOUCHER
+              </span>
+            </div>
+          </div>
+
+          <!-- VOUCHER METADATA GRID -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: white; padding: 14px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 16px; font-size: 0.82rem;">
+            <div>
+              <span style="color: #64748b; font-size: 0.72rem; display: block; font-weight: 700;">VOUCHER NUMBER</span>
+              <strong style="color: #0f172a; font-size: 0.95rem;">${v.voucherNo}</strong>
+            </div>
+            <div>
+              <span style="color: #64748b; font-size: 0.72rem; display: block; font-weight: 700;">TRANSACTION DATE</span>
+              <strong style="color: #0f172a;">${v.date}</strong>
+            </div>
+            <div>
+              <span style="color: #64748b; font-size: 0.72rem; display: block; font-weight: 700;">COST CENTER / HEAD</span>
+              <span style="color: #4338ca; font-weight: 800;">${v.category}</span>
+            </div>
+            <div>
+              <span style="color: #64748b; font-size: 0.72rem; display: block; font-weight: 700;">PAYMENT MODE</span>
+              <strong style="color: #059669;">${v.paidVia}</strong>
+            </div>
+          </div>
+
+          <!-- PAYEE & DESCRIPTION BOX -->
+          <div style="background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 14px; margin-bottom: 16px; font-size: 0.82rem;">
+            <div style="margin-bottom: 10px;">
+              <span style="color: #64748b; font-size: 0.72rem; display: block; font-weight: 700;">PAID TO / VENDOR / BENEFICIARY</span>
+              <strong style="font-size: 0.95rem; color: #0f172a;">${v.vendor}</strong>
+            </div>
+            <div>
+              <span style="color: #64748b; font-size: 0.72rem; display: block; font-weight: 700;">PURPOSE & PARTICULARS</span>
+              <p style="color: #334155; margin: 4px 0 0 0; line-height: 1.45; font-size: 0.82rem;">${v.description}</p>
+            </div>
+          </div>
+
+          <!-- AMOUNT PAID CALLOUT -->
+          <div style="background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border: 1px solid #6ee7b7; border-radius: 12px; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <div>
+              <span style="font-size: 0.74rem; font-weight: 800; color: #065f46; text-transform: uppercase;">Total Disbursed Amount</span>
+              <div style="font-size: 1.45rem; font-weight: 900; color: #047857; margin-top: 2px;">
+                ₹${v.amount.toLocaleString()}.00
+              </div>
+            </div>
+            <div style="text-align: right;">
+              <span style="background: #10b981; color: white; font-size: 0.75rem; font-weight: 800; padding: 4px 10px; border-radius: 20px;">
+                ✓ PAID & SETTLED
+              </span>
+            </div>
+          </div>
+
+          <!-- SIGNATURES & VERIFICATION STAMP -->
+          <div style="display: flex; justify-content: space-between; align-items: flex-end; padding-top: 10px; border-top: 1px solid #e2e8f0;">
+            <div>
+              <div style="width: 90px; height: 35px; border: 1px dashed #94a3b8; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.68rem; color: #059669; font-weight: 800; background: #f0fdf4;">
+                AUDITED & PASSED
+              </div>
+              <span style="font-size: 0.68rem; color: #64748b; display: block; margin-top: 4px;">Accounts Verification</span>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-family: 'Brush Script MT', cursive, sans-serif; font-size: 1.2rem; color: #1e3a8a; margin-bottom: -2px;">
+                K. Rajesham
+              </div>
+              <strong style="font-size: 0.78rem; color: #0f172a; display: block;">${v.approvedBy}</strong>
+              <span style="font-size: 0.68rem; color: #64748b;">Headmaster & Correspondent</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- FOOTER DISMISS -->
+        <div style="background: #f8fafc; padding: 14px 24px; border-top: 1px solid #e2e8f0; text-align: right;">
+          <button onclick="window.closeManagementExpenseReceiptModal()" style="padding: 8px 20px; background: #0f172a; color: white; border: none; border-radius: 8px; font-weight: 700; font-size: 0.82rem; cursor: pointer;">
+            Close Receipt
+          </button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+  }
+
+  function closeManagementExpenseReceiptModal() {
+    const modal = document.getElementById('managementExpenseReceiptModal');
     if (modal) modal.remove();
   }
 
@@ -1851,8 +1994,7 @@ document.addEventListener('DOMContentLoaded', () => {
       foundCat.spentAmount += amt;
     }
 
-    // Prepend new voucher to list
-    mgmt.vouchersList.unshift({
+    const newVoucherObj = {
       voucherNo: newVoucherNo,
       category: cat,
       categoryTag: cat.split(' ')[0],
@@ -1863,15 +2005,21 @@ document.addEventListener('DOMContentLoaded', () => {
       paidVia: mode,
       approvedBy: approvedBy,
       status: 'Approved & Settled'
-    });
+    };
+
+    // Prepend new voucher to list
+    mgmt.vouchersList.unshift(newVoucherObj);
 
     closeLogManagementExpenseModal();
     showToast(`✓ Logged Management Expense Voucher #${newVoucherNo} (₹${amt.toLocaleString()}) for ${cat}!`);
     renderPrincipalFeeLedgerScreen();
+    
+    // Automatically display the generated official receipt!
+    openManagementExpenseReceiptModal(newVoucherObj);
   }
 
   function downloadExpenseVoucherPdf(voucherNo) {
-    showToast(`Downloaded Official School Expenditure Voucher PDF [${voucherNo}]!`);
+    openManagementExpenseReceiptModal(voucherNo);
   }
 
   function exportFinancialAuditReport() {
