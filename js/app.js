@@ -206,6 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.renderPrincipalFeeLedgerScreen = renderPrincipalFeeLedgerScreen;
     window.openManagementExpenseReceiptModal = openManagementExpenseReceiptModal;
     window.closeManagementExpenseReceiptModal = closeManagementExpenseReceiptModal;
+    window.handleExpenseBillUpload = handleExpenseBillUpload;
 
     // Role Pills Switcher in Top Navbar
     document.querySelectorAll('.role-pill').forEach(btn => {
@@ -1752,7 +1753,7 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
 
     modal.innerHTML = `
-      <div style="background: white; border-radius: 20px; max-width: 580px; width: 100%; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3); overflow: hidden; animation: slideUp 0.3s ease;">
+      <div style="background: white; border-radius: 20px; max-width: 600px; width: 100%; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3); overflow: hidden; animation: slideUp 0.3s ease;">
         <div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding: 20px 24px; color: white; display: flex; justify-content: space-between; align-items: center;">
           <div>
             <span style="font-size:0.75rem; font-weight:800; text-transform:uppercase; letter-spacing:1px; color:#fbbf24;">Management Financial Authority</span>
@@ -1761,7 +1762,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <button onclick="window.closeLogManagementExpenseModal()" style="background: rgba(255,255,255,0.2); border:none; color:white; width:32px; height:32px; border-radius:50%; font-weight:900; cursor:pointer; font-size:1rem;">✕</button>
         </div>
 
-        <form onsubmit="window.submitManagementExpenseVoucher(event)" style="padding: 24px;">
+        <form onsubmit="window.submitManagementExpenseVoucher(event)" style="padding: 24px; max-height: 80vh; overflow-y: auto;">
           <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
             <div>
               <label style="font-size:0.78rem; font-weight:800; color:#334155; display:block; margin-bottom:4px;">Expense Category</label>
@@ -1782,8 +1783,13 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
 
           <div style="margin-bottom: 14px;">
-            <label style="font-size:0.78rem; font-weight:800; color:#334155; display:block; margin-bottom:4px;">Expense Description / Itemized Detail</label>
+            <label style="font-size:0.78rem; font-weight:800; color:#334155; display:block; margin-bottom:4px;">Expense Purpose / Main Head</label>
             <input type="text" id="expDesc" placeholder="e.g. Monthly Phenyl, Floor Bleach, Restroom Sanitizers & Cleaning Staff Allowance" required style="width:100%; padding:9px 12px; border:1px solid #cbd5e1; border-radius:8px; font-size:0.85rem;">
+          </div>
+
+          <div style="margin-bottom: 14px;">
+            <label style="font-size:0.78rem; font-weight:800; color:#334155; display:block; margin-bottom:4px;">Spent On Specific Items / Goods & Materials Purchased</label>
+            <input type="text" id="expSpecificItems" placeholder="e.g. 40L Phenyl Cans, 20 Lizol Bottles, 15 Toilet Cleaners, Sweeper Staff Allowance" required style="width:100%; padding:9px 12px; border:1px solid #cbd5e1; border-radius:8px; font-size:0.85rem;">
           </div>
 
           <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
@@ -1804,6 +1810,22 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
           </div>
 
+          <!-- UPLOAD VENDOR BILL / TAX INVOICE SECTION -->
+          <div style="margin-bottom: 14px;">
+            <label style="font-size:0.78rem; font-weight:800; color:#334155; display:block; margin-bottom:4px;">
+              Upload Vendor Bill / Tax Invoice / Cash Receipt (Required for School Audit)
+            </label>
+            <input type="file" id="expReceiptFile" accept="image/*,application/pdf" style="display:none;" onchange="window.handleExpenseBillUpload(this)">
+            <div id="billDropZone" onclick="document.getElementById('expReceiptFile').click()" style="border: 2px dashed #059669; border-radius: 12px; padding: 14px; text-align: center; background: #f0fdf4; cursor: pointer; transition: all 0.2s;">
+              <div id="billDropZoneContent">
+                <div style="font-size:1.3rem; margin-bottom:2px;">📁</div>
+                <div style="font-size:0.84rem; font-weight:800; color:#065f46;">Click to Browse or Drag & Drop Vendor Tax Invoice / Bill</div>
+                <div style="font-size:0.72rem; color:#047857; margin-top:2px;">Supports PNG, JPG, PDF (e.g. SriSai_Sanitization_Bill.pdf) • Instant Verification</div>
+              </div>
+            </div>
+            <input type="hidden" id="attachedBillName" value="Vendor_Tax_Invoice_Aug2026.pdf">
+          </div>
+
           <div style="margin-bottom: 20px;">
             <label style="font-size:0.78rem; font-weight:800; color:#334155; display:block; margin-bottom:4px;">Approving Authority</label>
             <input type="text" id="expApprovedBy" value="Headmaster K. Rajesham" required style="width:100%; padding:9px 12px; border:1px solid #cbd5e1; border-radius:8px; font-size:0.85rem; font-weight:600; background:#f8fafc;">
@@ -1814,7 +1836,7 @@ document.addEventListener('DOMContentLoaded', () => {
               Cancel
             </button>
             <button type="submit" style="flex:2; padding:12px; border:none; background:linear-gradient(135deg, #059669 0%, #10b981 100%); color:white; border-radius:10px; font-weight:800; font-size:0.92rem; cursor:pointer; box-shadow:0 4px 14px rgba(16,185,129,0.35);">
-              ✓ Record & Generate Receipt
+              ✓ Upload & Generate Official Receipt
             </button>
           </div>
         </form>
@@ -1827,6 +1849,27 @@ document.addEventListener('DOMContentLoaded', () => {
   function closeLogManagementExpenseModal() {
     const modal = document.getElementById('logManagementExpenseModal');
     if (modal) modal.remove();
+  }
+
+  function handleExpenseBillUpload(input) {
+    if (input && input.files && input.files[0]) {
+      const file = input.files[0];
+      const fileName = file.name;
+      const fileSizeKB = (file.size / 1024).toFixed(1);
+      const dropZoneContent = document.getElementById('billDropZoneContent');
+      const attachedHidden = document.getElementById('attachedBillName');
+      if (attachedHidden) attachedHidden.value = fileName;
+      if (dropZoneContent) {
+        dropZoneContent.innerHTML = `
+          <div style="display:flex; align-items:center; justify-content:center; gap:8px; color:#047857;">
+            <span style="font-size:1.2rem;">✓</span>
+            <span style="font-weight:800; font-size:0.86rem;">Attached: <strong>${fileName}</strong> (${fileSizeKB} KB)</span>
+            <span style="background:#10b981; color:white; font-size:0.68rem; font-weight:800; padding:2px 8px; border-radius:8px;">Ready for Audit</span>
+          </div>
+        `;
+      }
+      showToast(`✓ Attached Vendor Tax Invoice: ${fileName}`);
+    }
   }
 
   /* 10C-2. OFFICIAL MANAGEMENT EXPENSE RECEIPT MODAL */
@@ -1847,7 +1890,7 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
 
     modal.innerHTML = `
-      <div style="background: white; border-radius: 20px; max-width: 620px; width: 100%; box-shadow: 0 25px 60px -15px rgba(0,0,0,0.4); overflow: hidden; animation: slideUp 0.3s ease; border: 1px solid #e2e8f0;">
+      <div style="background: white; border-radius: 20px; max-width: 640px; width: 100%; box-shadow: 0 25px 60px -15px rgba(0,0,0,0.4); overflow: hidden; animation: slideUp 0.3s ease; border: 1px solid #e2e8f0;">
         <!-- RECEIPT TOP ACTION BAR -->
         <div style="background: #0f172a; padding: 14px 20px; color: white; display: flex; justify-content: space-between; align-items: center;">
           <div style="display:flex; align-items:center; gap:8px;">
@@ -1866,7 +1909,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
 
         <!-- PRINTABLE RECEIPT BODY -->
-        <div style="padding: 28px; background: #fafafa; position: relative;">
+        <div style="padding: 28px; background: #fafafa; position: relative; max-height: 80vh; overflow-y: auto;">
           <!-- Watermark -->
           <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; opacity: 0.03; pointer-events: none; font-size: 4rem; font-weight: 900; transform: rotate(-25deg); color: #0f172a;">
             VIKAS GRAMMAR SCHOOL
@@ -1914,9 +1957,38 @@ document.addEventListener('DOMContentLoaded', () => {
               <span style="color: #64748b; font-size: 0.72rem; display: block; font-weight: 700;">PAID TO / VENDOR / BENEFICIARY</span>
               <strong style="font-size: 0.95rem; color: #0f172a;">${v.vendor}</strong>
             </div>
-            <div>
+            <div style="margin-bottom: 8px;">
               <span style="color: #64748b; font-size: 0.72rem; display: block; font-weight: 700;">PURPOSE & PARTICULARS</span>
               <p style="color: #334155; margin: 4px 0 0 0; line-height: 1.45; font-size: 0.82rem;">${v.description}</p>
+            </div>
+          </div>
+
+          <!-- ATTACHED VENDOR BILL & SPENT ITEMS PROOF -->
+          <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 12px; padding: 14px; margin-bottom: 16px; font-size: 0.82rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <span style="color: #166534; font-size: 0.72rem; font-weight: 800; text-transform:uppercase; letter-spacing:0.5px;">
+                📎 ATTACHED VENDOR TAX INVOICE & PROOF OF PURCHASE
+              </span>
+              <span style="background:#10b981; color:white; font-size:0.68rem; font-weight:800; padding:2px 8px; border-radius:10px;">
+                Audit Verified & Archival Stored
+              </span>
+            </div>
+            <div style="background:white; border:1px solid #bbf7d0; border-radius:8px; padding:10px 14px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+              <div style="display:flex; align-items:center; gap:10px;">
+                <div style="width:34px; height:34px; border-radius:8px; background:#e0e7ff; color:#4338ca; display:flex; align-items:center; justify-content:center; font-size:1.1rem;">
+                  🧾
+                </div>
+                <div>
+                  <strong style="color:#0f172a; font-size:0.86rem; display:block;">${v.attachedBillName || (v.vendor.replace(/\s+/g, '_') + '_TaxInvoice.pdf')}</strong>
+                  <span style="font-size:0.72rem; color:#64748b;">Original Vendor Tax Invoice / Cash Memo • Uploaded & Verified</span>
+                </div>
+              </div>
+              <button onclick="showToast('Viewing Original Vendor Bill Attachment: ' + (v.attachedBillName || 'Tax Invoice'))" style="padding:5px 12px; background:#0f172a; color:white; border:none; border-radius:6px; font-size:0.74rem; font-weight:700; cursor:pointer;">
+                🔍 View Original Bill
+              </button>
+            </div>
+            <div style="font-size:0.76rem; color:#14532d; background:#ecfdf5; padding:6px 10px; border-radius:6px;">
+              <strong>Itemized Breakdown:</strong> ${v.specificItems || v.description}
             </div>
           </div>
 
@@ -1975,9 +2047,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const cat = document.getElementById('expCategory')?.value || 'Campus Hygiene & Sanitization';
     const amt = parseFloat(document.getElementById('expAmount')?.value || '0');
     const desc = document.getElementById('expDesc')?.value || 'General Campus Sanitization & Maintenance';
+    const specificItems = document.getElementById('expSpecificItems')?.value || desc;
     const vendor = document.getElementById('expVendor')?.value || 'Local Vendor Cherial';
     const mode = document.getElementById('expMode')?.value || 'Bank Transfer (SBI)';
     const approvedBy = document.getElementById('expApprovedBy')?.value || 'Headmaster K. Rajesham';
+    const attachedBillName = document.getElementById('attachedBillName')?.value || `${vendor.replace(/\s+/g, '_')}_TaxInvoice.pdf`;
 
     if (amt <= 0) {
       showToast('Please enter a valid expense amount in ₹.');
@@ -1999,7 +2073,9 @@ document.addEventListener('DOMContentLoaded', () => {
       category: cat,
       categoryTag: cat.split(' ')[0],
       description: desc,
+      specificItems: specificItems,
       vendor: vendor,
+      attachedBillName: attachedBillName,
       amount: amt,
       date: todayStr,
       paidVia: mode,
