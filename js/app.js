@@ -188,6 +188,16 @@ document.addEventListener('DOMContentLoaded', () => {
     window.setCarouselSlide = setCarouselSlide;
     window.scrollToPubSection = scrollToPubSection;
     window.submitPublicAdmissionInquiry = submitPublicAdmissionInquiry;
+    window.renderFeeRouterScreen = renderFeeRouterScreen;
+    window.openOnlineFeePaymentModal = openOnlineFeePaymentModal;
+    window.closeOnlineFeePaymentModal = closeOnlineFeePaymentModal;
+    window.processOnlineFeePayment = processOnlineFeePayment;
+    window.downloadFeeReceiptPdf = downloadFeeReceiptPdf;
+    window.sendTeacherFeeReminderSms = sendTeacherFeeReminderSms;
+    window.renderTransportRouterScreen = renderTransportRouterScreen;
+    window.pingBusDriverGps = pingBusDriverGps;
+    window.renderLibraryRouterScreen = renderLibraryRouterScreen;
+    window.renewLibraryBookOnline = renewLibraryBookOnline;
 
     // Role Pills Switcher in Top Navbar
     document.querySelectorAll('.role-pill').forEach(btn => {
@@ -517,11 +527,11 @@ document.addEventListener('DOMContentLoaded', () => {
       else if (activeRole === 'teacher') renderTeacherTimetableScreen();
       else renderStudentTimetableScreen();
     } else if (viewId === 'fees' || viewId === 'my_fees' || viewId === 'pay_fee' || viewId === 'fees_ledger' || viewId === 'fees_defaulters') {
-      renderFeeLedgerScreen();
+      renderFeeRouterScreen();
     } else if (viewId === 'transport' || viewId === 'bus_info' || viewId === 'bus_tracking') {
-      renderTransportFleetScreen();
+      renderTransportRouterScreen();
     } else if (viewId === 'library') {
-      renderLibraryCatalogScreen();
+      renderLibraryRouterScreen();
     } else if (viewId === 'calendar') {
       renderHolidayCalendarScreen('All');
     } else if (viewId === 'teacher_attendance' || viewId === 'attendance_daily') {
@@ -1240,25 +1250,300 @@ document.addEventListener('DOMContentLoaded', () => {
     refreshLucideIcons();
   }
 
-  /* 10. FEE COLLECTION LEDGER */
-  function renderFeeLedgerScreen() {
-    const list = MOCK_DATA.feeLedgerFullList;
+  /* 10. ROLE-SYNCED FEE ROUTER & PAYMENT LEDGER */
+  function renderFeeRouterScreen() {
+    if (activeRole === 'student' || activeRole === 'parent') {
+      renderStudentFeePaymentScreen(activeRole);
+    } else if (activeRole === 'teacher') {
+      renderTeacherClassFeeScreen();
+    } else {
+      renderPrincipalFeeLedgerScreen();
+    }
+  }
+
+  /* 10A. STUDENT & PARENT PERSONALIZED FEE SCREEN */
+  function renderStudentFeePaymentScreen(role) {
+    const feeAcc = MOCK_DATA.studentFeeAccount;
+    const isCleared = feeAcc.dueAmount <= 0;
+
     contentViewport.innerHTML = `
       <div class="panel-card" style="background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border-color: #a7f3d0; margin-bottom:20px;">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
           <div>
-            <h2><i data-lucide="indian-rupee" style="color:var(--emerald);"></i> Fee Collection & Financial Ledger</h2>
-            <p style="color:var(--text-secondary); margin-top:4px;">Q2 Academic Year 2026-2027 • Vikas Grammar School Cherial (UDISE: 36182100637)</p>
+            <h2><i data-lucide="indian-rupee" style="color:var(--emerald);"></i> ${role === 'parent' ? "Child's Fee Account & Online Payment" : "My Fee Account & Online Payment"}</h2>
+            <p style="color:var(--text-secondary); margin-top:4px;">
+              <strong>${feeAcc.studentName}</strong> • ${feeAcc.classGrade} (Roll: <code>${feeAcc.rollNo}</code> • PEN: <code>${feeAcc.penId}</code>) • Vikas Grammar School Cherial
+            </p>
           </div>
-          <button class="btn-primary" onclick="showToast('Dispatched Fee Reminder SMS to Defaulters!')" style="padding:8px 16px; background:var(--emerald); color:white; border-radius:10px; font-weight:700;">
-            <i data-lucide="send"></i> Send Fee Reminder SMS
+          <button class="btn-primary" onclick="window.downloadFeeReceiptPdf('CONSOLIDATED')" style="padding:8px 16px; background:var(--emerald); color:white; border-radius:10px; font-weight:700; border:none; cursor:pointer;">
+            <i data-lucide="download"></i> Download Fee Ledger PDF
+          </button>
+        </div>
+      </div>
+
+      <!-- PERSONALIZED STATS CARDS -->
+      <div class="stats-grid-4" style="margin-bottom:20px;">
+        <div class="stat-card">
+          <div class="stat-title">Total Annual Fee (2026-27)</div>
+          <div class="stat-value">₹${feeAcc.totalAnnualFee.toLocaleString()}</div>
+          <span class="trend-badge trend-indigo">Tuition, Lab & Transport</span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">Amount Paid Till Date</div>
+          <div class="stat-value" style="color:#10b981;">₹${feeAcc.paidAmount.toLocaleString()}</div>
+          <span class="trend-badge trend-up-green">${((feeAcc.paidAmount / feeAcc.totalAnnualFee) * 100).toFixed(1)}% Cleared</span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">Outstanding Balance Due</div>
+          <div class="stat-value" style="color:${isCleared ? '#10b981' : '#ef4444'};">₹${feeAcc.dueAmount.toLocaleString()}</div>
+          <span class="trend-badge ${isCleared ? 'trend-up-green' : 'trend-orange'}">${isCleared ? '✓ Zero Due' : 'Due: ' + feeAcc.dueDate}</span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">Payment Account Status</div>
+          <div class="stat-value" style="font-size:1.25rem; color:${isCleared ? '#10b981' : '#d97706'};">
+            ${isCleared ? '✓ Fully Cleared' : 'Installment Due'}
+          </div>
+          <span class="trend-badge ${isCleared ? 'trend-up-green' : 'trend-orange'}">${isCleared ? 'Good Standing' : 'Term 3 Final'}</span>
+        </div>
+      </div>
+
+      <!-- INTERACTIVE ONLINE PAYMENT ACTION BANNER -->
+      ${!isCleared ? `
+        <div class="panel-card" style="background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border:2px solid #fcd34d; margin-bottom:20px; box-shadow:0 6px 20px rgba(245,158,11,0.12);">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+            <div>
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+                <span class="badge badge-warning" style="font-size:0.78rem; font-weight:800;">🔔 PAYMENT ACTION REQUIRED</span>
+                <span style="font-size:0.8rem; color:#92400e; font-weight:700;">Due by ${feeAcc.dueDate}</span>
+              </div>
+              <h3 style="font-size:1.25rem; font-weight:900; color:#78350f; margin:0;">
+                ${feeAcc.dueTermName} — ₹${feeAcc.dueAmount.toLocaleString()}
+              </h3>
+              <p style="color:#92400e; font-size:0.84rem; margin:4px 0 0 0;">
+                Pay securely via Instant UPI (Google Pay, PhonePe, Paytm), Netbanking, or Debit Card with zero transaction fee.
+              </p>
+            </div>
+            <button onclick="window.openOnlineFeePaymentModal()" style="padding:12px 26px; background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:white; border:none; border-radius:12px; font-weight:800; font-size:0.95rem; cursor:pointer; box-shadow:0 6px 18px rgba(16,185,129,0.35); display:inline-flex; align-items:center; gap:8px; transition:transform 0.15s ease;">
+              <i data-lucide="credit-card"></i> Pay ₹${feeAcc.dueAmount.toLocaleString()} Online Now →
+            </button>
+          </div>
+        </div>
+      ` : `
+        <div class="panel-card" style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border:1px solid #86efac; margin-bottom:20px;">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div style="width:40px; height:40px; border-radius:50%; background:#10b981; color:white; display:flex; align-items:center; justify-content:center; font-size:1.2rem;">✓</div>
+            <div>
+              <h4 style="font-size:1.05rem; font-weight:800; color:#065f46; margin:0;">All School & Transport Fees 100% Cleared!</h4>
+              <p style="color:#047857; font-size:0.82rem; margin:2px 0 0 0;">No outstanding dues for Academic Year 2026-2027. Official receipts generated below.</p>
+            </div>
+          </div>
+        </div>
+      `}
+
+      <!-- INSTALLMENT SCHEDULE BREAKDOWN -->
+      <div class="panel-card" style="margin-bottom:20px;">
+        <div class="panel-header">
+          <h3 class="panel-title"><i data-lucide="calendar-check" style="color:var(--indigo);"></i> Fee Installment Schedule & Breakdown</h3>
+          <span style="font-size:0.8rem; color:var(--text-muted);">Academic Year 2026-2027</span>
+        </div>
+        <div class="table-container">
+          <table class="data-table" style="width:100%; border-collapse:collapse; text-align:left; font-size:0.88rem;">
+            <thead>
+              <tr style="color:var(--text-muted); font-size:0.78rem; text-transform:uppercase; background:var(--bg-card-sub);">
+                <th style="padding:12px;">Installment / Fee Component</th>
+                <th>Due Date</th>
+                <th>Installment Amount</th>
+                <th>Amount Paid</th>
+                <th>Status</th>
+                <th>Payment Mode</th>
+                <th>Receipt #</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${feeAcc.installmentSchedule.map(inst => `
+                <tr style="border-bottom:1px solid var(--border-color);">
+                  <td style="padding:12px;"><strong>${inst.term}</strong></td>
+                  <td>${inst.dueDate}</td>
+                  <td style="font-weight:700;">₹${inst.amount.toLocaleString()}</td>
+                  <td style="color:${inst.paidAmount > 0 ? '#047857' : 'var(--text-muted)'}; font-weight:700;">₹${inst.paidAmount.toLocaleString()}</td>
+                  <td>
+                    <span class="badge ${inst.status === 'Paid' ? 'badge-success' : 'badge-danger'}">
+                      ${inst.status}
+                    </span>
+                  </td>
+                  <td style="font-size:0.82rem;">${inst.mode}</td>
+                  <td><code>${inst.receiptNo}</code></td>
+                  <td>
+                    ${inst.status === 'Paid' ? `
+                      <button onclick="window.downloadFeeReceiptPdf('${inst.receiptNo}')" style="padding:4px 10px; font-size:0.75rem; background:var(--indigo); color:white; border-radius:6px; font-weight:700; border:none; cursor:pointer;">
+                        Receipt PDF
+                      </button>
+                    ` : `
+                      <button onclick="window.openOnlineFeePaymentModal()" style="padding:4px 10px; font-size:0.75rem; background:var(--emerald); color:white; border-radius:6px; font-weight:700; border:none; cursor:pointer;">
+                        Pay Now
+                      </button>
+                    `}
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PAST RECEIPTS HISTORY -->
+      <div class="panel-card">
+        <div class="panel-header">
+          <h3 class="panel-title"><i data-lucide="file-check" style="color:var(--emerald);"></i> Official Payment Receipts History</h3>
+          <span style="font-size:0.8rem; color:var(--text-muted);">Verified School Accounts Records</span>
+        </div>
+        <div class="table-container">
+          <table class="data-table" style="width:100%; border-collapse:collapse; text-align:left; font-size:0.88rem;">
+            <thead>
+              <tr style="color:var(--text-muted); font-size:0.78rem; text-transform:uppercase; background:var(--bg-card-sub);">
+                <th style="padding:12px;">Receipt Number</th>
+                <th>Date Paid</th>
+                <th>Description</th>
+                <th>Amount</th>
+                <th>Mode</th>
+                <th>Issued By</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${feeAcc.receiptsHistory.map(r => `
+                <tr style="border-bottom:1px solid var(--border-color);">
+                  <td style="padding:12px;"><code>${r.receiptNo}</code></td>
+                  <td>${r.date}</td>
+                  <td><strong>${r.description}</strong></td>
+                  <td style="color:#047857; font-weight:800;">₹${r.amount.toLocaleString()}</td>
+                  <td><span class="badge badge-indigo">${r.mode}</span></td>
+                  <td style="font-size:0.8rem;">${r.collectedBy}</td>
+                  <td><span class="badge badge-success">${r.status}</span></td>
+                  <td>
+                    <button onclick="window.downloadFeeReceiptPdf('${r.receiptNo}')" style="padding:5px 12px; font-size:0.75rem; background:var(--indigo); color:white; border-radius:6px; font-weight:700; border:none; cursor:pointer;">
+                      📄 Download PDF
+                    </button>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+    refreshLucideIcons();
+  }
+
+  /* 10B. TEACHER CLASS-WISE FEE SCREEN */
+  function renderTeacherClassFeeScreen() {
+    const classFee = MOCK_DATA.teacherClassFeeData;
+    contentViewport.innerHTML = `
+      <div class="panel-card" style="background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border-color: #a7f3d0; margin-bottom:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+          <div>
+            <h2><i data-lucide="indian-rupee" style="color:var(--emerald);"></i> ${classFee.className} — Fee Collection & Defaulter Tracker</h2>
+            <p style="color:var(--text-secondary); margin-top:4px;">Class Mentor: <strong>${classFee.classTeacher}</strong> • ${classFee.totalStudents} Enrolled Students • Vikas Grammar School</p>
+          </div>
+          <button class="btn-primary" onclick="window.sendTeacherFeeReminderSms()" style="padding:8px 16px; background:var(--emerald); color:white; border-radius:10px; font-weight:700; border:none; cursor:pointer;">
+            <i data-lucide="send"></i> Send SMS to ${classFee.defaultersCount} Defaulters
           </button>
         </div>
       </div>
 
       <div class="stats-grid-4" style="margin-bottom:20px;">
         <div class="stat-card">
-          <div class="stat-title">Total Fee Target (Q2)</div>
+          <div class="stat-title">Class Total Target</div>
+          <div class="stat-value">₹${(classFee.totalClassFee / 100000).toFixed(2)} L</div>
+          <span class="trend-badge trend-indigo">${classFee.totalStudents} Students</span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">Class Fees Collected</div>
+          <div class="stat-value" style="color:#10b981;">₹${(classFee.collectedClassFee / 100000).toFixed(2)} L</div>
+          <span class="trend-badge trend-up-green">${classFee.collectionPct}% Paid</span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">Pending Class Dues</div>
+          <div class="stat-value" style="color:#ef4444;">₹${classFee.dueClassFee.toLocaleString()}</div>
+          <span class="trend-badge trend-orange">${classFee.defaultersCount} Students Due</span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">Collection Health</div>
+          <div class="stat-value" style="color:#10b981;">A+</div>
+          <span class="trend-badge trend-purple">Above Target</span>
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <div class="panel-header">
+          <h3 class="panel-title">${classFee.className} Student Fee Roster</h3>
+        </div>
+        <div class="table-container">
+          <table class="data-table" style="width:100%; border-collapse:collapse; text-align:left; font-size:0.88rem;">
+            <thead>
+              <tr style="color:var(--text-muted); font-size:0.78rem; text-transform:uppercase; background:var(--bg-card-sub);">
+                <th style="padding:12px;">Roll & Student Name</th>
+                <th>Parent Name</th>
+                <th>Contact</th>
+                <th>Total Fee</th>
+                <th>Paid</th>
+                <th>Due Balance</th>
+                <th>Status</th>
+                <th>Last Payment</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${classFee.students.map(s => `
+                <tr style="border-bottom:1px solid var(--border-color);">
+                  <td style="padding:12px;"><code>${s.rollNo}</code> <strong>${s.name}</strong></td>
+                  <td>${s.parentName}</td>
+                  <td>${s.contact}</td>
+                  <td>₹${s.total.toLocaleString()}</td>
+                  <td style="color:#047857; font-weight:700;">₹${s.paid.toLocaleString()}</td>
+                  <td style="color:${s.due > 0 ? '#dc2626' : 'var(--text-muted)'}; font-weight:700;">₹${s.due.toLocaleString()}</td>
+                  <td><span class="badge ${s.status === 'Paid' ? 'badge-success' : s.status === 'Partial' ? 'badge-warning' : 'badge-danger'}">${s.status}</span></td>
+                  <td style="font-size:0.8rem;">${s.lastPaid}</td>
+                  <td>
+                    ${s.due > 0 ? `
+                      <button onclick="showToast('Dispatched Fee Reminder SMS to parent of ${s.name} (${s.contact})!')" style="padding:4px 10px; font-size:0.75rem; background:var(--orange); color:white; border-radius:6px; font-weight:700; border:none; cursor:pointer;">
+                        Send SMS
+                      </button>
+                    ` : `
+                      <span style="color:#10b981; font-weight:700; font-size:0.75rem;">✓ Cleared</span>
+                    `}
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+    refreshLucideIcons();
+  }
+
+  /* 10C. PRINCIPAL SCHOOL-WIDE FINANCIAL LEDGER */
+  function renderPrincipalFeeLedgerScreen() {
+    const list = MOCK_DATA.feeLedgerFullList;
+    contentViewport.innerHTML = `
+      <div class="panel-card" style="background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border-color: #a7f3d0; margin-bottom:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+          <div>
+            <h2><i data-lucide="indian-rupee" style="color:var(--emerald);"></i> Institutional Fee Collection & Financial Ledger</h2>
+            <p style="color:var(--text-secondary); margin-top:4px;">Headmaster Overview • Academic Year 2026-2027 • Vikas Grammar School Cherial (UDISE: 36182100637)</p>
+          </div>
+          <button class="btn-primary" onclick="showToast('Dispatched Automated Fee Reminder SMS to all 42 Defaulters!')" style="padding:8px 16px; background:var(--emerald); color:white; border-radius:10px; font-weight:700; border:none; cursor:pointer;">
+            <i data-lucide="send"></i> Send Fee Reminder SMS (All Classes)
+          </button>
+        </div>
+      </div>
+
+      <div class="stats-grid-4" style="margin-bottom:20px;">
+        <div class="stat-card">
+          <div class="stat-title">Total School Target (Q2)</div>
           <div class="stat-value">₹15.50 L</div>
           <span class="trend-badge trend-up-green">Classes 1–10</span>
         </div>
@@ -1281,7 +1566,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       <div class="panel-card">
         <div class="panel-header">
-          <h3 class="panel-title">Student Fee Accounts & Installment Status</h3>
+          <h3 class="panel-title">Institutional Student Fee Accounts & Installments</h3>
         </div>
         <div class="table-container">
           <table class="data-table" style="width:100%; border-collapse:collapse; text-align:left; font-size:0.88rem;">
@@ -1308,7 +1593,7 @@ document.addEventListener('DOMContentLoaded', () => {
                   <td><span class="badge ${f.status === 'Paid' ? 'badge-success' : f.status === 'Partial' ? 'badge-warning' : 'badge-danger'}">${f.status}</span></td>
                   <td><code>${f.receiptNo}</code></td>
                   <td>
-                    <button onclick="showToast('Generated Fee Receipt PDF for ${f.name}!')" style="padding:4px 10px; font-size:0.75rem; background:var(--indigo); color:white; border-radius:6px; font-weight:700;">
+                    <button onclick="window.downloadFeeReceiptPdf('${f.receiptNo}')" style="padding:4px 10px; font-size:0.75rem; background:var(--indigo); color:white; border-radius:6px; font-weight:700; border:none; cursor:pointer;">
                       Receipt PDF
                     </button>
                   </td>
@@ -1322,7 +1607,254 @@ document.addEventListener('DOMContentLoaded', () => {
     refreshLucideIcons();
   }
 
-  /* 11. TRANSPORT FLEET */
+  /* 10D. ONLINE PAYMENT MODAL CONTROLLERS */
+  function openOnlineFeePaymentModal() {
+    const feeAcc = MOCK_DATA.studentFeeAccount;
+    const existingModal = document.getElementById('onlineFeePaymentModal');
+    if (existingModal) existingModal.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'onlineFeePaymentModal';
+    modal.style.cssText = `
+      position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(4px); display: flex; align-items: center;
+      justify-content: center; z-index: 10000; padding: 20px; animation: fadeIn 0.2s ease;
+    `;
+
+    modal.innerHTML = `
+      <div style="background: white; border-radius: 20px; max-width: 520px; width: 100%; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3); overflow: hidden; animation: slideUp 0.3s ease;">
+        <div style="background: linear-gradient(135deg, #059669 0%, #10b981 100%); padding: 20px 24px; color: white; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <span style="font-size:0.75rem; font-weight:800; text-transform:uppercase; letter-spacing:1px; opacity:0.9;">Vikas Grammar School Gateway</span>
+            <h3 style="font-size:1.3rem; font-weight:900; margin:4px 0 0 0;">Secure Online Fee Payment</h3>
+          </div>
+          <button onclick="window.closeOnlineFeePaymentModal()" style="background: rgba(255,255,255,0.2); border:none; color:white; width:32px; height:32px; border-radius:50%; font-weight:900; cursor:pointer; font-size:1rem;">✕</button>
+        </div>
+
+        <div style="padding: 24px;">
+          <!-- SUMMARY BOX -->
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px 16px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-size:0.85rem; font-weight:800; color:#0f172a;">${feeAcc.studentName} (${feeAcc.classGrade})</div>
+              <div style="font-size:0.76rem; color:#64748b;">${feeAcc.dueTermName}</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:0.75rem; color:#64748b; font-weight:700;">Payable Amount</div>
+              <div style="font-size:1.4rem; font-weight:900; color:#059669;">₹${feeAcc.dueAmount.toLocaleString()}</div>
+            </div>
+          </div>
+
+          <!-- PAYMENT METHODS -->
+          <div style="margin-bottom: 20px;">
+            <label style="font-size:0.78rem; font-weight:800; color:#334155; text-transform:uppercase; margin-bottom:10px; display:block;">Select Payment Method</label>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom:16px;">
+              <div style="border: 2px solid #10b981; background: #ecfdf5; border-radius: 10px; padding: 12px; text-align: center; cursor: pointer;">
+                <div style="font-size: 1.3rem;">📱</div>
+                <strong style="font-size:0.82rem; color:#065f46; display:block;">UPI Instant (QR/App)</strong>
+                <span style="font-size:0.7rem; color:#047857;">GPay / PhonePe / Paytm</span>
+              </div>
+              <div style="border: 1px solid #cbd5e1; background: #ffffff; border-radius: 10px; padding: 12px; text-align: center; cursor: pointer; opacity: 0.85;">
+                <div style="font-size: 1.3rem;">🏦</div>
+                <strong style="font-size:0.82rem; color:#334155; display:block;">Netbanking / Cards</strong>
+                <span style="font-size:0.7rem; color:#64748b;">SBI, HDFC, Cards</span>
+              </div>
+            </div>
+
+            <!-- SIMULATED UPI QR CODE -->
+            <div style="background:#f1f5f9; border:1px dashed #94a3b8; border-radius:12px; padding:16px; text-align:center;">
+              <div style="display:inline-block; background:white; padding:10px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.06); margin-bottom:8px;">
+                <div style="width:120px; height:120px; background:linear-gradient(45deg, #0f172a 25%, #ffffff 25%, #ffffff 50%, #0f172a 50%, #0f172a 75%, #ffffff 75%, #ffffff 100%); background-size:16px 16px; border-radius:6px; display:flex; align-items:center; justify-content:center; color:white; font-size:0.75rem; font-weight:800; text-shadow:0 1px 3px rgba(0,0,0,0.8);">
+                  UPI QR CODE
+                </div>
+              </div>
+              <div style="font-size:0.8rem; font-weight:700; color:#1e293b;">Scan & Pay ₹${feeAcc.dueAmount.toLocaleString()}</div>
+              <div style="font-size:0.72rem; color:#64748b;">UPI ID: <code>vikasgrammar.cherial@sbi</code></div>
+            </div>
+          </div>
+
+          <!-- ACTION BUTTONS -->
+          <div style="display:flex; gap:10px;">
+            <button onclick="window.closeOnlineFeePaymentModal()" style="flex:1; padding:12px; border:1px solid #cbd5e1; background:white; color:#475569; border-radius:10px; font-weight:700; cursor:pointer;">
+              Cancel
+            </button>
+            <button onclick="window.processOnlineFeePayment()" style="flex:2; padding:12px; border:none; background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:white; border-radius:10px; font-weight:800; font-size:0.92rem; cursor:pointer; box-shadow:0 4px 14px rgba(16,185,129,0.35);">
+              ✓ Authorize & Pay ₹${feeAcc.dueAmount.toLocaleString()}
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+  }
+
+  function closeOnlineFeePaymentModal() {
+    const modal = document.getElementById('onlineFeePaymentModal');
+    if (modal) modal.remove();
+  }
+
+  function processOnlineFeePayment() {
+    const feeAcc = MOCK_DATA.studentFeeAccount;
+    const paidAmountThisTxn = feeAcc.dueAmount;
+    const newReceiptNo = `REC-VG-2026-${Math.floor(250 + Math.random() * 100)}`;
+    const todayStr = 'Sep 03, 2026';
+
+    // Update Student Account
+    feeAcc.paidAmount = feeAcc.totalAnnualFee;
+    feeAcc.dueAmount = 0;
+    feeAcc.status = 'Fully Paid';
+
+    // Update installment
+    const lastInst = feeAcc.installmentSchedule[feeAcc.installmentSchedule.length - 1];
+    if (lastInst) {
+      lastInst.paidAmount = paidAmountThisTxn;
+      lastInst.status = 'Paid';
+      lastInst.paidDate = todayStr;
+      lastInst.mode = 'Online UPI Gateway';
+      lastInst.receiptNo = newReceiptNo;
+      lastInst.transactionId = `TXN-UPI-${Math.floor(10000000 + Math.random() * 90000000)}`;
+    }
+
+    // Add receipt
+    feeAcc.receiptsHistory.unshift({
+      receiptNo: newReceiptNo,
+      date: todayStr,
+      description: 'Term 3 Final Tuition & Board Exam Fee',
+      amount: paidAmountThisTxn,
+      mode: 'Online UPI Gateway',
+      collectedBy: 'Online Portal Gateway (Auto-Reconciled)',
+      status: 'Success'
+    });
+
+    // Sync full list
+    const foundFull = MOCK_DATA.feeLedgerFullList.find(f => f.name === 'Rahul Reddy');
+    if (foundFull) {
+      foundFull.paidFee = foundFull.totalFee;
+      foundFull.dueFee = 0;
+      foundFull.status = 'Paid';
+      foundFull.receiptNo = newReceiptNo;
+      foundFull.lastDate = todayStr;
+    }
+
+    // Sync teacher class data
+    const classFee = MOCK_DATA.teacherClassFeeData;
+    if (classFee) {
+      classFee.collectedClassFee += paidAmountThisTxn;
+      classFee.dueClassFee = Math.max(0, classFee.dueClassFee - paidAmountThisTxn);
+      classFee.defaultersCount = Math.max(0, classFee.defaultersCount - 1);
+      classFee.collectionPct = ((classFee.collectedClassFee / classFee.totalClassFee) * 100).toFixed(1);
+      const studentInClass = classFee.students.find(s => s.name === 'Rahul Reddy');
+      if (studentInClass) {
+        studentInClass.paid = studentInClass.total;
+        studentInClass.due = 0;
+        studentInClass.status = 'Paid';
+        studentInClass.lastPaid = todayStr;
+      }
+    }
+
+    closeOnlineFeePaymentModal();
+    showToast(`🎉 Payment of ₹${paidAmountThisTxn.toLocaleString()} Successful! Receipt #${newReceiptNo} generated.`);
+    renderStudentFeePaymentScreen(activeRole);
+  }
+
+  function downloadFeeReceiptPdf(receiptNo) {
+    showToast(`Generated Official Government Fee Receipt PDF [${receiptNo}] with School Seal!`);
+  }
+
+  function sendTeacherFeeReminderSms() {
+    showToast(`Dispatched Fee Reminder SMS to 3 Class VIII Section A Defaulters!`);
+  }
+
+  /* 11. ROLE-SYNCED TRANSPORT ROUTER */
+  function renderTransportRouterScreen() {
+    if (activeRole === 'student' || activeRole === 'parent') {
+      renderStudentTransportScreen(activeRole);
+    } else {
+      renderTransportFleetScreen();
+    }
+  }
+
+  /* 11A. STUDENT & PARENT PERSONALIZED TRANSPORT SCREEN */
+  function renderStudentTransportScreen(role) {
+    const t = MOCK_DATA.studentTransportData;
+    contentViewport.innerHTML = `
+      <div class="panel-card" style="background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%); border-color: #fed7aa; margin-bottom:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+          <div>
+            <h2><i data-lucide="bus" style="color:var(--orange);"></i> ${role === 'parent' ? "Child's School Bus & Live GPS Tracking" : "My School Bus & Live GPS Tracking"}</h2>
+            <p style="color:var(--text-secondary); margin-top:4px;"><strong>${t.studentName}</strong> • Roll: <code>${t.rollNo}</code> • ${t.route}</p>
+          </div>
+          <button class="btn-primary" onclick="window.pingBusDriverGps('${t.busNo}')" style="padding:8px 16px; background:var(--orange); color:white; border-radius:10px; font-weight:700; border:none; cursor:pointer;">
+            🛰️ Ping Live Bus GPS
+          </button>
+        </div>
+      </div>
+
+      <div class="stats-grid-4" style="margin-bottom:20px;">
+        <div class="stat-card">
+          <div class="stat-title">Assigned School Bus</div>
+          <div class="stat-value" style="font-size:1.15rem; color:var(--indigo);">${t.busNo}</div>
+          <span class="trend-badge trend-indigo">Bus #2 Maddur Line</span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">Designated Pickup Stop</div>
+          <div class="stat-value" style="font-size:1.1rem;">${t.stopName}</div>
+          <span class="trend-badge trend-up-green">Morning: ${t.morningPickupTime}</span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">School Arrival & Evening Drop</div>
+          <div class="stat-value" style="font-size:1.15rem; color:var(--orange);">${t.eveningDropTime}</div>
+          <span class="trend-badge trend-orange">Arrival: ${t.schoolArrival}</span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">Live Telemetry Status</div>
+          <div class="stat-value" style="font-size:1.1rem; color:#10b981;">${t.speed}</div>
+          <span class="trend-badge trend-up-green">${t.gpsStatus}</span>
+        </div>
+      </div>
+
+      <div class="panel-card" style="margin-bottom:20px;">
+        <div class="panel-header">
+          <h3 class="panel-title"><i data-lucide="navigation" style="color:var(--orange);"></i> Live GPS Route & Contact Roster</h3>
+        </div>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+          <div style="background:var(--bg-card-sub); padding:16px; border-radius:12px; border:1px solid var(--border-color);">
+            <div style="font-size:0.75rem; font-weight:800; color:var(--text-muted); text-transform:uppercase; margin-bottom:4px;">Assigned Driver</div>
+            <h4 style="font-size:1.1rem; font-weight:800; color:var(--text-primary); margin:0 0 6px 0;">${t.driverName}</h4>
+            <div style="font-size:0.88rem; color:var(--indigo); font-weight:700; margin-bottom:12px;">📞 ${t.driverPhone}</div>
+            <button onclick="showToast('Calling Bus Driver ${t.driverName} (${t.driverPhone})...')" style="padding:6px 14px; background:var(--emerald); color:white; border-radius:8px; font-size:0.8rem; font-weight:700; border:none; cursor:pointer;">
+              Call Driver
+            </button>
+          </div>
+
+          <div style="background:var(--bg-card-sub); padding:16px; border-radius:12px; border:1px solid var(--border-color);">
+            <div style="font-size:0.75rem; font-weight:800; color:var(--text-muted); text-transform:uppercase; margin-bottom:4px;">Bus In-Charge Faculty</div>
+            <h4 style="font-size:1.1rem; font-weight:800; color:var(--text-primary); margin:0 0 6px 0;">${t.busInchargeTeacher}</h4>
+            <div style="font-size:0.82rem; color:var(--text-secondary); margin-bottom:12px;">Safety & Boarding In-Charge</div>
+            <button onclick="showToast('Calling In-Charge Teacher Mrs. V. Latha...')" style="padding:6px 14px; background:var(--indigo); color:white; border-radius:8px; font-size:0.8rem; font-weight:700; border:none; cursor:pointer;">
+              Call In-Charge
+            </button>
+          </div>
+
+          <div style="background:var(--bg-card-sub); padding:16px; border-radius:12px; border:1px solid var(--border-color);">
+            <div style="font-size:0.75rem; font-weight:800; color:var(--text-muted); text-transform:uppercase; margin-bottom:4px;">Emergency Helpline</div>
+            <h4 style="font-size:1.1rem; font-weight:800; color:#dc2626; margin:0 0 6px 0;">School Transport Desk</h4>
+            <div style="font-size:0.88rem; color:#dc2626; font-weight:700; margin-bottom:12px;">☎️ ${t.emergencyContact}</div>
+            <button onclick="showToast('Connecting to Vikas Grammar School Main Desk...')" style="padding:6px 14px; background:#dc2626; color:white; border-radius:8px; font-size:0.8rem; font-weight:700; border:none; cursor:pointer;">
+              Emergency SOS
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+    refreshLucideIcons();
+  }
+
+  function pingBusDriverGps(busNo) {
+    showToast(`Pinging ${busNo}... Signal: Strong • GPS Coordinates: 17.9182° N, 78.9610° E (Cherial Gate)`);
+  }
+
+  /* 11B. PRINCIPAL & TEACHER FLEET SCREEN */
   function renderTransportFleetScreen() {
     const fleet = MOCK_DATA.transportFleetList;
     contentViewport.innerHTML = `
@@ -1332,7 +1864,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <h2><i data-lucide="bus" style="color:var(--orange);"></i> School Transport Fleet & Live GPS Tracking</h2>
             <p style="color:var(--text-secondary); margin-top:4px;">3 School Buses • 115 Transported Students • Vikas Grammar School Cherial</p>
           </div>
-          <button class="btn-primary" onclick="showToast('Initiated Live GPS Ping to all 3 School Buses!')" style="padding:8px 16px; background:var(--orange); color:white; border-radius:10px; font-weight:700;">
+          <button class="btn-primary" onclick="showToast('Initiated Live GPS Ping to all 3 School Buses!')" style="padding:8px 16px; background:var(--orange); color:white; border-radius:10px; font-weight:700; border:none; cursor:pointer;">
             🛰️ Live GPS Map Ping
           </button>
         </div>
@@ -1365,7 +1897,125 @@ document.addEventListener('DOMContentLoaded', () => {
     refreshLucideIcons();
   }
 
-  /* 12. SCHOOL LIBRARY CATALOG */
+  /* 12. ROLE-SYNCED LIBRARY ROUTER */
+  function renderLibraryRouterScreen() {
+    if (activeRole === 'student' || activeRole === 'parent') {
+      renderStudentLibraryScreen(activeRole);
+    } else {
+      renderLibraryCatalogScreen();
+    }
+  }
+
+  /* 12A. STUDENT & PARENT PERSONALIZED LIBRARY SCREEN */
+  function renderStudentLibraryScreen(role) {
+    const lib = MOCK_DATA.studentLibraryData;
+    const allBooks = MOCK_DATA.libraryCatalogList;
+
+    contentViewport.innerHTML = `
+      <div class="panel-card" style="background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%); border-color: #d8b4fe; margin-bottom:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+          <div>
+            <h2><i data-lucide="book-marked" style="color:var(--purple);"></i> ${role === 'parent' ? "Child's Library Account & Digital E-Books" : "My Library Account & Digital E-Books"}</h2>
+            <p style="color:var(--text-secondary); margin-top:4px;">
+              <strong>${lib.studentName}</strong> • Card ID: <code>${lib.libraryCardNo}</code> • Vikas Grammar School Library
+            </p>
+          </div>
+          <button class="btn-primary" onclick="showToast('Opened Digital E-Library Book Catalog!')" style="padding:8px 16px; background:var(--purple); color:white; border-radius:10px; font-weight:700; border:none; cursor:pointer;">
+            <i data-lucide="search"></i> Browse E-Library Catalog
+          </button>
+        </div>
+      </div>
+
+      <div class="stats-grid-4" style="margin-bottom:20px;">
+        <div class="stat-card">
+          <div class="stat-title">Library Card ID</div>
+          <div class="stat-value" style="font-size:1.2rem; color:var(--indigo);">${lib.libraryCardNo}</div>
+          <span class="trend-badge trend-indigo">Active Member</span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">Currently Borrowed</div>
+          <div class="stat-value" style="color:var(--purple);">${lib.currentlyBorrowed.length} Book</div>
+          <span class="trend-badge trend-purple">Limit: ${lib.borrowLimit} Books</span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">Books Read This Term</div>
+          <div class="stat-value" style="color:#10b981;">${lib.readingHistory.length + lib.currentlyBorrowed.length}</div>
+          <span class="trend-badge trend-up-green">Exemplary Reader</span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">Overdue Penalties</div>
+          <div class="stat-value" style="color:#10b981;">₹0</div>
+          <span class="trend-badge trend-up-green">Zero Fines</span>
+        </div>
+      </div>
+
+      <!-- CURRENTLY BORROWED BOOK -->
+      <div class="panel-card" style="margin-bottom:20px;">
+        <div class="panel-header">
+          <h3 class="panel-title"><i data-lucide="book-open" style="color:var(--purple);"></i> Currently Issued Book</h3>
+          <span style="font-size:0.8rem; color:var(--text-muted);">Please return or renew before due date</span>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          ${lib.currentlyBorrowed.map(b => `
+            <div style="background:var(--bg-card-sub); padding:16px; border-radius:12px; border:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+              <div>
+                <span class="badge badge-indigo" style="margin-bottom:4px;">${b.category} • ${b.shelf}</span>
+                <h4 style="font-size:1.15rem; font-weight:800; color:var(--text-primary); margin:2px 0 4px 0;">${b.title}</h4>
+                <div style="font-size:0.84rem; color:var(--text-secondary);">Author: <strong>${b.author}</strong> • <code>${b.isbn}</code></div>
+                <div style="font-size:0.8rem; color:#d97706; font-weight:700; margin-top:6px;">
+                  📅 Borrowed: ${b.issueDate} • Return Due: ${b.dueDate} (${b.status})
+                </div>
+              </div>
+              <div style="display:flex; gap:8px;">
+                <button onclick="window.renewLibraryBookOnline('${b.id}')" style="padding:8px 16px; background:var(--purple); color:white; border-radius:8px; font-size:0.84rem; font-weight:700; border:none; cursor:pointer;">
+                  🔄 Renew (14 Days)
+                </button>
+                <button onclick="showToast('Opened E-Book PDF reader for ${b.title}!')" style="padding:8px 16px; background:#10b981; color:white; border-radius:8px; font-size:0.84rem; font-weight:700; border:none; cursor:pointer;">
+                  📖 Read E-Book
+                </button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <!-- PAST READING HISTORY -->
+      <div class="panel-card" style="margin-bottom:20px;">
+        <div class="panel-header">
+          <h3 class="panel-title"><i data-lucide="history" style="color:var(--indigo);"></i> Reading History</h3>
+        </div>
+        <div class="table-container">
+          <table class="data-table" style="width:100%; border-collapse:collapse; text-align:left; font-size:0.88rem;">
+            <thead>
+              <tr style="color:var(--text-muted); font-size:0.78rem; text-transform:uppercase; background:var(--bg-card-sub);">
+                <th style="padding:12px;">Book Title</th>
+                <th>Author</th>
+                <th>Returned Date</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${lib.readingHistory.map(h => `
+                <tr style="border-bottom:1px solid var(--border-color);">
+                  <td style="padding:12px;"><strong>${h.title}</strong></td>
+                  <td>${h.author}</td>
+                  <td>${h.returnedDate}</td>
+                  <td><span class="badge badge-success">${h.status}</span></td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+    refreshLucideIcons();
+  }
+
+  function renewLibraryBookOnline(bookId) {
+    showToast('Renewed book for an additional 14 days! New return due date: Sep 19, 2026.');
+  }
+
+  /* 12B. PRINCIPAL & TEACHER LIBRARY CATALOG */
   function renderLibraryCatalogScreen() {
     const books = MOCK_DATA.libraryCatalogList;
     contentViewport.innerHTML = `
@@ -1375,7 +2025,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <h2><i data-lucide="book-marked" style="color:var(--purple);"></i> School Library & E-Book Catalog</h2>
             <p style="color:var(--text-secondary); margin-top:4px;">2,450 Books & Reference Guides • Vikas Grammar School Cherial</p>
           </div>
-          <button class="btn-primary" onclick="showToast('Opened Book Issue Modal!')" style="padding:8px 16px; background:var(--purple); color:white; border-radius:10px; font-weight:700;">
+          <button class="btn-primary" onclick="showToast('Opened Book Issue Modal!')" style="padding:8px 16px; background:var(--purple); color:white; border-radius:10px; font-weight:700; border:none; cursor:pointer;">
             + Issue Book to Student
           </button>
         </div>
@@ -1411,11 +2061,11 @@ document.addEventListener('DOMContentLoaded', () => {
                   <td>${b.dueDate}</td>
                   <td>
                     ${b.status === 'Available' ? `
-                      <button onclick="showToast('Issued ${b.title} to student!')" style="padding:4px 10px; font-size:0.75rem; background:var(--purple); color:white; border-radius:6px; font-weight:700;">
+                      <button onclick="showToast('Issued ${b.title} to student!')" style="padding:4px 10px; font-size:0.75rem; background:var(--purple); color:white; border-radius:6px; font-weight:700; border:none; cursor:pointer;">
                         Issue Book
                       </button>
                     ` : `
-                      <button onclick="showToast('Returned ${b.title} to library shelf ${b.shelf}!')" style="padding:4px 10px; font-size:0.75rem; background:#10b981; color:white; border-radius:6px; font-weight:700;">
+                      <button onclick="showToast('Returned ${b.title} to library shelf ${b.shelf}!')" style="padding:4px 10px; font-size:0.75rem; background:#10b981; color:white; border-radius:6px; font-weight:700; border:none; cursor:pointer;">
                         ✓ Mark Returned
                       </button>
                     `}

@@ -97,13 +97,167 @@ const MOCK_DATA = {
 
   // 6. FEE COLLECTION & FINANCIAL LEDGER
   feeLedgerFullList: [
-    { id: 'fee_01', name: 'Rahul Reddy', gradeSec: 'Class VIII A', totalFee: 15000, paidFee: 11500, dueFee: 3500, status: 'Partial', receiptNo: 'REC-VG-2026-081', lastDate: 'Aug 05, 2026' },
-    { id: 'fee_02', name: 'Pooja Sharma', gradeSec: 'Class VIII A', totalFee: 15000, paidFee: 15000, dueFee: 0, status: 'Paid', receiptNo: 'REC-VG-2026-142', lastDate: 'Aug 10, 2026' },
-    { id: 'fee_03', name: 'V. Sai Kumar', gradeSec: 'Class X A', totalFee: 18000, paidFee: 18000, dueFee: 0, status: 'Paid', receiptNo: 'REC-VG-2026-198', lastDate: 'Aug 12, 2026' },
-    { id: 'fee_04', name: 'K. Ananya', gradeSec: 'Class X B', totalFee: 18000, paidFee: 15500, dueFee: 2500, status: 'Partial', receiptNo: 'REC-VG-2026-204', lastDate: 'Aug 14, 2026' },
-    { id: 'fee_05', name: 'G. Akhil', gradeSec: 'Class IX A', totalFee: 16500, paidFee: 11500, dueFee: 5000, status: 'Overdue', receiptNo: 'REC-VG-2026-055', lastDate: 'Jun 10, 2026' },
-    { id: 'fee_06', name: 'M. Karthik', gradeSec: 'Class V A', totalFee: 12000, paidFee: 12000, dueFee: 0, status: 'Paid', receiptNo: 'REC-VG-2026-012', lastDate: 'Jul 28, 2026' }
+    { id: 'fee_01', name: 'Rahul Reddy', gradeSec: 'Class VIII A', totalFee: 22500, paidFee: 18000, dueFee: 4500, status: 'Partial', receiptNo: 'REC-VG-2026-194', lastDate: 'Aug 05, 2026' },
+    { id: 'fee_02', name: 'Pooja Sharma', gradeSec: 'Class VIII A', totalFee: 22500, paidFee: 22500, dueFee: 0, status: 'Paid', receiptNo: 'REC-VG-2026-142', lastDate: 'Aug 10, 2026' },
+    { id: 'fee_03', name: 'V. Sai Kumar', gradeSec: 'Class X A', totalFee: 24000, paidFee: 24000, dueFee: 0, status: 'Paid', receiptNo: 'REC-VG-2026-198', lastDate: 'Aug 12, 2026' },
+    { id: 'fee_04', name: 'K. Ananya', gradeSec: 'Class X B', totalFee: 24000, paidFee: 21500, dueFee: 2500, status: 'Partial', receiptNo: 'REC-VG-2026-204', lastDate: 'Aug 14, 2026' },
+    { id: 'fee_05', name: 'G. Akhil', gradeSec: 'Class IX A', totalFee: 23000, paidFee: 18000, dueFee: 5000, status: 'Overdue', receiptNo: 'REC-VG-2026-055', lastDate: 'Jun 10, 2026' },
+    { id: 'fee_06', name: 'M. Karthik', gradeSec: 'Class V A', totalFee: 16000, paidFee: 16000, dueFee: 0, status: 'Paid', receiptNo: 'REC-VG-2026-012', lastDate: 'Jul 28, 2026' }
   ],
+
+  // STUDENT PERSONALIZED FEE STATEMENT (Rahul Reddy / Parent of Rahul Reddy)
+  studentFeeAccount: {
+    studentId: 'std_101',
+    studentName: 'Rahul Reddy',
+    parentName: 'V. Reddy',
+    admissionNo: 'VGS-2022-084',
+    penId: 'PEN-36182100637-801',
+    rollNo: 'VIII-014',
+    classGrade: 'Class VIII Section A',
+    academicYear: '2026 – 2027',
+    totalAnnualFee: 22500,
+    paidAmount: 18000,
+    dueAmount: 4500,
+    dueDate: 'Sep 20, 2026',
+    dueTermName: 'Term 3 Final Tuition & Board Exam Fee',
+    status: 'Partial Due',
+    installmentSchedule: [
+      {
+        term: 'Term 1 Tuition & Admission Fee',
+        amount: 7500,
+        dueDate: 'Jun 15, 2026',
+        paidDate: 'Jun 10, 2026',
+        paidAmount: 7500,
+        status: 'Paid',
+        mode: 'PhonePe UPI',
+        receiptNo: 'REC-VG-2026-081',
+        transactionId: 'TXN-UPI-98480112'
+      },
+      {
+        term: 'Term 2 Tuition & Science/Computer Lab Fee',
+        amount: 6500,
+        dueDate: 'Aug 10, 2026',
+        paidDate: 'Aug 05, 2026',
+        paidAmount: 6500,
+        status: 'Paid',
+        mode: 'Google Pay UPI',
+        receiptNo: 'REC-VG-2026-194',
+        transactionId: 'TXN-UPI-98480776'
+      },
+      {
+        term: 'School Bus Transport Fee (Term 1 & 2)',
+        amount: 4000,
+        dueDate: 'Aug 10, 2026',
+        paidDate: 'Aug 05, 2026',
+        paidAmount: 4000,
+        status: 'Paid',
+        mode: 'SBI Netbanking',
+        receiptNo: 'REC-VG-2026-195',
+        transactionId: 'TXN-SBI-0091244'
+      },
+      {
+        term: 'Term 3 Final Tuition & Board Exam Fee',
+        amount: 4500,
+        dueDate: 'Sep 20, 2026',
+        paidDate: '-',
+        paidAmount: 0,
+        status: 'Pending Due',
+        mode: 'Online / Counter',
+        receiptNo: 'Pending',
+        transactionId: '-'
+      }
+    ],
+    receiptsHistory: [
+      {
+        receiptNo: 'REC-VG-2026-195',
+        date: 'Aug 05, 2026',
+        description: 'School Bus Transport Fee (Term 1 & 2)',
+        amount: 4000,
+        mode: 'SBI Netbanking',
+        collectedBy: 'Accountant M. Sudhakar',
+        status: 'Success'
+      },
+      {
+        receiptNo: 'REC-VG-2026-194',
+        date: 'Aug 05, 2026',
+        description: 'Term 2 Tuition & Science/Computer Lab Fee',
+        amount: 6500,
+        mode: 'Google Pay UPI',
+        collectedBy: 'Online Portal Gateway',
+        status: 'Success'
+      },
+      {
+        receiptNo: 'REC-VG-2026-081',
+        date: 'Jun 10, 2026',
+        description: 'Term 1 Tuition & Admission Fee',
+        amount: 7500,
+        mode: 'PhonePe UPI',
+        collectedBy: 'Online Portal Gateway',
+        status: 'Success'
+      }
+    ]
+  },
+
+  // TEACHER CLASS-WISE FEE COLLECTION LEDGER (Class VIII Section A)
+  teacherClassFeeData: {
+    className: 'Class VIII Section A',
+    classTeacher: 'Mrs. S. Radhika',
+    totalStudents: 42,
+    totalClassFee: 630000,
+    collectedClassFee: 585000,
+    dueClassFee: 45000,
+    collectionPct: 92.8,
+    defaultersCount: 3,
+    students: [
+      { id: 'std_101', name: 'Rahul Reddy', rollNo: 'VIII-014', parentName: 'V. Reddy', contact: '+91 98480 12345', total: 15000, paid: 10500, due: 4500, status: 'Partial', lastPaid: 'Aug 05, 2026' },
+      { id: 'std_102', name: 'Pooja Sharma', rollNo: 'VIII-015', parentName: 'K. Sharma', contact: '+91 98480 67890', total: 15000, paid: 15000, due: 0, status: 'Paid', lastPaid: 'Aug 10, 2026' },
+      { id: 'std_108', name: 'B. Sumanth', rollNo: 'VIII-002', parentName: 'B. Srinivas', contact: '+91 98480 22334', total: 15000, paid: 15000, due: 0, status: 'Paid', lastPaid: 'Jul 22, 2026' },
+      { id: 'std_109', name: 'C. Tejaswi', rollNo: 'VIII-009', parentName: 'C. Venkatesh', contact: '+91 98480 44556', total: 15000, paid: 11000, due: 4000, status: 'Partial', lastPaid: 'Jun 15, 2026' },
+      { id: 'std_110', name: 'D. Sandeep', rollNo: 'VIII-021', parentName: 'D. Narsaiah', contact: '+91 98480 77889', total: 15000, paid: 9000, due: 6000, status: 'Overdue', lastPaid: 'May 30, 2026' },
+      { id: 'std_111', name: 'E. Kavya', rollNo: 'VIII-028', parentName: 'E. Mallesh', contact: '+91 98480 99001', total: 15000, paid: 15000, due: 0, status: 'Paid', lastPaid: 'Aug 02, 2026' }
+    ]
+  },
+
+  // STUDENT PERSONALIZED LIBRARY & TRANSPORT
+  studentLibraryData: {
+    studentName: 'Rahul Reddy',
+    libraryCardNo: 'LIB-VIII-014',
+    borrowLimit: 3,
+    currentlyBorrowed: [
+      {
+        id: 'bk_01',
+        title: 'Higher Algebra & Geometry',
+        author: 'Hall & Knight',
+        isbn: 'ISBN-978-81219',
+        category: 'Mathematics',
+        shelf: 'Shelf M-04',
+        issueDate: 'Aug 18, 2026',
+        dueDate: 'Sep 05, 2026',
+        status: 'Active (3 Days Remaining)'
+      }
+    ],
+    readingHistory: [
+      { title: 'Wings of Fire: An Autobiography', author: 'A.P.J. Abdul Kalam', returnedDate: 'Aug 15, 2026', status: 'Returned On Time' },
+      { title: 'Telangana Culture, Kakatiya Heritage', author: 'Dr. B. Narsaiah', returnedDate: 'Jul 28, 2026', status: 'Returned On Time' }
+    ]
+  },
+
+  studentTransportData: {
+    studentName: 'Rahul Reddy',
+    rollNo: 'VIII-014',
+    busNo: 'Bus #2 (TG 12 Z 4092)',
+    route: 'Route 2 — Cherial to Maddur Line',
+    stopName: 'Maddur Bus Stand (Near Gram Panchayat)',
+    morningPickupTime: '07:30 AM',
+    schoolArrival: '08:20 AM',
+    eveningDropTime: '05:00 PM',
+    driverName: 'M. Ramesh',
+    driverPhone: '+91 98480 67890',
+    busInchargeTeacher: 'Mrs. V. Latha (+91 98480 55443)',
+    gpsStatus: '🟢 On Route • Arriving School Gate',
+    speed: '28 km/h',
+    emergencyContact: '08716-242001 (School Main Office)'
+  },
 
   // 7. TRANSPORT FLEET
   transportFleetList: [
