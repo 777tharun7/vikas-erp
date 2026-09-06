@@ -29,8 +29,150 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function initApp() {
     setupEventListeners();
+    initGlobalSearch();
+    initAuthController();
+    initProfileModal();
+    applyTenantBranding();
+
+    // Subscribe to store updates to keep window.MOCK_DATA and current view reactive
+    EduPulseStore.subscribe((state, action) => {
+      window.MOCK_DATA = state;
+      renderNotificationsList();
+    });
+
+    // Restore active session if available
+    const sessionStr = sessionStorage.getItem('edupulse_current_session');
+    if (sessionStr) {
+      try {
+        const session = JSON.parse(sessionStr);
+        if (session && session.role) {
+          activeRole = session.role;
+        }
+      } catch (e) {}
+    }
+
     // Default entry for new visitors: show the Public Home Page!
     showPublicWebsite();
+  }
+
+  function applyTenantBranding() {
+    const tenant = (typeof TENANT_CONFIG !== 'undefined' && TENANT_CONFIG.current) ? TENANT_CONFIG.current : {
+      name: 'Vikas Grammar School HS Cherial',
+      shortName: 'Vikas Grammar School',
+      motto: 'Learn • Grow • Excel',
+      location: 'Cheriyal, Siddipet, Telangana — 506223',
+      udiseCode: '36182100637'
+    };
+
+    const brandName = document.querySelector('.brand-name');
+    if (brandName) brandName.textContent = tenant.shortName;
+
+    const brandSub = document.querySelector('.brand-sub');
+    if (brandSub) brandSub.textContent = tenant.motto;
+
+    const schoolCardTitle = document.querySelector('.school-card-title');
+    if (schoolCardTitle) schoolCardTitle.textContent = tenant.name;
+
+    const schoolCardSub = document.querySelector('.school-card-sub');
+    if (schoolCardSub) schoolCardSub.textContent = tenant.location;
+
+    const schoolUdiseBadge = document.querySelector('.school-udise-badge');
+    if (schoolUdiseBadge) schoolUdiseBadge.textContent = `UDISE: ${tenant.udiseCode}`;
+
+    const footerLeft = document.querySelector('.footer-left');
+    if (footerLeft) footerLeft.textContent = `© 2026 ${tenant.name} (UDISE: ${tenant.udiseCode}). All rights reserved.`;
+
+    const footerRight = document.querySelector('.footer-right');
+    if (footerRight) footerRight.textContent = tenant.location;
+  }
+
+  function getNavItemsForRole(role) {
+    if (role === 'principal') {
+      return [
+        { id: 'dashboard', label: 'Dashboard', icon: 'layout-grid' },
+        { id: 'institutional_diagnostic', label: 'Where We Stand & Improve', icon: 'trending-up' },
+        { id: 'cce_report_cards', label: 'SCERT CCE Report & Hall Ticket', icon: 'file-text' },
+        { id: 'whatsapp_comms', label: 'WhatsApp & DLT SMS Gateway', icon: 'message-circle' },
+        { id: 'beti_padhao', label: 'Beti Padhao Scholarship Hub', icon: 'heart' },
+        { id: 'proxy_substitution', label: 'Teacher Proxy & Substitution', icon: 'shuffle' },
+        { id: 'feedback_oversight', label: 'Daily Feedback Oversight', icon: 'message-square' },
+        { id: 'principal_gpa_analytics', label: 'GPA & Academic Gaps', icon: 'award' },
+        { id: 'study_vault', label: 'Curriculum & Study Vault', icon: 'folder-down' },
+        { id: 'methodology_satisfaction', label: 'Methodology & Satisfaction', icon: 'sparkles' },
+        { id: 'relations_climate', label: 'Teacher-Student Relations & Conduct', icon: 'heart-handshake' },
+        { id: 'facilities_incidents', label: 'Facilities & Safety Incidents', icon: 'shield-alert' },
+        { id: 'pacing_diary', label: 'Syllabus Pacing & Daily Progress', icon: 'clock' },
+        { id: 'admissions', label: 'Admissions & Enquiries', icon: 'user-plus' },
+        { id: 'students', label: 'Students Roster (Classes 1–10)', icon: 'users' },
+        { id: 'academics', label: 'Academics & Board', icon: 'book-open' },
+        { id: 'staff_payroll', label: 'Staff & HR Payroll', icon: 'user-check' },
+        { id: 'timetable', label: 'Master Timetables Matrix', icon: 'calendar' },
+        { id: 'fees', label: 'Fee Collection Ledger', icon: 'indian-rupee' },
+        { id: 'transport', label: 'Transport & Fleet', icon: 'bus' },
+        { id: 'library', label: 'School Library', icon: 'book-marked' },
+        { id: 'calendar', label: 'School Holiday Calendar', icon: 'calendar' }
+      ];
+    } else if (role === 'teacher') {
+      return [
+        { id: 'dashboard', label: 'Teacher Workspace', icon: 'layout-grid' },
+        { id: 'cce_marks_entry', label: 'SCERT CCE Marks Entry Portal', icon: 'award' },
+        { id: 'whatsapp_comms', label: 'WhatsApp & SMS Alerts', icon: 'message-circle' },
+        { id: 'proxy_substitution', label: 'Proxy Duty & Substitutions', icon: 'shuffle' },
+        { id: 'student_homework', label: 'Homework & Submissions', icon: 'check-square' },
+        { id: 'study_vault', label: 'Study Vault & Resources', icon: 'folder-down' },
+        { id: 'teacher_feedback', label: 'Daily Class & Student Feedback', icon: 'message-square' },
+        { id: 'teacher_behaviour', label: 'Student 360° Conduct & Behaviour', icon: 'heart-handshake' },
+        { id: 'teacher_gpa_gaps', label: 'GPA & Learning Gaps Plugging', icon: 'award' },
+        { id: 'pacing_diary', label: 'Syllabus Pacing & Daily Diary', icon: 'clock' },
+        { id: 'teacher_methodology', label: 'Teaching Methodology Review', icon: 'sparkles' },
+        { id: 'teacher_report_incident', label: 'Facilities & Safety Incidents', icon: 'shield-alert' },
+        { id: 'my_students', label: 'My Class Students (360°)', icon: 'users' },
+        { id: 'teacher_attendance', label: 'My Teacher Attendance', icon: 'check-circle' },
+        { id: 'timetable', label: 'My Teaching Schedule', icon: 'clock' },
+        { id: 'student_leave_approvals', label: 'Student Leave Approvals', icon: 'file-text' },
+        { id: 'teacher_salary', label: 'My Salary & Payslips', icon: 'indian-rupee' },
+        { id: 'calendar', label: 'School Holiday Calendar', icon: 'calendar' }
+      ];
+    } else if (role === 'student') {
+      return [
+        { id: 'dashboard', label: 'Student Portal', icon: 'layout-grid' },
+        { id: 'beti_padhao', label: 'Beti Padhao & STEM Scholarships', icon: 'heart' },
+        { id: 'study_vault', label: 'Digital Study Vault & Notes', icon: 'folder-down' },
+        { id: 'student_homework', label: 'My Homework & Turn-In', icon: 'check-square' },
+        { id: 'olympiad_corner', label: 'Scholarships & Olympiad Prep', icon: 'trophy' },
+        { id: 'my_cce_card', label: 'My CCE Grade Card & Hall Ticket', icon: 'file-text' },
+        { id: 'student_daily_feedback', label: 'Daily Class Feedback', icon: 'message-square-plus' },
+        { id: 'student_gpa_gaps', label: 'My GPA & Learning Gaps', icon: 'award' },
+        { id: 'student_methodology_opinion', label: 'Teaching Method Opinion', icon: 'sparkles' },
+        { id: 'pacing_diary', label: 'Class Pacing & Today\'s Diary', icon: 'clock' },
+        { id: 'student_facilities_feedback', label: 'Campus Amenities & Facilities', icon: 'coffee' },
+        { id: 'student_report_incident', label: 'Safety & Incident Report', icon: 'shield-alert' },
+        { id: 'timetable', label: 'My Class Timetable', icon: 'calendar' },
+        { id: 'my_fees', label: 'My Fee Breakdown', icon: 'indian-rupee' },
+        { id: 'student_apply_leave', label: 'Submit Leave Request', icon: 'file-text' },
+        { id: 'bus_info', label: 'My Bus Route & Timing', icon: 'bus' },
+        { id: 'calendar', label: 'School Holiday Calendar', icon: 'calendar' }
+      ];
+    } else if (role === 'parent') {
+      return [
+        { id: 'dashboard', label: 'Child Overview', icon: 'layout-grid' },
+        { id: 'beti_padhao', label: 'Beti Padhao Scholarship Tracker', icon: 'heart' },
+        { id: 'my_cce_card', label: 'Child CCE Report & Hall Ticket', icon: 'file-text' },
+        { id: 'student_homework', label: 'Homework Submissions', icon: 'check-square' },
+        { id: 'olympiad_corner', label: 'Scholarships & Olympiad Corner', icon: 'trophy' },
+        { id: 'teacher_feedback_parent', label: "Teacher's Daily Feedback", icon: 'message-circle' },
+        { id: 'parent_child_behaviour', label: 'Child 360° Conduct & Behaviour', icon: 'heart-handshake' },
+        { id: 'parent_gpa_gaps', label: 'Subject GPA & Learning Gaps', icon: 'award' },
+        { id: 'pacing_diary', label: 'Class Pacing & Syllabus Coverage', icon: 'clock' },
+        { id: 'parent_facilities_safety', label: 'Campus Hygiene & Safety Log', icon: 'shield-alert' },
+        { id: 'child_attendance', label: 'Child Attendance & Performance', icon: 'user-check' },
+        { id: 'parent_apply_leave', label: 'Apply Child Leave', icon: 'file-text' },
+        { id: 'pay_fee', label: 'Pay School Fee', icon: 'indian-rupee' },
+        { id: 'bus_tracking', label: 'Child Bus Tracking', icon: 'bus' },
+        { id: 'calendar', label: 'School Holiday Calendar', icon: 'calendar' }
+      ];
+    }
+    return [];
   }
 
   function setupEventListeners() {
@@ -44,48 +186,29 @@ document.addEventListener('DOMContentLoaded', () => {
       renderPrincipalFeedbackOversightScreen();
     };
     window.acknowledgeFeedbackAsParent = function(id) {
-      const item = MOCK_DATA.teacherStudentFeedbacks.find(x => x.id === id);
-      if (item) {
-        const noteInput = document.getElementById(`parentNoteInput_${id}`);
-        const noteText = noteInput?.value ? noteInput.value.trim() : 'Reviewed and acknowledged by parent.';
-        item.parentAcknowledged = true;
-        item.parentNote = noteText;
-        const now = new Date();
-        item.acknowledgedDate = `Sep 02, 2026 at ${now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}`;
-        showToast(`Feedback acknowledged! Your reply was delivered to ${item.teacherName} and Principal.`);
-        renderParentTeacherFeedbackScreen();
-      }
+      const noteInput = document.getElementById(`parentNoteInput_${id}`);
+      const noteText = noteInput?.value ? noteInput.value.trim() : 'Reviewed and acknowledged by parent.';
+      EduPulseStore.dispatch('ACKNOWLEDGE_FEEDBACK_PARENT', { id, note: noteText });
+      showToast(`Feedback acknowledged! Your reply was delivered to class teacher and Principal.`);
+      renderParentTeacherFeedbackScreen();
     };
     window.principalAcknowledgeStudent = function(id) {
-      const item = MOCK_DATA.studentClassFeedbacks.find(x => x.id === id);
-      if (item) {
-        item.principalStatus = 'Acknowledged by Headmaster';
-        item.principalRemarks = 'Reviewed by Headmaster K. Rajesham. Excellent progress noted.';
-        showToast('Acknowledged student feedback!');
-        renderPrincipalFeedbackOversightScreen();
-      }
+      EduPulseStore.dispatch('ACKNOWLEDGE_FEEDBACK_PRINCIPAL', {
+        id,
+        remarks: 'Reviewed by Headmaster K. Rajesham. Excellent progress noted.'
+      });
+      showToast('Acknowledged student feedback!');
+      renderPrincipalFeedbackOversightScreen();
     };
     window.plugSubjectGap = function(subjectName) {
-      const student = MOCK_DATA.gpaSubjectDiagnostics[0];
-      const sub = student.subjects.find(s => s.subject === subjectName);
-      if (sub) {
-        sub.gapStatus = 'Plugged Successfully';
-        showToast(`Remedial action verified! Learning gap plugged for ${subjectName}.`);
-        renderGpaDiagnosticsScreen(activeRole);
-      }
+      EduPulseStore.dispatch('PLUG_GPA_GAP', { subjectName });
+      showToast(`Remedial action verified! Learning gap plugged for ${subjectName}.`);
+      renderGpaDiagnosticsScreen(activeRole);
     };
     window.advanceImprovementAction = function(id) {
-      const item = MOCK_DATA.whereToImprove.find(x => x.id === id);
-      if (item) {
-        if (item.progressPct < 100) {
-          item.progressPct = Math.min(100, item.progressPct + 10);
-          if (item.progressPct === 100) item.status = 'Fully Accomplished';
-          showToast(`Updated progress on ${item.area} to ${item.progressPct}%!`);
-          renderInstitutionalDiagnosticScreen();
-        } else {
-          showToast('Action item is already fully accomplished!');
-        }
-      }
+      EduPulseStore.dispatch('ADVANCE_IMPROVEMENT_ACTION', { id });
+      showToast('Updated institutional improvement progress!');
+      renderInstitutionalDiagnosticScreen();
     };
     window.switchMethodologyTab = function(tab) {
       activeMethodologyTab = tab;
@@ -108,25 +231,19 @@ document.addEventListener('DOMContentLoaded', () => {
       renderStudyVaultScreen();
     };
     window.downloadVaultMaterial = function(id) {
-      const item = MOCK_DATA.studyVault.find(x => x.id === id);
-      if (item) {
-        item.downloads += 1;
-        showToast(`Downloading "${item.title}" (${item.size}). File saved!`);
-        renderStudyVaultScreen();
-      }
+      const item = EduPulseStore.getState().studyVault?.find(x => x.id === id);
+      EduPulseStore.dispatch('DOWNLOAD_VAULT_ITEM', { id });
+      showToast(`Downloading "${item?.title || 'Resource'}" (${item?.size || 'PDF'}). File saved!`);
+      renderStudyVaultScreen();
     };
     window.submitHomeworkOnline = function(id) {
-      const item = MOCK_DATA.studentHomeworkList.find(x => x.id === id);
-      if (item) {
-        item.status = 'Submitted Online';
-        const now = new Date();
-        item.submissionTime = `Sep 02, 2026 at ${now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}`;
-        showToast(`Homework for ${item.subject} submitted successfully! Teacher notified.`);
-        renderStudentHomeworkScreen();
-      }
+      const item = EduPulseStore.getState().studentHomeworkList?.find(x => x.id === id);
+      EduPulseStore.dispatch('SUBMIT_HOMEWORK', { id });
+      showToast(`Homework for ${item?.subject || 'Class'} submitted successfully! Teacher notified.`);
+      renderStudentHomeworkScreen();
     };
     window.selectOlympiadOption = function(qId, selectedIdx) {
-      const q = MOCK_DATA.olympiadQuizPractice.find(x => x.id === qId);
+      const q = EduPulseStore.getState().olympiadQuizPractice?.find(x => x.id === qId);
       if (!q) return;
       const opts = document.querySelectorAll(`[data-quiz-opt="${qId}"]`);
       opts.forEach((btn, idx) => {
@@ -148,17 +265,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     };
     window.assignProxyTeacher = function(leaveId, periodStr, proxyTeacherName) {
-      MOCK_DATA.proxySubstitutionSystem.allocatedProxies.push({
-        id: `proxy_${Date.now()}`,
-        period: periodStr,
-        time: 'Today',
-        targetClass: 'Class Covered',
-        originalTeacher: 'Staff on Leave',
-        assignedProxyTeacher: proxyTeacherName,
-        topicCovered: 'Classroom Mentoring & Revision Worksheets',
-        status: 'Duty Confirmed',
-        notifiedVia: 'Automated In-App SMS'
-      });
+      EduPulseStore.dispatch('ASSIGN_PROXY_TEACHER', { leaveId, periodStr, proxyTeacherName });
       showToast(`Proxy duty confirmed! ${proxyTeacherName} assigned to cover ${periodStr}.`);
       renderProxySubstitutionScreen();
     };
@@ -167,9 +274,10 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     window.logWeeklyHygieneRating = function(score, weekName, notes) {
       const parsedScore = parseFloat(score) || 96.0;
-      MOCK_DATA.campusFacilitiesData.overallCampusHygieneScore = parsedScore;
-      MOCK_DATA.campusFacilitiesData.weeklyHygieneRatings.push({
-        week: weekName || `Week ${MOCK_DATA.campusFacilitiesData.weeklyHygieneRatings.length + 1}`,
+      const state = EduPulseStore.getState();
+      state.campusFacilitiesData.overallCampusHygieneScore = parsedScore;
+      state.campusFacilitiesData.weeklyHygieneRatings.push({
+        week: weekName || `Week ${state.campusFacilitiesData.weeklyHygieneRatings.length + 1}`,
         dateRange: 'Sep 03 – Sep 09, 2026',
         score: parsedScore,
         ratingStars: `${(parsedScore / 20).toFixed(1)} / 5`,
@@ -177,7 +285,8 @@ document.addEventListener('DOMContentLoaded', () => {
         auditor: 'Health Committee & Duty Inspector',
         highlights: notes || 'Weekly campus sanitization and drinking water audit completed.'
       });
-      MOCK_DATA.campusFacilitiesData.lastHygieneAudit = `Just now (Score: ${parsedScore}%)`;
+      state.campusFacilitiesData.lastHygieneAudit = `Just now (Score: ${parsedScore}%)`;
+      EduPulseStore.save();
       showToast(`Logged weekly hygiene rating: ${parsedScore}%! Overall score updated.`);
       renderFacilitiesIncidentsScreen(activeRole);
     };
@@ -187,6 +296,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.changeCarouselSlide = changeCarouselSlide;
     window.setCarouselSlide = setCarouselSlide;
     window.scrollToPubSection = scrollToPubSection;
+    window.togglePubMobileMenu = togglePubMobileMenu;
     window.submitPublicAdmissionInquiry = submitPublicAdmissionInquiry;
     window.renderFeeRouterScreen = renderFeeRouterScreen;
     window.openOnlineFeePaymentModal = openOnlineFeePaymentModal;
@@ -207,6 +317,34 @@ document.addEventListener('DOMContentLoaded', () => {
     window.openManagementExpenseReceiptModal = openManagementExpenseReceiptModal;
     window.closeManagementExpenseReceiptModal = closeManagementExpenseReceiptModal;
     window.handleExpenseBillUpload = handleExpenseBillUpload;
+
+    function navigateFromDock(key) {
+      document.querySelectorAll('.dock-item').forEach(b => b.classList.remove('active'));
+      if (key === 'home') {
+        document.getElementById('dockBtnHome')?.classList.add('active');
+        handleNavClick('dashboard');
+      } else if (key === 'roster') {
+        document.getElementById('dockBtnRoster')?.classList.add('active');
+        if (activeRole === 'student' || activeRole === 'parent') {
+          handleNavClick('academics');
+        } else {
+          handleNavClick('student_roster');
+        }
+      } else if (key === 'fees') {
+        document.getElementById('dockBtnFees')?.classList.add('active');
+        if (activeRole === 'principal') {
+          handleNavClick('fee_collection');
+        } else if (activeRole === 'teacher') {
+          handleNavClick('teacher_salary');
+        } else {
+          handleNavClick('fees');
+        }
+      }
+      if (typeof refreshLucideIcons === 'function') {
+        refreshLucideIcons();
+      }
+    }
+    window.navigateFromDock = navigateFromDock;
 
     // Role Pills Switcher in Top Navbar
     document.querySelectorAll('.role-pill').forEach(btn => {
@@ -231,11 +369,28 @@ document.addEventListener('DOMContentLoaded', () => {
       themeLightBtn.classList.remove('active');
     });
 
-    // Sidebar Responsive Collapse Toggle
-    sidebarCollapseBtn?.addEventListener('click', () => {
-      sidebar.classList.toggle('collapsed');
-      document.querySelector('.main-wrapper').classList.toggle('expanded');
-    });
+    // Sidebar Responsive Collapse & Mobile Drawer Toggle
+    const sidebarOverlayEl = document.getElementById('sidebarOverlay');
+
+    function toggleSidebar() {
+      if (window.innerWidth < 992) {
+        sidebar?.classList.toggle('open');
+        sidebarOverlayEl?.classList.toggle('active');
+      } else {
+        sidebar?.classList.toggle('collapsed');
+        document.querySelector('.main-wrapper')?.classList.toggle('expanded');
+      }
+    }
+
+    function closeMobileSidebar() {
+      sidebar?.classList.remove('open');
+      sidebarOverlayEl?.classList.remove('active');
+    }
+
+    sidebarCollapseBtn?.addEventListener('click', toggleSidebar);
+    sidebarOverlayEl?.addEventListener('click', closeMobileSidebar);
+    window.closeMobileSidebar = closeMobileSidebar;
+    window.toggleMobileSidebar = toggleSidebar;
 
     // AI Drawer Open/Close Controls
     const openAiDrawerBtn = document.getElementById('openAiDrawerBtn');
@@ -270,17 +425,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 400);
     });
 
-    // Global Search Handler
-    const globalSearchInput = document.getElementById('globalSearchInput');
-    globalSearchInput?.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        const query = globalSearchInput.value.trim();
-        if (query) {
-          showToast(`Searching Vikas Grammar School records for "${query}"...`);
-        }
-      }
-    });
-
     // Notification Center Event Listeners
     const notifBtn = document.getElementById('notifBtn');
     const notifDropdown = document.getElementById('notifDropdown');
@@ -298,15 +442,606 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-
     markAllReadBtn?.addEventListener('click', () => {
-      MOCK_DATA.notificationsList.forEach(n => n.unread = false);
+      const state = EduPulseStore.getState();
+      if (Array.isArray(state.notificationsList)) {
+        state.notificationsList.forEach(n => n.unread = false);
+        EduPulseStore.save();
+      }
       renderNotificationsList();
       showToast('All notifications marked as read!');
     });
 
     renderNotificationsList();
   }
+
+  /* ==========================================================================
+     GLOBAL SCOPED SEARCH ENGINE WITH ⌘K COMMAND PALETTE
+     ========================================================================== */
+  function initGlobalSearch() {
+    const searchInput = document.getElementById('globalSearchInput');
+    const resultsContainer = document.getElementById('globalSearchResults');
+    const resultsList = document.getElementById('searchResultsList');
+    const roleScopeBadge = document.getElementById('searchRoleScopeBadge');
+
+    if (!searchInput || !resultsContainer || !resultsList) return;
+
+    // Keyboard shortcut ⌘K / Ctrl+K
+    document.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        searchInput.focus();
+        searchInput.select();
+        performSearch(searchInput.value.trim());
+      }
+      if (e.key === 'Escape' && resultsContainer.classList.contains('active')) {
+        resultsContainer.classList.remove('active');
+        searchInput.blur();
+      }
+    });
+
+    searchInput.addEventListener('focus', () => {
+      performSearch(searchInput.value.trim());
+    });
+
+    searchInput.addEventListener('input', (e) => {
+      performSearch(e.target.value.trim());
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!searchInput.contains(e.target) && !resultsContainer.contains(e.target)) {
+        resultsContainer.classList.remove('active');
+      }
+    });
+
+    function performSearch(query) {
+      if (roleScopeBadge) {
+        roleScopeBadge.textContent = `${activeRole.toUpperCase()} SCOPE`;
+      }
+
+      if (!query) {
+        renderQuickShortcuts();
+        resultsContainer.classList.add('active');
+        return;
+      }
+
+      const q = query.toLowerCase();
+      const state = EduPulseStore.getState();
+      const results = [];
+
+      // 1. Students Search
+      if (Array.isArray(state.studentDirectoryList)) {
+        state.studentDirectoryList.forEach(std => {
+          const matches = std.name.toLowerCase().includes(q) ||
+            (std.rollNo && std.rollNo.toLowerCase().includes(q)) ||
+            (std.penId && std.penId.toLowerCase().includes(q)) ||
+            (std.grade && std.grade.toLowerCase().includes(q)) ||
+            (std.parentName && std.parentName.toLowerCase().includes(q));
+
+          if (matches) {
+            // RBAC scoping
+            if (activeRole === 'student' && !std.name.includes('Rahul Reddy')) return;
+            if (activeRole === 'parent' && !std.name.includes('Rahul Reddy')) return;
+
+            results.push({
+              category: 'Students',
+              icon: '🎓',
+              title: `${std.name} (${std.grade} - ${std.section || 'A'})`,
+              sub: `Roll: ${std.rollNo || 'N/A'} • PEN: ${std.penId || 'N/A'} • Parent: ${std.parentName} (${std.parentContact})`,
+              badge: std.feeStatus === 'Paid' ? 'Fee Paid' : `Due ₹${std.feeDue || 0}`,
+              badgeColor: std.feeStatus === 'Paid' ? 'badge-success' : 'badge-warning',
+              action: () => {
+                if (activeRole === 'student' || activeRole === 'parent') {
+                  handleNavClick('child_attendance');
+                } else {
+                  handleNavClick('students');
+                }
+              }
+            });
+          }
+        });
+      }
+
+      // 2. Staff Search (Principal & Teacher only)
+      if (activeRole === 'principal' || activeRole === 'teacher') {
+        if (Array.isArray(state.staffPayrollList)) {
+          state.staffPayrollList.forEach(stf => {
+            if (stf.name.toLowerCase().includes(q) || stf.role.toLowerCase().includes(q) || stf.empId.toLowerCase().includes(q)) {
+              results.push({
+                category: 'Staff & Faculty',
+                icon: '👩‍🏫',
+                title: stf.name,
+                sub: `${stf.role} • ID: ${stf.empId}`,
+                badge: activeRole === 'principal' ? `₹${stf.netSalary.toLocaleString()}/mo` : 'Faculty',
+                badgeColor: 'badge-indigo',
+                action: () => {
+                  if (activeRole === 'principal') handleNavClick('staff_payroll');
+                  else handleNavClick('timetable');
+                }
+              });
+            }
+          });
+        }
+      }
+
+      // 3. Admissions Inquiries (Principal only)
+      if (activeRole === 'principal') {
+        if (Array.isArray(state.admissionsLeadsList)) {
+          state.admissionsLeadsList.forEach(adm => {
+            if (adm.applicantName.toLowerCase().includes(q) || adm.parentName.toLowerCase().includes(q) || adm.gradeApplied.toLowerCase().includes(q) || (adm.phone && adm.phone.includes(q))) {
+              results.push({
+                category: 'Admissions & Inquiries',
+                icon: '📋',
+                title: `${adm.applicantName} (${adm.gradeApplied})`,
+                sub: `Parent: ${adm.parentName} (${adm.phone}) • Date: ${adm.date}`,
+                badge: adm.status,
+                badgeColor: adm.status === 'Approved' ? 'badge-success' : adm.status === 'Enrolled' ? 'badge-primary' : 'badge-warning',
+                action: () => handleNavClick('admissions')
+              });
+            }
+          });
+        }
+      }
+
+      // 4. Leave Applications (Principal & Teacher only)
+      if (activeRole === 'principal' || activeRole === 'teacher') {
+        if (Array.isArray(state.studentLeaveRequests)) {
+          state.studentLeaveRequests.forEach(lvr => {
+            if (lvr.studentName.toLowerCase().includes(q) || lvr.leaveType.toLowerCase().includes(q) || lvr.grade.toLowerCase().includes(q)) {
+              results.push({
+                category: 'Leave Requests',
+                icon: '📝',
+                title: `${lvr.studentName} — ${lvr.leaveType}`,
+                sub: `${lvr.grade} • ${lvr.days} Days (${lvr.fromDate} to ${lvr.toDate})`,
+                badge: lvr.status,
+                badgeColor: lvr.status === 'Accepted' ? 'badge-success' : 'badge-warning',
+                action: () => handleNavClick('student_leave_approvals')
+              });
+            }
+          });
+        }
+      }
+
+      // 5. Navigation Modules
+      const modules = getNavItemsForRole(activeRole);
+      modules.forEach(m => {
+        if (m.label.toLowerCase().includes(q) || m.id.toLowerCase().includes(q)) {
+          results.push({
+            category: 'Navigation Modules',
+            icon: '⚡',
+            title: m.label,
+            sub: `Jump directly to ${m.label} module`,
+            badge: 'Module',
+            badgeColor: 'badge-purple',
+            action: () => handleNavClick(m.id)
+          });
+        }
+      });
+
+      renderSearchResults(results, query);
+      resultsContainer.classList.add('active');
+    }
+
+    function renderSearchResults(results, query) {
+      if (results.length === 0) {
+        resultsList.innerHTML = `
+          <div class="search-empty-state">
+            <div class="search-empty-icon">🔍</div>
+            <div style="font-weight:700; color:var(--text-primary); font-size:0.9rem;">No records found for "${query}"</div>
+            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">Try searching by student name, roll number, PEN ID, or staff name.</div>
+          </div>
+        `;
+        return;
+      }
+
+      const groups = {};
+      results.forEach(r => {
+        if (!groups[r.category]) groups[r.category] = [];
+        groups[r.category].push(r);
+      });
+
+      let html = '';
+      Object.keys(groups).forEach(cat => {
+        html += `<div class="search-result-group-title">${cat} (${groups[cat].length})</div>`;
+        groups[cat].forEach((item, idx) => {
+          const itemId = `search_res_${cat.replace(/\s+/g, '')}_${idx}`;
+          html += `
+            <div class="search-result-item" id="${itemId}">
+              <div class="search-item-left">
+                <div class="search-item-icon" style="background:var(--bg-card-sub);">${item.icon}</div>
+                <div class="search-item-text">
+                  <div class="search-item-title">${highlightQuery(item.title, query)}</div>
+                  <div class="search-item-sub">${highlightQuery(item.sub, query)}</div>
+                </div>
+              </div>
+              <span class="badge ${item.badgeColor} search-item-badge">${item.badge}</span>
+            </div>
+          `;
+        });
+      });
+
+      resultsList.innerHTML = html;
+
+      Object.keys(groups).forEach(cat => {
+        groups[cat].forEach((item, idx) => {
+          const el = document.getElementById(`search_res_${cat.replace(/\s+/g, '')}_${idx}`);
+          if (el) {
+            el.addEventListener('click', () => {
+              resultsContainer.classList.remove('active');
+              searchInput.value = '';
+              item.action();
+            });
+          }
+        });
+      });
+    }
+
+    function renderQuickShortcuts() {
+      const items = getNavItemsForRole(activeRole).slice(0, 6);
+      let html = `<div class="search-result-group-title">⚡ Quick Workspace Navigation</div>`;
+      items.forEach((m, idx) => {
+        html += `
+          <div class="search-result-item" id="quick_nav_${idx}">
+            <div class="search-item-left">
+              <div class="search-item-icon" style="background:var(--bg-card-sub);">📍</div>
+              <div class="search-item-text">
+                <div class="search-item-title">${m.label}</div>
+                <div class="search-item-sub">Switch to ${m.label} screen</div>
+              </div>
+            </div>
+            <span class="badge badge-indigo search-item-badge">Go →</span>
+          </div>
+        `;
+      });
+      resultsList.innerHTML = html;
+
+      items.forEach((m, idx) => {
+        const el = document.getElementById(`quick_nav_${idx}`);
+        if (el) {
+          el.addEventListener('click', () => {
+            resultsContainer.classList.remove('active');
+            searchInput.value = '';
+            handleNavClick(m.id);
+          });
+        }
+      });
+    }
+
+    function highlightQuery(text, query) {
+      if (!query || !text) return text || '';
+      const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+      return String(text).replace(regex, '<mark style="background:#fef08a; color:#854d0e; padding:0 2px; border-radius:2px; font-weight:800;">$1</mark>');
+    }
+  }
+
+  /* ==========================================================================
+     AUTHENTICATION & ROLE INTEGRITY CONTROLLER
+     ========================================================================== */
+  function initAuthController() {
+    const loginModalOverlay = document.getElementById('loginModalOverlay');
+    const loginForm = document.getElementById('loginForm');
+    const loginEmailInput = document.getElementById('loginEmailInput');
+    const loginPasswordInput = document.getElementById('loginPasswordInput');
+    const demoChips = document.querySelectorAll('.demo-chip');
+    const detectionBadge = document.getElementById('detectionBadge');
+    const detectionAvatar = document.getElementById('detectionAvatar');
+    const detectionName = document.getElementById('detectionName');
+    const detectionSub = document.getElementById('detectionSub');
+
+    // Demo Chips Autofill
+    demoChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        demoChips.forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        const email = chip.getAttribute('data-email');
+        if (loginEmailInput) loginEmailInput.value = email;
+
+        const state = EduPulseStore.getState();
+        const cred = state.userCredentials?.[email];
+        if (cred && loginPasswordInput) {
+          loginPasswordInput.value = cred.password;
+        }
+        updateRoleDetectionBox(email);
+      });
+    });
+
+    loginEmailInput?.addEventListener('input', (e) => {
+      updateRoleDetectionBox(e.target.value.trim());
+    });
+
+    function updateRoleDetectionBox(email) {
+      const state = EduPulseStore.getState();
+      const cred = state.userCredentials?.[email];
+      if (cred) {
+        if (detectionBadge) detectionBadge.textContent = `${cred.role === 'principal' ? '👑 Principal' : cred.role === 'teacher' ? '👩‍🏫 Teacher' : cred.role === 'student' ? '🎓 Student' : '👨‍👩‍👧 Parent'} Command Center`;
+        if (detectionAvatar) detectionAvatar.src = cred.avatar;
+        if (detectionName) detectionName.textContent = cred.name;
+        if (detectionSub) detectionSub.textContent = cred.designation;
+      }
+    }
+
+    window.switchLoginMode = function(mode) {
+      const parentTab = document.getElementById('tabParentEasy');
+      const staffTab = document.getElementById('tabStaff');
+      const parentSec = document.getElementById('parentEasySection');
+      const staffSec = document.getElementById('staffSection');
+
+      if (mode === 'parent') {
+        if (parentTab) {
+          parentTab.style.background = '#10b981';
+          parentTab.style.color = 'white';
+        }
+        if (staffTab) {
+          staffTab.style.background = 'transparent';
+          staffTab.style.color = '#64748b';
+        }
+        if (parentSec) parentSec.style.display = 'block';
+        if (staffSec) staffSec.style.display = 'none';
+      } else {
+        if (staffTab) {
+          staffTab.style.background = '#4f46e5';
+          staffTab.style.color = 'white';
+        }
+        if (parentTab) {
+          parentTab.style.background = 'transparent';
+          parentTab.style.color = '#64748b';
+        }
+        if (parentSec) parentSec.style.display = 'none';
+        if (staffSec) staffSec.style.display = 'block';
+      }
+      refreshLucideIcons();
+    };
+
+    window.handleParentEasySubmit = async function(e) {
+      if (e) e.preventDefault();
+      const mobileInput = document.getElementById('parentMobileInput')?.value.trim() || '98480 11223';
+      const otp = document.getElementById('parentOtpInput')?.value.trim() || '1234';
+
+      // 1. Try FastAPI Cloud Run Auth
+      if (window.EduPulseAPI) {
+        try {
+          const authRes = await window.EduPulseAPI.login('parent@vikas.edu.in', otp);
+          if (authRes && authRes.access_token) {
+            window.EduPulseAPI.setToken(authRes.access_token);
+          }
+        } catch (apiErr) {
+          console.warn('Backend login fallback:', apiErr);
+        }
+      }
+
+      const state = EduPulseStore.getState();
+      const cred = state.userCredentials?.['parent@vikas.edu.in'] || {
+        name: 'K. Srinivas Reddy',
+        role: 'parent',
+        designation: 'Father of Rahul Reddy (Class VIII-A)',
+        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80'
+      };
+
+      const session = {
+        email: 'parent@vikas.edu.in',
+        role: 'parent',
+        user: cred,
+        loggedInAt: new Date().toISOString()
+      };
+      sessionStorage.setItem('edupulse_current_session', JSON.stringify(session));
+
+      if (loginModalOverlay) loginModalOverlay.style.display = 'none';
+
+      activeRole = 'parent';
+      const pubView = document.getElementById('publicWebsiteView');
+      const appCont = document.getElementById('appContainer');
+      if (pubView) pubView.style.display = 'none';
+      if (appCont) appCont.style.display = 'flex';
+
+      document.querySelectorAll('.role-pill').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-role') === 'parent');
+      });
+
+      switchRolePersonality('parent');
+      showToast(`✓ స్వాగతం! Logged in as ${cred.name} (${cred.designation})`);
+    };
+
+    loginForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = loginEmailInput?.value.trim();
+      const password = loginPasswordInput?.value.trim();
+      const state = EduPulseStore.getState();
+      const cred = state.userCredentials?.[email];
+
+      // Try FastAPI backend authentication first
+      let apiSuccess = false;
+      if (window.EduPulseAPI) {
+        try {
+          const authRes = await window.EduPulseAPI.login(email, password);
+          if (authRes && authRes.access_token) {
+            window.EduPulseAPI.setToken(authRes.access_token);
+            apiSuccess = true;
+          }
+        } catch (apiErr) {
+          console.warn('Backend login fallback to local credentials:', apiErr);
+        }
+      }
+
+      if (!cred && !apiSuccess) {
+        showToast('❌ Unregistered email. Please click one of the 4 demo accounts.');
+        return;
+      }
+
+      if (cred && cred.password !== password && !apiSuccess) {
+        showToast(`❌ Incorrect password for ${cred.name}.`);
+        return;
+      }
+
+      const effectiveRole = cred ? cred.role : 'principal';
+      const effectiveName = cred ? cred.name : 'Authorized User';
+      const effectiveDesig = cred ? cred.designation : 'Administrator';
+
+      // Validated! Store session
+      const session = {
+        email: email,
+        role: effectiveRole,
+        user: cred || { name: effectiveName, designation: effectiveDesig, role: effectiveRole },
+        loggedInAt: new Date().toISOString()
+      };
+      sessionStorage.setItem('edupulse_current_session', JSON.stringify(session));
+
+      if (loginModalOverlay) loginModalOverlay.style.display = 'none';
+
+      // Enter ERP with authenticated role
+      activeRole = effectiveRole;
+      const pubView = document.getElementById('publicWebsiteView');
+      const appCont = document.getElementById('appContainer');
+      if (pubView) pubView.style.display = 'none';
+      if (appCont) appCont.style.display = 'flex';
+
+      document.querySelectorAll('.role-pill').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-role') === effectiveRole);
+      });
+
+      switchRolePersonality(effectiveRole);
+      showToast(`✓ Authenticated as ${effectiveName} (${effectiveDesig})`);
+    });
+  }
+
+  window.openLoginModal = function(role) {
+    const modal = document.getElementById('loginModalOverlay');
+    if (modal) modal.style.display = 'flex';
+    if (role) {
+      const emailMap = {
+        principal: 'principal@vikas.edu.in',
+        teacher: 'teacher@vikas.edu.in',
+        student: 'student@vikas.edu.in',
+        parent: 'parent@vikas.edu.in'
+      };
+      const email = emailMap[role];
+      const chip = document.querySelector(`.demo-chip[data-email="${email}"]`);
+      if (chip) chip.click();
+    }
+  };
+
+  window.handleLogout = function() {
+    sessionStorage.removeItem('edupulse_current_session');
+    showToast('Signed out of ERP Workspace.');
+    showPublicWebsite();
+  };
+
+  /* ==========================================================================
+     USER PROFILE MODAL CONTROLLER
+     ========================================================================== */
+  function initProfileModal() {
+    const profileModalOverlay = document.getElementById('profileModalOverlay');
+    const userProfilePill = document.getElementById('userProfilePill');
+    const closeProfileModalBtn = document.getElementById('closeProfileModalBtn');
+    const cancelProfileBtn = document.getElementById('cancelProfileBtn');
+    const profileForm = document.getElementById('profileForm');
+
+    userProfilePill?.addEventListener('click', () => {
+      openProfileModal();
+    });
+
+    closeProfileModalBtn?.addEventListener('click', () => {
+      if (profileModalOverlay) profileModalOverlay.style.display = 'none';
+    });
+
+    cancelProfileBtn?.addEventListener('click', () => {
+      if (profileModalOverlay) profileModalOverlay.style.display = 'none';
+    });
+
+    profileForm?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const updatedName = document.getElementById('profileNameInput')?.value.trim();
+      const updatedEmail = document.getElementById('profileEmailInput')?.value.trim();
+      const updatedPhone = document.getElementById('profilePhoneInput')?.value.trim();
+      const updatedId = document.getElementById('profileIdInput')?.value.trim();
+      const updatedPen = document.getElementById('profilePenInput')?.value.trim();
+      const updatedClass = document.getElementById('profileClassInput')?.value.trim();
+      const updatedBlood = document.getElementById('profileBloodGroupInput')?.value.trim();
+      const updatedEmerg = document.getElementById('profileEmergencyInput')?.value.trim();
+      const updatedAddr = document.getElementById('profileAddressInput')?.value.trim();
+      const updatedAvatar = document.getElementById('profileAvatarInput')?.value.trim();
+
+      EduPulseStore.dispatch('UPDATE_USER_PROFILE', {
+        role: activeRole,
+        name: updatedName,
+        email: updatedEmail,
+        phone: updatedPhone,
+        empId: updatedId,
+        penId: updatedPen,
+        department: updatedClass,
+        bloodGroup: updatedBlood,
+        emergencyContact: updatedEmerg,
+        address: updatedAddr,
+        avatar: updatedAvatar
+      });
+
+      if (profileModalOverlay) profileModalOverlay.style.display = 'none';
+      showToast('✓ Profile details updated and persisted successfully!');
+      switchRolePersonality(activeRole);
+    });
+  }
+
+  function openProfileModal() {
+    const profileModalOverlay = document.getElementById('profileModalOverlay');
+    if (!profileModalOverlay) return;
+
+    const state = EduPulseStore.getState();
+    const credKey = Object.keys(state.userCredentials || {}).find(k => state.userCredentials[k].role === activeRole);
+    const user = (credKey && state.userCredentials[credKey]) || {
+      name: 'K. Rajesham',
+      role: activeRole,
+      designation: 'Headmaster',
+      phone: '+91 98480 99887',
+      email: 'principal@vikas.edu.in',
+      empId: 'EMP-VG-001',
+      penId: 'TS-STAFF-361821-001',
+      department: 'School Administration',
+      bloodGroup: 'O+',
+      emergencyContact: '08716-242001',
+      address: 'Cheriyal, Siddipet — 506223',
+      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80'
+    };
+
+    const modalAvatar = document.getElementById('modalProfileAvatar');
+    if (modalAvatar) modalAvatar.src = user.avatar;
+    const modalName = document.getElementById('modalProfileName');
+    if (modalName) modalName.textContent = user.name;
+    const modalRoleBadge = document.getElementById('modalProfileRoleBadge');
+    if (modalRoleBadge) modalRoleBadge.textContent = `${activeRole === 'principal' ? '👑 Principal' : activeRole === 'teacher' ? '👩‍🏫 Teacher' : activeRole === 'student' ? '🎓 Student' : '👨‍👩‍👧 Parent'}`;
+    const modalDesig = document.getElementById('modalProfileDesignation');
+    if (modalDesig) modalDesig.textContent = user.designation;
+
+    const emailTag = document.getElementById('modalProfileEmailTag');
+    if (emailTag) emailTag.innerHTML = `<i data-lucide="mail"></i> ${user.email}`;
+    const phoneTag = document.getElementById('modalProfilePhoneTag');
+    if (phoneTag) phoneTag.innerHTML = `<i data-lucide="phone"></i> ${user.phone}`;
+    const idTag = document.getElementById('modalProfileIdTag');
+    if (idTag) idTag.innerHTML = `<i data-lucide="id-card"></i> ID: ${user.empId || user.rollNo || 'N/A'}`;
+
+    const nameInp = document.getElementById('profileNameInput');
+    if (nameInp) nameInp.value = user.name || '';
+    const emailInp = document.getElementById('profileEmailInput');
+    if (emailInp) emailInp.value = user.email || '';
+    const phoneInp = document.getElementById('profilePhoneInput');
+    if (phoneInp) phoneInp.value = user.phone || '';
+    const idInp = document.getElementById('profileIdInput');
+    if (idInp) idInp.value = user.empId || user.rollNo || '';
+    const penInp = document.getElementById('profilePenInput');
+    if (penInp) penInp.value = user.penId || '';
+    const classInp = document.getElementById('profileClassInput');
+    if (classInp) classInp.value = user.department || user.grade || '';
+    const bloodInp = document.getElementById('profileBloodGroupInput');
+    if (bloodInp) bloodInp.value = user.bloodGroup || '';
+    const emergInp = document.getElementById('profileEmergencyInput');
+    if (emergInp) emergInp.value = user.emergencyContact || '';
+    const addrInp = document.getElementById('profileAddressInput');
+    if (addrInp) addrInp.value = user.address || '';
+    const avatarInp = document.getElementById('profileAvatarInput');
+    if (avatarInp) avatarInp.value = user.avatar || '';
+
+    profileModalOverlay.style.display = 'flex';
+    refreshLucideIcons();
+  }
+
 
   function renderNotificationsList() {
     const list = MOCK_DATA.notificationsList;
@@ -357,111 +1092,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   function switchRolePersonality(role) {
+    activeRole = role;
     document.body.className = `theme-light role-${role}`;
     renderRoleSidebarNav(role);
 
+    const state = EduPulseStore.getState();
+    const credKey = Object.keys(state.userCredentials || {}).find(k => state.userCredentials[k].role === role);
+    const user = credKey ? state.userCredentials[credKey] : null;
+
+    if (userName && user) userName.textContent = user.name;
+    if (userRole && user) userRole.textContent = user.designation;
+    const userAvatarEl = document.getElementById('userAvatar');
+    if (userAvatarEl && user) userAvatarEl.src = user.avatar;
+
     if (role === 'principal') {
-      userName.textContent = 'K. Rajesham';
-      userRole.textContent = 'Headmaster';
       renderPrincipalDashboardScreen();
     } else if (role === 'teacher') {
-      userName.textContent = 'Mrs. S. Radhika';
-      userRole.textContent = 'Class Teacher (VIII A)';
       renderTeacherDashboardScreen();
     } else if (role === 'student') {
-      userName.textContent = 'Rahul Reddy';
-      userRole.textContent = 'Student (Class VIII A)';
       renderStudentDashboardScreen();
     } else if (role === 'parent') {
-      userName.textContent = 'Parent of Rahul Reddy';
-      userRole.textContent = 'Parent';
       renderParentDashboardScreen();
     }
   }
 
   /* SIDEBAR NAVIGATION MATRIX */
   function renderRoleSidebarNav(role) {
-    let items = [];
-
-    if (role === 'principal') {
-      items = [
-        { id: 'dashboard', label: 'Dashboard', icon: 'layout-grid' },
-        { id: 'institutional_diagnostic', label: 'Where We Stand & Improve', icon: 'trending-up' },
-        { id: 'cce_report_cards', label: 'SCERT CCE Report & Hall Ticket', icon: 'file-text' },
-        { id: 'proxy_substitution', label: 'Teacher Proxy & Substitution', icon: 'shuffle' },
-        { id: 'feedback_oversight', label: 'Daily Feedback Oversight', icon: 'message-square' },
-        { id: 'principal_gpa_analytics', label: 'GPA & Academic Gaps', icon: 'award' },
-        { id: 'study_vault', label: 'Curriculum & Study Vault', icon: 'folder-down' },
-        { id: 'methodology_satisfaction', label: 'Methodology & Satisfaction', icon: 'sparkles' },
-        { id: 'relations_climate', label: 'Teacher-Student Relations & Conduct', icon: 'heart-handshake' },
-        { id: 'facilities_incidents', label: 'Facilities & Safety Incidents', icon: 'shield-alert' },
-        { id: 'pacing_diary', label: 'Syllabus Pacing & Daily Progress', icon: 'clock' },
-        { id: 'admissions', label: 'Admissions & Enquiries', icon: 'user-plus' },
-        { id: 'students', label: 'Students Roster (Classes 1–10)', icon: 'users' },
-        { id: 'academics', label: 'Academics & Board', icon: 'book-open' },
-        { id: 'staff_payroll', label: 'Staff & HR Payroll', icon: 'user-check' },
-        { id: 'timetable', label: 'Master Timetables Matrix', icon: 'calendar' },
-        { id: 'fees', label: 'Fee Collection Ledger', icon: 'indian-rupee' },
-        { id: 'transport', label: 'Transport & Fleet', icon: 'bus' },
-        { id: 'library', label: 'School Library', icon: 'book-marked' },
-        { id: 'calendar', label: 'School Holiday Calendar', icon: 'calendar' }
-      ];
-    } else if (role === 'teacher') {
-      items = [
-        { id: 'dashboard', label: 'Teacher Workspace', icon: 'layout-grid' },
-        { id: 'proxy_substitution', label: 'Proxy Duty & Substitutions', icon: 'shuffle' },
-        { id: 'student_homework', label: 'Homework & Submissions', icon: 'check-square' },
-        { id: 'study_vault', label: 'Study Vault & Resources', icon: 'folder-down' },
-        { id: 'teacher_feedback', label: 'Daily Class & Student Feedback', icon: 'message-square' },
-        { id: 'teacher_behaviour', label: 'Student 360° Conduct & Behaviour', icon: 'heart-handshake' },
-        { id: 'teacher_gpa_gaps', label: 'GPA & Learning Gaps Plugging', icon: 'award' },
-        { id: 'pacing_diary', label: 'Syllabus Pacing & Daily Diary', icon: 'clock' },
-        { id: 'teacher_methodology', label: 'Teaching Methodology Review', icon: 'sparkles' },
-        { id: 'teacher_report_incident', label: 'Facilities & Safety Incidents', icon: 'shield-alert' },
-        { id: 'my_students', label: 'My Class Students (360°)', icon: 'users' },
-        { id: 'teacher_attendance', label: 'My Teacher Attendance', icon: 'check-circle' },
-        { id: 'timetable', label: 'My Teaching Schedule', icon: 'clock' },
-        { id: 'student_leave_approvals', label: 'Student Leave Approvals', icon: 'file-text' },
-        { id: 'teacher_salary', label: 'My Salary & Payslips', icon: 'indian-rupee' },
-        { id: 'calendar', label: 'School Holiday Calendar', icon: 'calendar' }
-      ];
-    } else if (role === 'student') {
-      items = [
-        { id: 'dashboard', label: 'Student Portal', icon: 'layout-grid' },
-        { id: 'study_vault', label: 'Digital Study Vault & Notes', icon: 'folder-down' },
-        { id: 'student_homework', label: 'My Homework & Turn-In', icon: 'check-square' },
-        { id: 'olympiad_corner', label: 'Scholarships & Olympiad Prep', icon: 'trophy' },
-        { id: 'my_cce_card', label: 'My CCE Grade Card & Hall Ticket', icon: 'file-text' },
-        { id: 'student_daily_feedback', label: 'Daily Class Feedback', icon: 'message-square-plus' },
-        { id: 'student_gpa_gaps', label: 'My GPA & Learning Gaps', icon: 'award' },
-        { id: 'student_methodology_opinion', label: 'Teaching Method Opinion', icon: 'sparkles' },
-        { id: 'pacing_diary', label: 'Class Pacing & Today\'s Diary', icon: 'clock' },
-        { id: 'student_facilities_feedback', label: 'Campus Amenities & Facilities', icon: 'coffee' },
-        { id: 'student_report_incident', label: 'Safety & Incident Report', icon: 'shield-alert' },
-        { id: 'timetable', label: 'My Class Timetable', icon: 'calendar' },
-        { id: 'my_fees', label: 'My Fee Breakdown', icon: 'indian-rupee' },
-        { id: 'student_apply_leave', label: 'Submit Leave Request', icon: 'file-text' },
-        { id: 'bus_info', label: 'My Bus Route & Timing', icon: 'bus' },
-        { id: 'calendar', label: 'School Holiday Calendar', icon: 'calendar' }
-      ];
-    } else if (role === 'parent') {
-      items = [
-        { id: 'dashboard', label: 'Child Overview', icon: 'layout-grid' },
-        { id: 'my_cce_card', label: 'Child CCE Report & Hall Ticket', icon: 'file-text' },
-        { id: 'student_homework', label: 'Homework Submissions', icon: 'check-square' },
-        { id: 'olympiad_corner', label: 'Scholarships & Olympiad Corner', icon: 'trophy' },
-        { id: 'teacher_feedback_parent', label: "Teacher's Daily Feedback", icon: 'message-circle' },
-        { id: 'parent_child_behaviour', label: 'Child 360° Conduct & Behaviour', icon: 'heart-handshake' },
-        { id: 'parent_gpa_gaps', label: 'Subject GPA & Learning Gaps', icon: 'award' },
-        { id: 'pacing_diary', label: 'Class Pacing & Syllabus Coverage', icon: 'clock' },
-        { id: 'parent_facilities_safety', label: 'Campus Hygiene & Safety Log', icon: 'shield-alert' },
-        { id: 'child_attendance', label: 'Child Attendance & Performance', icon: 'user-check' },
-        { id: 'parent_apply_leave', label: 'Apply Child Leave', icon: 'file-text' },
-        { id: 'pay_fee', label: 'Pay School Fee', icon: 'indian-rupee' },
-        { id: 'bus_tracking', label: 'Child Bus Tracking', icon: 'bus' },
-        { id: 'calendar', label: 'School Holiday Calendar', icon: 'calendar' }
-      ];
-    }
+    const items = getNavItemsForRole(role);
 
     sidebarNavList.innerHTML = items.map((item, idx) => `
       <li class="nav-item">
@@ -479,6 +1136,9 @@ document.addEventListener('DOMContentLoaded', () => {
         sidebarNavList.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         const view = btn.getAttribute('data-view');
+        if (window.innerWidth < 992 && typeof closeMobileSidebar === 'function') {
+          closeMobileSidebar();
+        }
         handleNavClick(view);
       });
     });
@@ -486,8 +1146,19 @@ document.addEventListener('DOMContentLoaded', () => {
     refreshLucideIcons();
   }
 
-  /* NAV ROUTER CONTROLLER */
+  /* NAV ROUTER CONTROLLER WITH ROLE-BASED ACCESS CONTROL (RBAC) */
   function handleNavClick(viewId) {
+    // RBAC Security Gate: Prevent unauthorized cross-role view hijacking
+    const roleRestrictions = {
+      student: ['staff_payroll', 'institutional_diagnostic', 'feedback_oversight', 'student_leave_approvals', 'teacher_salary', 'admissions', 'proxy_substitution'],
+      parent: ['staff_payroll', 'institutional_diagnostic', 'feedback_oversight', 'student_leave_approvals', 'teacher_salary', 'admissions', 'proxy_substitution'],
+      teacher: ['staff_payroll', 'institutional_diagnostic', 'feedback_oversight', 'admissions']
+    };
+
+    if (roleRestrictions[activeRole]?.includes(viewId)) {
+      showToast(`🔒 Access restricted. Your role (${activeRole.toUpperCase()}) is not authorized for this management module.`);
+      return;
+    }
     if (viewId === 'dashboard') {
       if (activeRole === 'principal') renderPrincipalDashboardScreen();
       else if (activeRole === 'teacher') renderTeacherDashboardScreen();
@@ -515,6 +1186,10 @@ document.addEventListener('DOMContentLoaded', () => {
       renderClassPacingDiaryScreen(activeRole);
     } else if (viewId === 'study_vault') {
       renderStudyVaultScreen();
+    } else if (viewId === 'whatsapp_comms') {
+      renderCommunicationCenterScreen();
+    } else if (viewId === 'beti_padhao') {
+      renderBetiPadhaoScreen();
     } else if (viewId === 'student_homework' || viewId === 'homework' || viewId === 'child_homework') {
       renderStudentHomeworkScreen();
     } else if (viewId === 'olympiad_corner') {
@@ -523,6 +1198,8 @@ document.addEventListener('DOMContentLoaded', () => {
       renderProxySubstitutionScreen();
     } else if (viewId === 'cce_report_cards' || viewId === 'my_cce_card') {
       renderCceReportCardScreen();
+    } else if (viewId === 'cce_marks_entry') {
+      renderCceMarksEntryScreen();
     } else if (viewId === 'admissions' || viewId === 'admissions_enquiries' || viewId === 'admissions_forms' || viewId === 'admissions_tests') {
       renderAdmissionsScreen();
     } else if (viewId === 'students' || viewId === 'student_directory' || viewId === 'my_students' || viewId === 'student_lifecycle' || viewId === 'student_documents') {
@@ -726,8 +1403,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* 5. ADMISSIONS & ENQUIRIES — EXACT MOCKUP MATCH */
   function renderAdmissionsScreen() {
-    const leads = MOCK_DATA.admissionsLeadsList;
-    const interest = MOCK_DATA.classWiseInterestList;
+    const state = EduPulseStore.getState();
+    const leads = state.admissionsLeadsList || [];
+    const interest = state.classWiseInterestList || [];
+
+    const totalInquiries = 140 + leads.length;
+    const appsSubmitted = 80 + leads.filter(l => l.status !== 'Under Verification').length;
+    const testsPassed = 60 + leads.filter(l => l.status === 'Approved' || l.status === 'Enrolled').length;
+    const totalEnrolled = 40 + leads.filter(l => l.status === 'Enrolled').length;
 
     contentViewport.innerHTML = `
       <!-- HERO BANNER -->
@@ -742,7 +1425,7 @@ document.addEventListener('DOMContentLoaded', () => {
               <p style="color:#4338ca; font-size:0.88rem; font-weight:600;">Academic Year 2026–2027 • Vikas Grammar School HS Cherial (UDISE: 36182100637)</p>
             </div>
           </div>
-          <button onclick="showToast('Opened New Admission Inquiry Form!')" style="padding:10px 22px; background:#4f46e5; color:white; border-radius:10px; font-weight:700; border:none; box-shadow:0 4px 14px rgba(79,70,229,0.3); font-size:0.88rem; cursor:pointer; display:flex; align-items:center; gap:6px;">
+          <button onclick="window.openNewInquiryModal()" style="padding:10px 22px; background:#4f46e5; color:white; border-radius:10px; font-weight:700; border:none; box-shadow:0 4px 14px rgba(79,70,229,0.3); font-size:0.88rem; cursor:pointer; display:flex; align-items:center; gap:6px;">
             + Log New Inquiry
           </button>
         </div>
@@ -758,8 +1441,8 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
           <div>
             <div style="font-size:0.8rem; font-weight:700; color:var(--text-muted);">Total Inquiries</div>
-            <div style="font-size:1.8rem; font-weight:800; color:var(--text-primary); line-height:1.1; margin:2px 0;">142</div>
-            <div style="font-size:0.75rem; font-weight:700; color:#10b981;">↑ 12% vs last month</div>
+            <div style="font-size:1.8rem; font-weight:800; color:var(--text-primary); line-height:1.1; margin:2px 0;">${totalInquiries}</div>
+            <div style="font-size:0.75rem; font-weight:700; color:#10b981;">↑ Live Store Synchronized</div>
           </div>
         </div>
 
@@ -770,8 +1453,8 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
           <div>
             <div style="font-size:0.8rem; font-weight:700; color:var(--text-muted);">Applications Submitted</div>
-            <div style="font-size:1.8rem; font-weight:800; color:var(--text-primary); line-height:1.1; margin:2px 0;">86</div>
-            <div style="font-size:0.75rem; font-weight:700; color:#10b981;">↑ 8% vs last month</div>
+            <div style="font-size:1.8rem; font-weight:800; color:var(--text-primary); line-height:1.1; margin:2px 0;">${appsSubmitted}</div>
+            <div style="font-size:0.75rem; font-weight:700; color:#10b981;">${((appsSubmitted / totalInquiries) * 100).toFixed(1)}% Conversion</div>
           </div>
         </div>
 
@@ -782,8 +1465,8 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
           <div>
             <div style="font-size:0.8rem; font-weight:700; color:var(--text-muted);">Entrance Tests Passed</div>
-            <div style="font-size:1.8rem; font-weight:800; color:var(--text-primary); line-height:1.1; margin:2px 0;">64</div>
-            <div style="font-size:0.75rem; font-weight:700; color:var(--text-secondary);">74.4% Pass Rate</div>
+            <div style="font-size:1.8rem; font-weight:800; color:var(--text-primary); line-height:1.1; margin:2px 0;">${testsPassed}</div>
+            <div style="font-size:0.75rem; font-weight:700; color:var(--text-secondary);">${((testsPassed / appsSubmitted) * 100).toFixed(1)}% Pass Rate</div>
           </div>
         </div>
 
@@ -794,8 +1477,8 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
           <div>
             <div style="font-size:0.8rem; font-weight:700; color:var(--text-muted);">Approved & Enrolled</div>
-            <div style="font-size:1.8rem; font-weight:800; color:var(--text-primary); line-height:1.1; margin:2px 0;">42</div>
-            <div style="font-size:0.75rem; font-weight:700; color:#10b981;">60.5% Conversion</div>
+            <div style="font-size:1.8rem; font-weight:800; color:var(--text-primary); line-height:1.1; margin:2px 0;">${totalEnrolled}</div>
+            <div style="font-size:0.75rem; font-weight:700; color:#10b981;">Roster Synced</div>
           </div>
         </div>
 
@@ -816,9 +1499,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <p style="font-size:0.78rem; color:var(--text-muted);">Track the complete admission journey</p>
               </div>
             </div>
-            <button onclick="showToast('Loading detailed funnel report...')" style="padding:6px 14px; background:#e0e7ff; color:#4338ca; border-radius:8px; font-weight:700; font-size:0.78rem; border:none; cursor:pointer;">
-              View Detailed Report →
-            </button>
+            <span class="badge badge-indigo">Live Funnel</span>
           </div>
 
           <!-- FUNNEL PROCESS STEPS CONNECTED BY ARROWS -->
@@ -830,10 +1511,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 <i data-lucide="users" style="width:18px; height:18px;"></i>
               </div>
               <div style="font-size:0.75rem; font-weight:700; color:var(--text-secondary);">Inquiries</div>
-              <div style="font-size:1.3rem; font-weight:800; color:#5b21b6; margin-top:2px;">142</div>
+              <div style="font-size:1.3rem; font-weight:800; color:#5b21b6; margin-top:2px;">${totalInquiries}</div>
             </div>
 
-            <!-- ARROW -->
             <div style="color:#94a3b8; font-size:1.2rem; font-weight:800;">➔</div>
 
             <!-- STEP 2 -->
@@ -842,11 +1522,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 <i data-lucide="file-text" style="width:18px; height:18px;"></i>
               </div>
               <div style="font-size:0.75rem; font-weight:700; color:var(--text-secondary);">Applications</div>
-              <div style="font-size:1.3rem; font-weight:800; color:#1e40af; margin-top:2px;">86</div>
-              <div style="font-size:0.7rem; font-weight:700; color:#2563eb;">60.5%</div>
+              <div style="font-size:1.3rem; font-weight:800; color:#1e40af; margin-top:2px;">${appsSubmitted}</div>
+              <div style="font-size:0.7rem; font-weight:700; color:#2563eb;">${((appsSubmitted / totalInquiries) * 100).toFixed(0)}%</div>
             </div>
 
-            <!-- ARROW -->
             <div style="color:#94a3b8; font-size:1.2rem; font-weight:800;">➔</div>
 
             <!-- STEP 3 -->
@@ -855,11 +1534,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 <i data-lucide="award" style="width:18px; height:18px;"></i>
               </div>
               <div style="font-size:0.75rem; font-weight:700; color:var(--text-secondary);">Test Passed</div>
-              <div style="font-size:1.3rem; font-weight:800; color:#9a3412; margin-top:2px;">64</div>
-              <div style="font-size:0.7rem; font-weight:700; color:#c2410c;">74.4%</div>
+              <div style="font-size:1.3rem; font-weight:800; color:#9a3412; margin-top:2px;">${testsPassed}</div>
+              <div style="font-size:0.7rem; font-weight:700; color:#c2410c;">${((testsPassed / appsSubmitted) * 100).toFixed(0)}%</div>
             </div>
 
-            <!-- ARROW -->
             <div style="color:#94a3b8; font-size:1.2rem; font-weight:800;">➔</div>
 
             <!-- STEP 4 -->
@@ -868,8 +1546,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 <i data-lucide="graduation-cap" style="width:18px; height:18px;"></i>
               </div>
               <div style="font-size:0.75rem; font-weight:700; color:var(--text-secondary);">Enrolled</div>
-              <div style="font-size:1.3rem; font-weight:800; color:#065f46; margin-top:2px;">42</div>
-              <div style="font-size:0.7rem; font-weight:700; color:#047857;">29.6% of Total</div>
+              <div style="font-size:1.3rem; font-weight:800; color:#065f46; margin-top:2px;">${totalEnrolled}</div>
+              <div style="font-size:0.7rem; font-weight:700; color:#047857;">Active</div>
             </div>
 
           </div>
@@ -883,7 +1561,6 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
 
           <div style="display:flex; align-items:center; gap:16px;">
-            <!-- DONUT CHART SVG -->
             <div style="position:relative; width:130px; height:130px; flex-shrink:0;">
               <svg viewBox="0 0 36 36" style="width:100%; height:100%; transform: rotate(-90deg);">
                 <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#f1f5f9" stroke-width="4.5" />
@@ -894,12 +1571,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#a855f7" stroke-dasharray="8, 100" stroke-dashoffset="-87" stroke-width="4.5" />
               </svg>
               <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;">
-                <span style="font-size:1.1rem; font-weight:800; color:var(--text-primary); line-height:1;">142</span>
+                <span style="font-size:1.1rem; font-weight:800; color:var(--text-primary); line-height:1;">${totalInquiries}</span>
                 <span style="font-size:0.65rem; color:var(--text-muted); font-weight:600;">Total</span>
               </div>
             </div>
 
-            <!-- LEGEND LIST -->
             <div style="flex:1; display:flex; flex-direction:column; gap:4px; font-size:0.75rem;">
               ${interest.map(item => `
                 <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -919,16 +1595,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
       <!-- BOTTOM TABLE PANEL: RECENT ADMISSION APPLICATIONS -->
       <div class="panel-card">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
           <div style="display:flex; align-items:center; gap:10px;">
             <div style="width:36px; height:36px; border-radius:10px; background:#e0e7ff; color:#4f46e5; display:flex; align-items:center; justify-content:center;">
               <i data-lucide="award" style="width:18px; height:18px;"></i>
             </div>
-            <h3 style="font-size:1.1rem; font-weight:800; color:var(--text-primary);">Recent Admission Applications & Entrance Status</h3>
+            <h3 style="font-size:1.1rem; font-weight:800; color:var(--text-primary);">Admission Inquiries & Entrance Status</h3>
           </div>
-          <button onclick="showToast('Loading full application directory...')" style="padding:6px 14px; background:#e0e7ff; color:#4338ca; border-radius:8px; font-weight:700; font-size:0.78rem; border:none; cursor:pointer;">
-            View All Applications →
-          </button>
+          <span style="font-size:0.8rem; color:var(--text-muted); font-weight:600;">${leads.length} Active Inquiries in Pipeline</span>
         </div>
 
         <div class="table-container">
@@ -971,14 +1645,27 @@ document.addEventListener('DOMContentLoaded', () => {
                     📅 ${l.date}
                   </td>
                   <td>
-                    <span class="badge ${l.statusClass}" style="font-size:0.75rem; padding:4px 12px;">
-                      ${l.status === 'Approved' ? '✓ Approved' : l.status.includes('Verification') ? '⌛ Under Verification' : '📝 Test Scheduled'}
+                    <span class="badge ${l.statusClass || 'badge-warning'}" style="font-size:0.75rem; padding:4px 12px;">
+                      ${l.status === 'Approved' ? '✓ Approved' : l.status === 'Enrolled' ? '🎓 Enrolled' : l.status.includes('Verification') ? '⌛ Under Verification' : l.status === 'Rejected' ? '✗ Rejected' : '📝 Test Scheduled'}
                     </span>
                   </td>
                   <td style="text-align:right;">
-                    <button onclick="showToast('Enrolled ${l.applicantName} into ${l.gradeApplied}!')" style="padding:8px 18px; background:#4f46e5; color:white; border-radius:8px; font-weight:700; font-size:0.8rem; border:none; cursor:pointer; box-shadow:0 3px 10px rgba(79,70,229,0.3);">
-                      ✓ Enroll Student
-                    </button>
+                    ${l.status === 'Enrolled' ? `
+                      <span style="color:#10b981; font-weight:800; font-size:0.8rem;">✓ On Roster</span>
+                    ` : l.status === 'Approved' ? `
+                      <button onclick="window.openEnrollmentModal('${l.id}')" class="btn-enroll-action">
+                        ✓ Enroll Student
+                      </button>
+                    ` : `
+                      <div style="display:inline-flex; gap:6px;">
+                        <button onclick="window.updateAdmissionLeadStatus('${l.id}', 'Approved')" style="padding:6px 12px; background:#10b981; color:white; border-radius:6px; font-weight:700; font-size:0.75rem; border:none; cursor:pointer;">
+                          Approve
+                        </button>
+                        <button onclick="window.updateAdmissionLeadStatus('${l.id}', 'Rejected')" style="padding:6px 10px; background:#ef4444; color:white; border-radius:6px; font-weight:700; font-size:0.75rem; border:none; cursor:pointer;">
+                          Reject
+                        </button>
+                      </div>
+                    `}
                   </td>
                 </tr>
               `).join('')}
@@ -991,9 +1678,203 @@ document.addEventListener('DOMContentLoaded', () => {
     refreshLucideIcons();
   }
 
+  window.updateAdmissionLeadStatus = function(leadId, newStatus) {
+    EduPulseStore.dispatch('UPDATE_ADMISSION_STATUS', {
+      id: leadId,
+      status: newStatus,
+      testScore: newStatus === 'Approved' ? '88/100' : 'Pending'
+    });
+    showToast(`Admissions lead status updated to: ${newStatus}`);
+    renderAdmissionsScreen();
+  };
+
+  window.openNewInquiryModal = function() {
+    const existing = document.getElementById('newInquiryModal');
+    if (existing) existing.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'newInquiryModal';
+    modal.style.cssText = `
+      position: fixed; inset: 0; background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(5px); display: flex; align-items: center;
+      justify-content: center; z-index: 10000; padding: 20px; animation: fadeIn 0.2s ease;
+    `;
+
+    modal.innerHTML = `
+      <div style="background: white; border-radius: 20px; max-width: 500px; width: 100%; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3); overflow: hidden;">
+        <div style="background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%); padding: 18px 22px; color: white; display: flex; justify-content: space-between; align-items: center;">
+          <h3 style="font-size:1.2rem; font-weight:800; margin:0;">📝 Log New Admission Inquiry</h3>
+          <button onclick="document.getElementById('newInquiryModal').remove()" style="background: rgba(255,255,255,0.2); border:none; color:white; width:28px; height:28px; border-radius:50%; font-weight:900; cursor:pointer;">✕</button>
+        </div>
+        <form id="deskInquiryForm" style="padding: 20px; display:flex; flex-direction:column; gap:12px;">
+          <div>
+            <label style="font-size:0.8rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Applicant Full Name</label>
+            <input type="text" id="deskInqName" required placeholder="e.g. B. Sai Teja" style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:8px;">
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <div>
+              <label style="font-size:0.8rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Grade Applying For</label>
+              <select id="deskInqGrade" style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:8px; background:white;">
+                <option value="Class I">Class I</option>
+                <option value="Class V">Class V</option>
+                <option value="Class VIII" selected>Class VIII</option>
+                <option value="Class IX">Class IX</option>
+                <option value="Class X">Class X</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:0.8rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Contact Phone</label>
+              <input type="text" id="deskInqPhone" required placeholder="+91 98480 00000" style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:8px;">
+            </div>
+          </div>
+          <div>
+            <label style="font-size:0.8rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Parent / Guardian Name</label>
+            <input type="text" id="deskInqParent" required placeholder="e.g. B. Srinivas" style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:8px;">
+          </div>
+          <div style="display:flex; gap:10px; margin-top:10px;">
+            <button type="button" onclick="document.getElementById('newInquiryModal').remove()" style="flex:1; padding:10px; border:1px solid #cbd5e1; background:white; color:#475569; border-radius:8px; font-weight:700; cursor:pointer;">Cancel</button>
+            <button type="submit" style="flex:2; padding:10px; border:none; background:#4f46e5; color:white; border-radius:8px; font-weight:800; cursor:pointer;">Log Inquiry</button>
+          </div>
+        </form>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    document.getElementById('deskInquiryForm')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const sName = document.getElementById('deskInqName')?.value.trim();
+      const pGrade = document.getElementById('deskInqGrade')?.value;
+      const pPhone = document.getElementById('deskInqPhone')?.value.trim();
+      const pParent = document.getElementById('deskInqParent')?.value.trim();
+
+      EduPulseStore.dispatch('CREATE_ADMISSION_INQUIRY', {
+        applicantName: sName,
+        gradeApplied: pGrade,
+        parentName: pParent,
+        phone: pPhone
+      });
+
+      document.getElementById('newInquiryModal')?.remove();
+      showToast(`Logged new admission inquiry for ${sName}!`);
+      renderAdmissionsScreen();
+    });
+  };
+
+  window.openEnrollmentModal = function(leadId) {
+    const state = EduPulseStore.getState();
+    const lead = state.admissionsLeadsList?.find(l => l.id === leadId);
+    if (!lead) return;
+
+    const existing = document.getElementById('enrollmentModal');
+    if (existing) existing.remove();
+
+    const schoolUdise = state.schoolInfo?.udise || '36182100637';
+    const suggestedPen = `PEN-${schoolUdise}-${Math.floor(100 + Math.random() * 899)}`;
+    const gradeNum = lead.gradeApplied.replace('Class ', '').trim();
+    const suggestedRoll = `${gradeNum}-0${Math.floor(20 + Math.random() * 25)}`;
+
+    const modal = document.createElement('div');
+    modal.id = 'enrollmentModal';
+    modal.style.cssText = `
+      position: fixed; inset: 0; background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(5px); display: flex; align-items: center;
+      justify-content: center; z-index: 10000; padding: 20px; animation: fadeIn 0.2s ease;
+    `;
+
+    modal.innerHTML = `
+      <div style="background: white; border-radius: 20px; max-width: 540px; width: 100%; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3); overflow: hidden; animation: slideUp 0.3s ease;">
+        <div style="background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%); padding: 20px 24px; color: white; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <span style="font-size:0.75rem; font-weight:800; text-transform:uppercase; letter-spacing:1px; opacity:0.9;">Admissions Desk → Student Onboarding</span>
+            <h3 style="font-size:1.3rem; font-weight:900; margin:4px 0 0 0;">Official Student Enrollment</h3>
+          </div>
+          <button onclick="document.getElementById('enrollmentModal').remove()" style="background: rgba(255,255,255,0.2); border:none; color:white; width:32px; height:32px; border-radius:50%; font-weight:900; cursor:pointer; font-size:1rem;">✕</button>
+        </div>
+
+        <form id="enrollmentForm" style="padding: 24px; display:flex; flex-direction:column; gap:14px;">
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px 16px;">
+            <div style="font-size:0.85rem; font-weight:800; color:#0f172a;">${lead.applicantName}</div>
+            <div style="font-size:0.78rem; color:#64748b;">Applying for: <strong>${lead.gradeApplied}</strong> • Parent: ${lead.parentName} (${lead.phone})</div>
+            <div style="font-size:0.75rem; color:#059669; font-weight:700; margin-top:4px;">✓ Entrance Score: ${lead.testScore}</div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div>
+              <label style="font-size:0.8rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Section Assigned</label>
+              <select id="enrollSectionInput" style="width:100%; padding:10px; border-radius:8px; border:1px solid #cbd5e1; background:white; font-weight:600;">
+                <option value="Section A">Section A (English Medium)</option>
+                <option value="Section B">Section B (English Medium)</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:0.8rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Roll Number</label>
+              <input type="text" id="enrollRollInput" value="${suggestedRoll}" style="width:100%; padding:10px; border-radius:8px; border:1px solid #cbd5e1; font-weight:700;">
+            </div>
+          </div>
+
+          <div>
+            <label style="font-size:0.8rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Permanent Education Number (UDISE PEN ID)</label>
+            <input type="text" id="enrollPenInput" value="${suggestedPen}" style="width:100%; padding:10px; border-radius:8px; border:1px solid #cbd5e1; font-weight:700; font-family:monospace;">
+          </div>
+
+          <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; padding:12px; font-size:0.78rem; color:#1e40af;">
+            ℹ️ Enrolling this student will automatically initialize their student directory profile, assign a class fee ledger, and create portal credentials.
+          </div>
+
+          <div style="display:flex; gap:10px; margin-top:8px;">
+            <button type="button" onclick="document.getElementById('enrollmentModal').remove()" style="flex:1; padding:12px; border:1px solid #cbd5e1; background:white; color:#475569; border-radius:10px; font-weight:700; cursor:pointer;">
+              Cancel
+            </button>
+            <button type="submit" style="flex:2; padding:12px; border:none; background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:white; border-radius:10px; font-weight:800; font-size:0.92rem; cursor:pointer; box-shadow:0 4px 14px rgba(16,185,129,0.35);">
+              ✓ Confirm Enrollment & Issue PEN
+            </button>
+          </div>
+        </form>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    document.getElementById('enrollmentForm')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const sec = document.getElementById('enrollSectionInput')?.value || 'Section A';
+      const roll = document.getElementById('enrollRollInput')?.value || suggestedRoll;
+      const pen = document.getElementById('enrollPenInput')?.value || suggestedPen;
+
+      // 1. Dispatch to Store
+      EduPulseStore.dispatch('ENROLL_ADMISSION_LEAD', {
+        id: leadId,
+        section: sec,
+        rollNo: roll,
+        penId: pen
+      });
+
+      // 2. Sync to Backend if connected
+      if (window.EduPulseAPI && typeof leadId === 'number') {
+        try {
+          await window.EduPulseAPI.enrollLead({
+            inquiry_id: leadId,
+            grade: lead.gradeApplied,
+            section: sec.replace('Section ', ''),
+            roll_no: roll,
+            parent_phone: lead.phone
+          });
+        } catch (err) {
+          console.warn('Backend enrollment queued locally:', err);
+        }
+      }
+
+      document.getElementById('enrollmentModal')?.remove();
+      showToast(`🎉 ${lead.applicantName} enrolled successfully! Generated PEN: ${pen}`);
+      renderAdmissionsScreen();
+    });
+  };
+
   window.filterAdmissions = function(status) {
     renderAdmissionsScreen();
   };
+
 
 
   /* 6. STUDENTS DIRECTORY */
@@ -2188,62 +3069,30 @@ document.addEventListener('DOMContentLoaded', () => {
     if (modal) modal.remove();
   }
 
-  function processOnlineFeePayment() {
-    const feeAcc = MOCK_DATA.studentFeeAccount;
-    const paidAmountThisTxn = feeAcc.dueAmount;
+  async function processOnlineFeePayment() {
+    const state = (window.EduPulseStore && window.EduPulseStore.getState()) || MOCK_DATA;
+    const feeAcc = state.studentFeeAccount || {};
+    const paidAmountThisTxn = feeAcc.dueAmount || 3500;
     const newReceiptNo = `REC-VG-2026-${Math.floor(250 + Math.random() * 100)}`;
-    const todayStr = 'Sep 03, 2026';
+    const todayStr = new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
 
-    // Update Student Account
-    feeAcc.paidAmount = feeAcc.totalAnnualFee;
-    feeAcc.dueAmount = 0;
-    feeAcc.status = 'Fully Paid';
-
-    // Update installment
-    const lastInst = feeAcc.installmentSchedule[feeAcc.installmentSchedule.length - 1];
-    if (lastInst) {
-      lastInst.paidAmount = paidAmountThisTxn;
-      lastInst.status = 'Paid';
-      lastInst.paidDate = todayStr;
-      lastInst.mode = 'Online UPI Gateway';
-      lastInst.receiptNo = newReceiptNo;
-      lastInst.transactionId = `TXN-UPI-${Math.floor(10000000 + Math.random() * 90000000)}`;
+    // 1. Dispatch to Store
+    if (window.EduPulseStore) {
+      window.EduPulseStore.dispatch('PROCESS_FEE_PAYMENT', {
+        amount: paidAmountThisTxn,
+        receiptNo: newReceiptNo,
+        date: todayStr,
+        mode: 'Online UPI Gateway',
+        studentName: feeAcc.studentName || 'Rahul Reddy'
+      });
     }
 
-    // Add receipt
-    feeAcc.receiptsHistory.unshift({
-      receiptNo: newReceiptNo,
-      date: todayStr,
-      description: 'Term 3 Final Tuition & Board Exam Fee',
-      amount: paidAmountThisTxn,
-      mode: 'Online UPI Gateway',
-      collectedBy: 'Online Portal Gateway (Auto-Reconciled)',
-      status: 'Success'
-    });
-
-    // Sync full list
-    const foundFull = MOCK_DATA.feeLedgerFullList.find(f => f.name === 'Rahul Reddy');
-    if (foundFull) {
-      foundFull.paidFee = foundFull.totalFee;
-      foundFull.dueFee = 0;
-      foundFull.status = 'Paid';
-      foundFull.receiptNo = newReceiptNo;
-      foundFull.lastDate = todayStr;
-    }
-
-    // Sync teacher class data
-    const classFee = MOCK_DATA.teacherClassFeeData;
-    if (classFee) {
-      classFee.collectedClassFee += paidAmountThisTxn;
-      classFee.dueClassFee = Math.max(0, classFee.dueClassFee - paidAmountThisTxn);
-      classFee.defaultersCount = Math.max(0, classFee.defaultersCount - 1);
-      classFee.collectionPct = ((classFee.collectedClassFee / classFee.totalClassFee) * 100).toFixed(1);
-      const studentInClass = classFee.students.find(s => s.name === 'Rahul Reddy');
-      if (studentInClass) {
-        studentInClass.paid = studentInClass.total;
-        studentInClass.due = 0;
-        studentInClass.status = 'Paid';
-        studentInClass.lastPaid = todayStr;
+    // 2. Post to Google Cloud SQL Backend if online
+    if (window.EduPulseAPI && window.EduPulseAPI.token) {
+      try {
+        await window.EduPulseAPI.payFee(paidAmountThisTxn, 'Online UPI Gateway');
+      } catch (err) {
+        console.warn('Backend fee sync fallback:', err);
       }
     }
 
@@ -2253,7 +3102,149 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function downloadFeeReceiptPdf(receiptNo) {
-    showToast(`Generated Official Government Fee Receipt PDF [${receiptNo}] with School Seal!`);
+    openGovtFeeReceiptModal(receiptNo);
+  }
+
+  function openGovtFeeReceiptModal(receiptNo) {
+    const state = (window.EduPulseStore && window.EduPulseStore.getState()) || MOCK_DATA;
+    const feeAcc = state.studentFeeAccount || {};
+    const existingModal = document.getElementById('govtFeeReceiptModal');
+    if (existingModal) existingModal.remove();
+
+    const rNo = receiptNo || 'REC-VG-2026-289';
+    const txnId = `TXN-UPI-${Math.floor(10000000 + Math.random() * 90000000)}`;
+    const todayStr = new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
+
+    const modal = document.createElement('div');
+    modal.id = 'govtFeeReceiptModal';
+    modal.style.cssText = `
+      position: fixed; inset: 0; background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(6px); display: flex; align-items: center;
+      justify-content: center; z-index: 10000; padding: 16px; overflow-y: auto;
+    `;
+
+    modal.innerHTML = `
+      <div style="background: white; border-radius: 16px; max-width: 680px; width: 100%; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.35); overflow: hidden; border: 2px solid #0f172a;">
+        <!-- PRINTABLE RECEIPT BODY -->
+        <div id="printableReceiptArea" style="padding: 28px; background: white; color: #0f172a;">
+          
+          <!-- OFFICIAL HEADER -->
+          <div style="border-bottom: 2px solid #0f172a; padding-bottom: 14px; margin-bottom: 16px; text-align: center;">
+            <div style="font-size:0.75rem; font-weight:800; color:#047857; letter-spacing:1px; text-transform:uppercase;">
+              GOVERNMENT OF TELANGANA RECOGNIZED • SCERT CURRICULUM
+            </div>
+            <h2 style="font-size: 1.5rem; font-weight: 900; margin: 4px 0; color: #0f172a; text-transform: uppercase;">
+              VIKAS GRAMMAR HIGH SCHOOL
+            </h2>
+            <p style="font-size: 0.82rem; color: #475569; margin: 2px 0;">
+              Near Bus Stand, Main Road, Cherial Mandal, Siddipet District, Telangana – 506223
+            </p>
+            <div style="display:inline-block; background: #0f172a; color: white; padding: 4px 16px; border-radius: 4px; font-size: 0.75rem; font-weight: 800; margin-top: 6px; text-transform:uppercase;">
+              Official Tuition Fee Receipt & Tax Invoice • AY 2026–2027
+            </div>
+          </div>
+
+          <!-- RECEIPT METADATA ROW -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; font-size: 0.84rem; background: #f8fafc; padding: 12px 16px; border-radius: 8px; border: 1px solid #e2e8f0;">
+            <div>
+              <div>Receipt No: <strong style="color:#0f172a; font-family:monospace;">${rNo}</strong></div>
+              <div>Payment Date: <strong>${todayStr}</strong></div>
+              <div>Mode: <strong>Online UPI Gateway (Auto-Reconciled)</strong></div>
+            </div>
+            <div style="text-align: right;">
+              <div>UDISE Code: <strong>36182100637</strong></div>
+              <div>Transaction Ref: <code style="font-size:0.78rem;">${txnId}</code></div>
+              <div>Status: <span style="background:#10b981; color:white; padding:2px 8px; border-radius:4px; font-weight:800; font-size:0.75rem;">PAID IN FULL</span></div>
+            </div>
+          </div>
+
+          <!-- STUDENT DETAILS ROW -->
+          <div style="margin-bottom: 16px; font-size: 0.84rem; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px 16px;">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <div>Student Name: <strong>Rahul Reddy</strong></div>
+              <div>Roll No: <strong>2026-VIII-014</strong></div>
+              <div>Class & Section: <strong>Class VIII — Section A</strong></div>
+              <div>State PEN: <strong>PEN-TS-2026-88192</strong></div>
+              <div>Father's Name: <strong>Mr. K. Narayana Reddy</strong></div>
+              <div>Parent Phone: <strong>+91 98491 55667</strong></div>
+            </div>
+          </div>
+
+          <!-- ITEMISED FEE TABLE -->
+          <table style="width: 100%; border-collapse: collapse; font-size: 0.84rem; margin-bottom: 18px;">
+            <thead>
+              <tr style="background: #0f172a; color: white;">
+                <th style="padding: 8px 12px; text-align: left;">S.No</th>
+                <th style="padding: 8px 12px; text-align: left;">Fee Particulars / Description</th>
+                <th style="padding: 8px 12px; text-align: right;">Amount (INR)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom: 1px solid #e2e8f0;">
+                <td style="padding: 8px 12px;">1</td>
+                <td style="padding: 8px 12px;"><strong>Term 3 Final Tuition Fee</strong></td>
+                <td style="padding: 8px 12px; text-align: right;">₹2,500.00</td>
+              </tr>
+              <tr style="border-bottom: 1px solid #e2e8f0;">
+                <td style="padding: 8px 12px;">2</td>
+                <td style="padding: 8px 12px;">STEM Robotics & Computer Science Lab Fee</td>
+                <td style="padding: 8px 12px; text-align: right;">₹500.00</td>
+              </tr>
+              <tr style="border-bottom: 1px solid #e2e8f0;">
+                <td style="padding: 8px 12px;">3</td>
+                <td style="padding: 8px 12px;">Telangana SCERT CCE Assessment & Board Exam Processing</td>
+                <td style="padding: 8px 12px; text-align: right;">₹500.00</td>
+              </tr>
+              <tr style="background: #f1f5f9; font-weight: 900; font-size: 0.95rem; border-top: 2px solid #0f172a;">
+                <td colspan="2" style="padding: 10px 12px; text-align: right;">TOTAL AMOUNT RECEIVED:</td>
+                <td style="padding: 10px 12px; text-align: right; color: #047857;">₹3,500.00</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div style="font-size: 0.78rem; color: #475569; font-style: italic; margin-bottom: 16px;">
+            Amount in words: <strong>Three Thousand Five Hundred Indian Rupees Only.</strong>
+          </div>
+
+          <!-- FOOTER SEALS & VERIFICATION -->
+          <div style="display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px dashed #cbd5e1; padding-top: 14px; margin-top: 12px;">
+            <div>
+              <div style="font-size: 0.7rem; color: #64748b; margin-bottom: 4px;">Digital Verification QR & Hash:</div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <div style="width: 48px; height: 48px; background: #0f172a; color: white; font-size: 0.5rem; display: flex; align-items: center; justify-content: center; text-align: center; border-radius: 4px;">
+                  SCAN VERIFY
+                </div>
+                <div style="font-size: 0.7rem; color: #64748b; font-family: monospace;">
+                  HASH: VG26-88192-RECONCILED<br>
+                  TELANGANA SCERT COMPLIANT
+                </div>
+              </div>
+            </div>
+
+            <div style="text-align: center;">
+              <div style="width: 140px; border-bottom: 1px solid #0f172a; margin-bottom: 4px; padding-bottom: 2px; font-size: 0.8rem; font-weight: 800; color: #0f172a;">
+                K. Rajesham
+              </div>
+              <div style="font-size: 0.75rem; font-weight: 700; color: #475569;">
+                Headmaster & Correspondent<br>Vikas Grammar High School
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODAL ACTION BUTTONS -->
+        <div style="background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 14px 24px; display: flex; justify-content: flex-end; gap: 12px;">
+          <button onclick="document.getElementById('govtFeeReceiptModal').remove()" style="padding: 8px 18px; border: 1px solid #cbd5e1; background: white; border-radius: 8px; font-weight: 700; cursor: pointer;">
+            Close
+          </button>
+          <button onclick="window.print()" style="padding: 8px 22px; background: #0f172a; color: white; border: none; border-radius: 8px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+            🖨️ Print Official Receipt
+          </button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
   }
 
   function sendTeacherFeeReminderSms() {
@@ -2728,7 +3719,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* 17. MENTOR LEAVE APPROVAL SCREEN */
   function renderMentorLeaveApprovalScreen() {
-    const requests = MOCK_DATA.studentLeaveRequests;
+    const state = (window.EduPulseStore && window.EduPulseStore.getState()) || MOCK_DATA;
+    const requests = state.studentLeaveRequests || [];
     contentViewport.innerHTML = `
       <div class="panel-card" style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border-color: #bfdbfe; margin-bottom:20px;">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
@@ -2741,7 +3733,13 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
 
       <div style="display:flex; flex-direction:column; gap:16px;">
-        ${requests.map(r => `
+        ${requests.length === 0 ? `
+          <div class="panel-card" style="text-align:center; padding:40px; color:var(--text-muted);">
+            <i data-lucide="check-circle" style="width:48px; height:48px; color:var(--emerald); margin-bottom:12px;"></i>
+            <h3>No Pending Leave Applications</h3>
+            <p>All student leave requests have been reviewed and resolved.</p>
+          </div>
+        ` : requests.map(r => `
           <div class="panel-card" style="border-left:5px solid ${r.mentorStatus === 'Accepted' ? '#10b981' : r.mentorStatus === 'Rejected' ? '#ef4444' : '#f59e0b'};">
             <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
               <div>
@@ -2777,18 +3775,30 @@ document.addEventListener('DOMContentLoaded', () => {
     refreshLucideIcons();
   }
 
-  window.updateLeaveStatus = function(id, newStatus) {
-    const req = MOCK_DATA.studentLeaveRequests.find(r => r.id === id);
-    if (req) {
-      req.mentorStatus = newStatus;
-      showToast(`Leave request for ${req.studentName} updated to: ${newStatus}`);
-      renderMentorLeaveApprovalScreen();
+  window.updateLeaveStatus = async function(id, newStatus) {
+    if (window.EduPulseStore) {
+      window.EduPulseStore.dispatch('UPDATE_LEAVE_STATUS', { id, status: newStatus });
+    } else {
+      const req = MOCK_DATA.studentLeaveRequests.find(r => r.id === id);
+      if (req) req.mentorStatus = newStatus;
     }
+
+    if (window.EduPulseAPI && typeof id === 'number') {
+      try {
+        await window.EduPulseAPI.updateLeaveStatus(id, newStatus);
+      } catch (err) {
+        console.warn('Backend leave status sync queued locally:', err);
+      }
+    }
+
+    showToast(`✓ Leave request updated to: ${newStatus}`);
+    renderMentorLeaveApprovalScreen();
   };
 
   /* 18. TEACHER SALARY SCREEN */
   function renderTeacherSalaryScreen() {
-    const sal = MOCK_DATA.teacherSalary;
+    const state = (window.EduPulseStore && window.EduPulseStore.getState()) || MOCK_DATA;
+    const sal = state.teacherSalary || MOCK_DATA.teacherSalary;
     contentViewport.innerHTML = `
       <div class="panel-card" style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-color: #bbf7d0; margin-bottom:20px;">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
@@ -2843,7 +3853,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* 19. TEACHER ATTENDANCE SCREEN */
   function renderTeacherAttendanceScreen() {
-    const att = MOCK_DATA.teacherAttendance;
+    const state = (window.EduPulseStore && window.EduPulseStore.getState()) || MOCK_DATA;
+    const att = state.teacherAttendance || MOCK_DATA.teacherAttendance;
     contentViewport.innerHTML = `
       <div class="panel-card" style="margin-bottom:20px;">
         <div class="panel-header">
@@ -2872,37 +3883,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* 20. SUBMIT LEAVE REQUEST FORM */
   function renderLeaveRequestFormScreen() {
+    const state = (window.EduPulseStore && window.EduPulseStore.getState()) || MOCK_DATA;
+    const myLeaves = (state.studentLeaveRequests || []).filter(l => l.studentName.includes('Rahul') || l.rollNo === '2026-VIII-014');
+
     contentViewport.innerHTML = `
-      <div class="panel-card" style="max-width:700px; margin:0 auto;">
+      <div class="panel-card" style="max-width:750px; margin:0 auto 24px auto;">
         <div class="panel-header">
           <h2><i data-lucide="file-text" style="color:var(--indigo);"></i> Submit Student Leave Request</h2>
         </div>
-        <p style="color:var(--text-secondary); font-size:0.85rem; margin-bottom:20px;">Leave request will be submitted directly to Class VIII A Mentor (Mrs. S. Radhika) for review.</p>
+        <p style="color:var(--text-secondary); font-size:0.85rem; margin-bottom:20px;">
+          Leave request will be submitted directly to Class VIII A Mentor (Mrs. S. Radhika) for review and logged in real-time.
+        </p>
 
         <form id="leaveForm" style="display:flex; flex-direction:column; gap:14px;">
           <div>
             <label style="font-size:0.83rem; font-weight:700; display:block; margin-bottom:4px;">Leave Type</label>
-            <select id="leaveType" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-card); color:var(--text-primary);">
+            <select id="leaveType" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-card); color:var(--text-primary);" required>
               <option value="Medical Leave">Medical Leave</option>
               <option value="Casual / Personal Leave">Casual / Personal Leave</option>
               <option value="Family Function">Family Function</option>
+              <option value="Festival / Native Visit">Festival / Native Visit</option>
             </select>
           </div>
 
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
             <div>
               <label style="font-size:0.83rem; font-weight:700; display:block; margin-bottom:4px;">From Date</label>
-              <input type="date" value="2026-09-02" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-card); color:var(--text-primary);">
+              <input type="date" id="leaveFromDate" value="2026-09-08" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-card); color:var(--text-primary);" required>
             </div>
             <div>
               <label style="font-size:0.83rem; font-weight:700; display:block; margin-bottom:4px;">To Date</label>
-              <input type="date" value="2026-09-04" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-card); color:var(--text-primary);">
+              <input type="date" id="leaveToDate" value="2026-09-09" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-card); color:var(--text-primary);" required>
             </div>
           </div>
 
           <div>
             <label style="font-size:0.83rem; font-weight:700; display:block; margin-bottom:4px;">Reason for Leave</label>
-            <textarea rows="3" placeholder="Specify reason..." style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-card); color:var(--text-primary);">Fever & Doctor Advised Rest</textarea>
+            <textarea id="leaveReason" rows="3" placeholder="Specify reason..." style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-card); color:var(--text-primary);" required>Fever & Doctor Advised Rest</textarea>
           </div>
 
           <button type="submit" class="btn-primary" style="padding:12px; background:var(--indigo); color:white; border-radius:8px; font-weight:700; margin-top:10px;">
@@ -2910,11 +3927,55 @@ document.addEventListener('DOMContentLoaded', () => {
           </button>
         </form>
       </div>
+
+      <!-- MY LEAVE HISTORY TABLE -->
+      <div class="panel-card" style="max-width:750px; margin:0 auto;">
+        <h3 style="font-size:1rem; font-weight:800; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+          <i data-lucide="history" style="color:var(--text-muted); width:18px; height:18px;"></i>
+          My Submitted Leave Applications (${myLeaves.length})
+        </h3>
+        ${myLeaves.length === 0 ? `
+          <div style="text-align:center; padding:20px; color:var(--text-muted); font-size:0.85rem;">No previous leave requests filed.</div>
+        ` : `
+          <div style="display:flex; flex-direction:column; gap:10px;">
+            ${myLeaves.map(lv => `
+              <div style="background:var(--bg-card-sub); padding:12px 16px; border-radius:8px; border:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                <div>
+                  <strong style="font-size:0.9rem; color:var(--text-primary);">${lv.leaveType}</strong>
+                  <div style="font-size:0.8rem; color:var(--text-muted); margin-top:2px;">
+                    ${lv.fromDate} to ${lv.toDate} (${lv.days} Days) • Reason: <em>${lv.reason}</em>
+                  </div>
+                </div>
+                <span class="badge ${lv.mentorStatus === 'Accepted' ? 'badge-success' : lv.mentorStatus === 'Rejected' ? 'badge-danger' : 'badge-warning'}">
+                  ${lv.mentorStatus}
+                </span>
+              </div>
+            `).join('')}
+          </div>
+        `}
+      </div>
     `;
 
     document.getElementById('leaveForm')?.addEventListener('submit', (e) => {
       e.preventDefault();
-      showToast("Submitted leave request to Mrs. S. Radhika! Status set to Pending Mentor Review.");
+      const type = document.getElementById('leaveType')?.value || 'Medical Leave';
+      const from = document.getElementById('leaveFromDate')?.value || '2026-09-08';
+      const to = document.getElementById('leaveToDate')?.value || '2026-09-09';
+      const reason = document.getElementById('leaveReason')?.value || 'Personal Reasons';
+
+      if (window.EduPulseStore) {
+        window.EduPulseStore.dispatch('SUBMIT_LEAVE_REQUEST', {
+          leaveType: type,
+          fromDate: from,
+          toDate: to,
+          days: 2,
+          reason: reason,
+          appliedBy: activeRole === 'parent' ? 'Parent (Mr. K. Narayana Reddy)' : 'Student (Rahul Reddy)'
+        });
+      }
+
+      showToast("✓ Submitted leave request to Mrs. S. Radhika! Synced to Mentor Queue.");
+      renderLeaveRequestFormScreen();
     });
 
     refreshLucideIcons();
@@ -2922,7 +3983,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* 21. CHILD ATTENDANCE & PERFORMANCE (PARENT) */
   function renderChildAttendanceScreen() {
-    const latestFeedback = MOCK_DATA.teacherStudentFeedbacks.find(f => f.studentName.includes('Rahul Reddy')) || MOCK_DATA.teacherStudentFeedbacks[0];
+    const state = (window.EduPulseStore && window.EduPulseStore.getState()) || MOCK_DATA;
+    const feeAcc = state.studentFeeAccount || {};
+    const dueAmount = feeAcc.dueAmount !== undefined ? feeAcc.dueAmount : 3500;
+    const feedbacks = state.teacherStudentFeedbacks || [];
+    const latestFeedback = feedbacks.find(f => f.studentName.includes('Rahul Reddy')) || feedbacks[0];
 
     contentViewport.innerHTML = `
       <div class="panel-card" style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border-color: #bfdbfe; margin-bottom:20px;">
@@ -2948,8 +4013,8 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
         <div class="stat-card">
           <div class="stat-title">Fee Balance Due</div>
-          <div class="stat-value" style="color:#ef4444;">₹3,500</div>
-          <span class="trend-badge trend-purple">Term 3 Dues</span>
+          <div class="stat-value" style="color:${dueAmount > 0 ? '#ef4444' : '#10b981'};">₹${dueAmount.toLocaleString()}</div>
+          <span class="trend-badge ${dueAmount > 0 ? 'trend-purple' : 'trend-up-green'}">${dueAmount > 0 ? 'Term 3 Dues' : '✓ Paid in Full'}</span>
         </div>
       </div>
 
@@ -5758,12 +6823,48 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  function submitPublicAdmissionInquiry(e) {
+  function togglePubMobileMenu() {
+    const menu = document.getElementById('pubMobileMenu');
+    const icon = document.getElementById('pubMobileMenuIcon');
+    if (!menu) return;
+    const isOpen = menu.classList.toggle('active');
+    if (icon) {
+      icon.setAttribute('data-lucide', isOpen ? 'x' : 'menu');
+      refreshLucideIcons();
+    }
+  }
+
+  async function submitPublicAdmissionInquiry(e) {
     if (e) e.preventDefault();
     const sName = document.getElementById('inqStudentName')?.value || 'Prospective Student';
     const pClass = document.getElementById('inqGrade')?.value || 'Class VIII';
     const pPhone = document.getElementById('inqPhone')?.value || '';
+    const pParent = document.getElementById('inqParentName')?.value || 'Guardian';
     const inqId = `INQ-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+
+    // 1. Sync with local store
+    EduPulseStore.dispatch('CREATE_ADMISSION_INQUIRY', {
+      applicantName: sName,
+      gradeApplied: pClass,
+      parentName: pParent,
+      phone: pPhone
+    });
+
+    // 2. Post to central FastAPI backend if online
+    if (window.EduPulseAPI) {
+      try {
+        await window.EduPulseAPI.submitInquiry({
+          student_name: sName,
+          parent_name: pParent,
+          phone: pPhone,
+          grade_applied: pClass,
+          notes: `Public website admission inquiry for ${sName}`
+        });
+      } catch (err) {
+        console.warn('Backend sync queued locally:', err);
+      }
+    }
+
     showToast(`🎉 Admission inquiry #${inqId} registered for ${sName} (${pClass})! Admissions desk will call ${pPhone} shortly.`);
     const form = document.getElementById('publicInquiryForm');
     if (form) form.reset();
@@ -5805,10 +6906,51 @@ document.addEventListener('DOMContentLoaded', () => {
           </ul>
         </nav>
 
-        <div style="display:flex; align-items:center; gap:10px;">
+        <div class="pub-nav-actions" style="display:flex; align-items:center; gap:8px;">
           <button type="button" onclick="window.enterErpPortal('principal')" class="pub-login-btn">
-            <i data-lucide="lock" style="width:15px; height:15px;"></i> ERP Portal Login
+            <i data-lucide="lock" style="width:15px; height:15px;"></i> <span>ERP Portal Login</span>
           </button>
+          <button type="button" id="pubMobileToggleBtn" class="pub-mobile-toggle" onclick="window.togglePubMobileMenu()" aria-label="Toggle Navigation Menu">
+            <i data-lucide="menu" id="pubMobileMenuIcon"></i>
+          </button>
+        </div>
+
+        <!-- MOBILE SLIDE-DOWN DRAWER -->
+        <div class="pub-mobile-menu" id="pubMobileMenu">
+          <div class="pub-mobile-menu-inner">
+            <div class="pub-mobile-links">
+              <a class="pub-mobile-nav-link" onclick="window.scrollToPubSection('heroCarouselSection'); window.togglePubMobileMenu();">
+                <i data-lucide="home"></i> Home
+              </a>
+              <a class="pub-mobile-nav-link" onclick="window.scrollToPubSection('pubAboutSection'); window.togglePubMobileMenu();">
+                <i data-lucide="info"></i> About Us
+              </a>
+              <a class="pub-mobile-nav-link" onclick="window.scrollToPubSection('pubSlogansSection'); window.togglePubMobileMenu();">
+                <i data-lucide="sparkles"></i> Why Schooling?
+              </a>
+              <a class="pub-mobile-nav-link" onclick="window.scrollToPubSection('pubProgramsSection'); window.togglePubMobileMenu();">
+                <i data-lucide="book-open"></i> Academic Wings
+              </a>
+              <a class="pub-mobile-nav-link" onclick="window.scrollToPubSection('pubFacilitiesSection'); window.togglePubMobileMenu();">
+                <i data-lucide="building-2"></i> Facilities
+              </a>
+              <a class="pub-mobile-nav-link" onclick="window.scrollToPubSection('pubFacultySection'); window.togglePubMobileMenu();">
+                <i data-lucide="users"></i> Faculty Team
+              </a>
+              <a class="pub-mobile-nav-link" onclick="window.scrollToPubSection('pubAdmissionsSection'); window.togglePubMobileMenu();">
+                <i data-lucide="file-text"></i> Admissions & Inquiry
+              </a>
+            </div>
+            <div class="pub-mobile-portals">
+              <div class="pub-mobile-portal-title">Instant ERP Role Access:</div>
+              <div class="pub-mobile-portal-grid">
+                <button type="button" class="portal-quick-btn" onclick="window.enterErpPortal('principal'); window.togglePubMobileMenu();">👑 Principal</button>
+                <button type="button" class="portal-quick-btn" onclick="window.enterErpPortal('teacher'); window.togglePubMobileMenu();">👩‍🏫 Teacher</button>
+                <button type="button" class="portal-quick-btn" onclick="window.enterErpPortal('student'); window.togglePubMobileMenu();">🎓 Student</button>
+                <button type="button" class="portal-quick-btn" onclick="window.enterErpPortal('parent'); window.togglePubMobileMenu();">👨‍👩‍👧 Parent</button>
+              </div>
+            </div>
+          </div>
         </div>
       </header>
 
@@ -6194,6 +7336,584 @@ document.addEventListener('DOMContentLoaded', () => {
     refreshLucideIcons();
     resetCarouselTimer();
   }
+
+  /* 28. WHATSAPP & DLT SMS COMMUNICATION CENTER */
+  function renderCommunicationCenterScreen() {
+    contentViewport.innerHTML = `
+      <div class="panel-card" style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-color: #86efac; margin-bottom:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+          <div>
+            <h2 style="font-size:1.35rem; font-weight:800; color:#14532d; display:flex; align-items:center; gap:8px;">
+              <i data-lucide="message-circle" style="color:#16a34a;"></i> WhatsApp & Govt DLT SMS Gateway — Vikas Grammar School
+            </h2>
+            <p style="color:#166534; font-size:0.85rem; margin-top:4px;">
+              Automated parent communication engine for daily attendance alerts, 1-click UPI fee recovery, and emergency board circulars.
+            </p>
+          </div>
+          <span class="badge" style="background:#16a34a; color:white; font-size:0.82rem; padding:6px 14px; font-weight:800;">
+            🟢 WhatsApp Business API: Connected
+          </span>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(360px, 1fr)); gap:20px; margin-bottom:24px;">
+        
+        <!-- CARD 1: DAILY ATTENDANCE WHATSAPP DISPATCHER -->
+        <div class="panel-card" style="border-top:4px solid #16a34a;">
+          <div class="panel-header" style="margin-bottom:12px;">
+            <h3 style="font-size:1.05rem; font-weight:800; color:var(--text-primary); display:flex; align-items:center; gap:6px;">
+              <i data-lucide="check-circle" style="color:#16a34a;"></i> Daily Attendance Alert Dispatcher
+            </h3>
+            <span class="badge badge-success">Live Template</span>
+          </div>
+
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:14px; font-size:0.84rem; margin-bottom:14px;">
+            <div style="font-size:0.75rem; font-weight:800; color:#64748b; margin-bottom:4px; text-transform:uppercase;">WhatsApp Template Preview:</div>
+            <div style="background:white; border:1px solid #cbd5e1; border-radius:8px; padding:12px; font-family:sans-serif; line-height:1.5; color:#1e293b;">
+              "Dear Parent, Your ward <strong>Rahul Reddy (Class VIII-A)</strong> has safely arrived at school and is marked <strong>PRESENT</strong> at 08:24 AM today.<br><br>
+              — Headmaster, Vikas Grammar School Cherial"
+            </div>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.82rem; color:var(--text-secondary); margin-bottom:12px;">
+            <span>Target Recipients: <strong>788 Present Students</strong></span>
+            <span>Delivery Channel: <strong>WhatsApp / SMS</strong></span>
+          </div>
+
+          <button onclick="window.dispatchAttendanceWhatsApp()" style="width:100%; padding:12px; background:linear-gradient(135deg, #16a34a 0%, #15803d 100%); color:white; border:none; border-radius:10px; font-weight:800; font-size:0.88rem; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 4px 12px rgba(22,163,74,0.3);">
+            <i data-lucide="send"></i> Broadcast Daily Attendance WhatsApp to 788 Parents
+          </button>
+        </div>
+
+        <!-- CARD 2: FEE DUE WHATSAPP DISPATCHER WITH UPI LINK -->
+        <div class="panel-card" style="border-top:4px solid #f59e0b;">
+          <div class="panel-header" style="margin-bottom:12px;">
+            <h3 style="font-size:1.05rem; font-weight:800; color:var(--text-primary); display:flex; align-items:center; gap:6px;">
+              <i data-lucide="indian-rupee" style="color:#f59e0b;"></i> Fee Dues Recovery & Direct UPI Link
+            </h3>
+            <span class="badge badge-warning">High Recovery</span>
+          </div>
+
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:14px; font-size:0.84rem; margin-bottom:14px;">
+            <div style="font-size:0.75rem; font-weight:800; color:#64748b; margin-bottom:4px; text-transform:uppercase;">WhatsApp UPI Template Preview:</div>
+            <div style="background:white; border:1px solid #cbd5e1; border-radius:8px; padding:12px; font-family:sans-serif; line-height:1.5; color:#1e293b;">
+              "Dear Parent, Term 3 fee of <strong>₹3,500</strong> for <strong>Rahul Reddy</strong> is due by Sep 30, 2026. Avoid late board fee. Pay securely in 1-click via UPI:<br>
+              👉 <strong style="color:#0284c7;">https://pay.edupulse.in/vikas/REC-289</strong><br><br>
+              — Vikas Grammar High School Accounts Office"
+            </div>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.82rem; color:var(--text-secondary); margin-bottom:12px;">
+            <span>Class Defaulters: <strong>3 in Class VIII-A (14 School-Wide)</strong></span>
+            <span>Total Recoverable: <strong>₹49,000</strong></span>
+          </div>
+
+          <button onclick="window.dispatchFeeWhatsApp()" style="width:100%; padding:12px; background:linear-gradient(135deg, #d97706 0%, #b45309 100%); color:white; border:none; border-radius:10px; font-weight:800; font-size:0.88rem; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 4px 12px rgba(217,119,6,0.3);">
+            <i data-lucide="message-square"></i> Send 1-Click WhatsApp Reminders with UPI Links
+          </button>
+        </div>
+
+      </div>
+
+      <!-- BROADCAST CIRCULAR BOX -->
+      <div class="panel-card">
+        <h3 style="font-size:1.1rem; font-weight:800; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+          <i data-lucide="radio" style="color:var(--indigo);"></i> Emergency Holiday & Board Circular Broadcast
+        </h3>
+        <p style="font-size:0.84rem; color:var(--text-secondary); margin-bottom:16px;">Instantly sends approved circulars to all 832 registered parent mobile numbers.</p>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
+          <div>
+            <label style="font-size:0.82rem; font-weight:700; display:block; margin-bottom:4px;">Broadcast Category</label>
+            <select style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-card); color:var(--text-primary);">
+              <option>🌧️ Heavy Rain / Govt Holiday Announcement</option>
+              <option>📝 Formative Assessment FA-2 Timetable Release</option>
+              <option>🚌 School Bus Route Delay Alert</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:0.82rem; font-weight:700; display:block; margin-bottom:4px;">Target Audience</label>
+            <select style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-card); color:var(--text-primary);">
+              <option>All School Parents (Classes 1–10 • 832 Contacts)</option>
+              <option>Class VIII & X Board Batches Only</option>
+              <option>All Teaching & Non-Teaching Faculty</option>
+            </select>
+          </div>
+        </div>
+
+        <button onclick="showToast('🚀 Broadcast delivered successfully to all 832 Parent WhatsApp & SMS Numbers!')" class="btn-primary" style="padding:10px 24px; font-weight:800; background:var(--indigo);">
+          <i data-lucide="send"></i> Dispatch Emergency Broadcast
+        </button>
+      </div>
+    `;
+
+    window.dispatchAttendanceWhatsApp = function() {
+      showToast("✓ Dispatched 788 Attendance WhatsApp Messages! Delivery status: 99.8% Success.");
+    };
+
+    window.dispatchFeeWhatsApp = function() {
+      showToast("✓ Dispatched 14 WhatsApp Fee Reminder messages with direct UPI payment links!");
+    };
+
+    refreshLucideIcons();
+  }
+
+  /* 29. BETI BACHAO BETI PADHAO SCHOLARSHIP HUB */
+  function renderBetiPadhaoScreen() {
+    contentViewport.innerHTML = `
+      <div class="panel-card" style="background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%); border-color: #fbcfe8; margin-bottom:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+          <div>
+            <span style="font-size:0.75rem; font-weight:800; color:#db2777; text-transform:uppercase; letter-spacing:1px;">National Flagship Initiative</span>
+            <h2 style="font-size:1.4rem; font-weight:900; color:#831843; margin:4px 0 0 0; display:flex; align-items:center; gap:8px;">
+              🌸 Beti Bachao Beti Padhao — Girl-Child STEM Scholarship Hub
+            </h2>
+            <p style="color:#9d174d; font-size:0.85rem; margin-top:4px;">
+              Vikas Grammar School 100% Tuition Fee Waiver & STEM Mentorship Program for Deserving Rural Girl Students.
+            </p>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <button onclick="openBetiPadhaoApplyModal()" style="padding:9px 18px; background:linear-gradient(135deg, #db2777 0%, #be185d 100%); color:white; border:none; border-radius:10px; font-weight:800; cursor:pointer; box-shadow:0 4px 12px rgba(219,39,119,0.3);">
+              ✨ Apply for 100% Fee Waiver
+            </button>
+            <button onclick="showToast('Downloaded Beti Padhao Scholarship Beneficiary Report PDF with School Seal!')" style="padding:9px 18px; background:white; color:#be185d; border:1px solid #fbcfe8; border-radius:10px; font-weight:800; cursor:pointer;">
+              📄 Download Report
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- KEY IMPACT METRICS -->
+      <div class="stats-grid-4" style="margin-bottom:20px;">
+        <div class="stat-card">
+          <div class="stat-title">100% Fee Waiver Scholars</div>
+          <div class="stat-value" style="color:#db2777;">48 Girls</div>
+          <span class="trend-badge trend-up-green">AY 2026–27</span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">Total Financial Aid Disbursed</div>
+          <div class="stat-value" style="color:#059669;">₹11.52 Lakhs</div>
+          <span class="trend-badge trend-up-blue">100% Free Tuition</span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">STEM Robotics Participation</div>
+          <div class="stat-value" style="color:#4f46e5;">62% Girls</div>
+          <span class="trend-badge trend-purple">State Science Winners</span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">SSC GPA 10.0 Girls Track Record</div>
+          <div class="stat-value" style="color:#d97706;">18 Scholars</div>
+          <span class="trend-badge trend-orange">Rank #1 in Mandal</span>
+        </div>
+      </div>
+
+      <!-- SCHOLARSHIP RECIPIENTS ROSTER -->
+      <div class="panel-card">
+        <div class="panel-header" style="margin-bottom:16px;">
+          <h3 class="panel-title">Active Girl-Child STEM Scholarship Beneficiaries (Cherial Mandal)</h3>
+          <span class="badge badge-success">48 Enrolled</span>
+        </div>
+
+        <table style="width:100%; border-collapse:collapse; font-size:0.88rem;">
+          <thead>
+            <tr style="background:#fdf2f8; border-bottom:2px solid #fbcfe8; text-align:left;">
+              <th style="padding:10px;">Roll No</th>
+              <th style="padding:10px;">Scholar Name</th>
+              <th style="padding:10px;">Class & Section</th>
+              <th style="padding:10px;">State PEN</th>
+              <th style="padding:10px;">Scholarship Tier</th>
+              <th style="padding:10px;">Academic GPA</th>
+              <th style="padding:10px; text-align:right;">Official Certificate</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #fce7f3;">
+              <td style="padding:10px; font-weight:700; color:#db2777;">2026-X-004</td>
+              <td style="padding:10px; font-weight:800;">M. Deepthi</td>
+              <td style="padding:10px;">Class X — Section A</td>
+              <td style="padding:10px;"><code>PEN-TS-2026-44192</code></td>
+              <td style="padding:10px;"><span style="background:#fce7f3; color:#9d174d; padding:2px 8px; border-radius:4px; font-weight:800; font-size:0.75rem;">100% Free STEM Fellowship</span></td>
+              <td style="padding:10px; font-weight:800; color:#059669;">9.8 / 10</td>
+              <td style="padding:10px; text-align:right;">
+                <button onclick="openBetiPadhaoCertificateModal('M. Deepthi', '2026-X-004', 'Class X-A', 'PEN-TS-2026-44192', '9.8')" style="padding:6px 12px; background:#db2777; color:white; border:none; border-radius:6px; font-weight:700; font-size:0.78rem; cursor:pointer;">
+                  🏅 View Certificate
+                </button>
+              </td>
+            </tr>
+            <tr style="border-bottom:1px solid #fce7f3;">
+              <td style="padding:10px; font-weight:700; color:#db2777;">2026-IX-012</td>
+              <td style="padding:10px; font-weight:800;">K. Sravani</td>
+              <td style="padding:10px;">Class IX — Section A</td>
+              <td style="padding:10px;"><code>PEN-TS-2026-55120</code></td>
+              <td style="padding:10px;"><span style="background:#fce7f3; color:#9d174d; padding:2px 8px; border-radius:4px; font-weight:800; font-size:0.75rem;">100% Free STEM Fellowship</span></td>
+              <td style="padding:10px; font-weight:800; color:#059669;">9.6 / 10</td>
+              <td style="padding:10px; text-align:right;">
+                <button onclick="openBetiPadhaoCertificateModal('K. Sravani', '2026-IX-012', 'Class IX-A', 'PEN-TS-2026-55120', '9.6')" style="padding:6px 12px; background:#db2777; color:white; border:none; border-radius:6px; font-weight:700; font-size:0.78rem; cursor:pointer;">
+                  🏅 View Certificate
+                </button>
+              </td>
+            </tr>
+            <tr style="border-bottom:1px solid #fce7f3;">
+              <td style="padding:10px; font-weight:700; color:#db2777;">2026-VIII-019</td>
+              <td style="padding:10px; font-weight:800;">P. Ananya Reddy</td>
+              <td style="padding:10px;">Class VIII — Section A</td>
+              <td style="padding:10px;"><code>PEN-TS-2026-77810</code></td>
+              <td style="padding:10px;"><span style="background:#fce7f3; color:#9d174d; padding:2px 8px; border-radius:4px; font-weight:800; font-size:0.75rem;">100% Free STEM Fellowship</span></td>
+              <td style="padding:10px; font-weight:800; color:#059669;">9.7 / 10</td>
+              <td style="padding:10px; text-align:right;">
+                <button onclick="openBetiPadhaoCertificateModal('P. Ananya Reddy', '2026-VIII-019', 'Class VIII-A', 'PEN-TS-2026-77810', '9.7')" style="padding:6px 12px; background:#db2777; color:white; border:none; border-radius:6px; font-weight:700; font-size:0.78rem; cursor:pointer;">
+                  🏅 View Certificate
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    `;
+    refreshLucideIcons();
+  }
+
+  /* 30. TELANGANA SCERT CCE MARKS ENTRY PORTAL FOR TEACHERS */
+  function renderCceMarksEntryScreen(selectedClass = 'Class VIII-A', selectedTerm = 'FA-2', selectedSubject = 'Mathematics') {
+    const studentsData = [
+      { roll: '2026-VIII-001', name: 'Rahul Reddy', tool1: 5, tool2: 4, tool3: 5, tool4: 32 },
+      { roll: '2026-VIII-002', name: 'P. Ananya Reddy', tool1: 5, tool2: 5, tool3: 5, tool4: 34 },
+      { roll: '2026-VIII-003', name: 'K. Sai Teja', tool1: 4, tool2: 4, tool3: 4, tool4: 28 },
+      { roll: '2026-VIII-004', name: 'V. Divya Sri', tool1: 5, tool2: 5, tool3: 5, tool4: 33 },
+      { roll: '2026-VIII-005', name: 'G. Naveen Kumar', tool1: 4, tool2: 4, tool3: 3, tool4: 26 },
+      { roll: '2026-VIII-006', name: 'S. Manasa', tool1: 5, tool2: 5, tool3: 4, tool4: 31 },
+      { roll: '2026-VIII-007', name: 'B. Tharun Goud', tool1: 4, tool2: 5, tool3: 5, tool4: 35 },
+      { roll: '2026-VIII-008', name: 'T. Bhavani', tool1: 4, tool2: 3, tool3: 4, tool4: 24 }
+    ];
+
+    function calculateGrade(total) {
+      const pct = (total / 50) * 100;
+      if (pct >= 91) return { grade: 'A1', gpa: '10.0', color: '#059669', bg: '#ecfdf5' };
+      if (pct >= 81) return { grade: 'A2', gpa: '9.0', color: '#10b981', bg: '#f0fdf4' };
+      if (pct >= 71) return { grade: 'B1', gpa: '8.0', color: '#3b82f6', bg: '#eff6ff' };
+      if (pct >= 61) return { grade: 'B2', gpa: '7.0', color: '#6366f1', bg: '#eef2ff' };
+      if (pct >= 51) return { grade: 'C1', gpa: '6.0', color: '#d97706', bg: '#fffbeb' };
+      if (pct >= 41) return { grade: 'C2', gpa: '5.0', color: '#f59e0b', bg: '#fef3c7' };
+      if (pct >= 35) return { grade: 'D', gpa: '4.0', color: '#ea580c', bg: '#fff7ed' };
+      return { grade: 'E', gpa: '0.0', color: '#dc2626', bg: '#fef2f2' };
+    }
+
+    contentViewport.innerHTML = `
+      <div class="panel-card" style="margin-bottom:20px; background:linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); color:white;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+          <div>
+            <span style="font-size:0.75rem; font-weight:800; color:#a5b4fc; text-transform:uppercase; letter-spacing:1px;">Telangana SCERT Evaluation Suite</span>
+            <h2 style="font-size:1.4rem; font-weight:900; margin:4px 0 0 0; color:white;">
+              📝 CCE Marks Entry & Grade Computation Portal
+            </h2>
+            <p style="color:#c7d2fe; font-size:0.85rem; margin-top:4px;">
+              Teacher Workspace • Formative & Summative SCERT 4-Tool Evaluation Engine.
+            </p>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <button onclick="saveCceMarksDraft()" style="padding:9px 18px; background:rgba(255,255,255,0.15); color:white; border:1px solid rgba(255,255,255,0.25); border-radius:10px; font-weight:700; cursor:pointer;">
+              💾 Save Draft
+            </button>
+            <button onclick="publishCceMarksAndNotify()" style="padding:9px 18px; background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:white; border:none; border-radius:10px; font-weight:800; cursor:pointer; box-shadow:0 4px 14px rgba(16,185,129,0.35);">
+              📲 Publish & Notify Parents (WhatsApp)
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- FILTER CONTROLS -->
+      <div class="panel-card" style="margin-bottom:20px;">
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:16px;">
+          <div>
+            <label style="font-size:0.8rem; font-weight:700; color:#475569; display:block; margin-bottom:4px;">Class & Section</label>
+            <select id="cceClassSelect" onchange="renderCceMarksEntryScreen(this.value, document.getElementById('cceTermSelect').value, document.getElementById('cceSubjectSelect').value)" style="width:100%; padding:10px; border-radius:8px; border:1px solid #cbd5e1; font-weight:700;">
+              <option value="Class VIII-A" ${selectedClass === 'Class VIII-A' ? 'selected' : ''}>Class VIII — Section A (English Medium)</option>
+              <option value="Class IX-A" ${selectedClass === 'Class IX-A' ? 'selected' : ''}>Class IX — Section A (English Medium)</option>
+              <option value="Class X-A" ${selectedClass === 'Class X-A' ? 'selected' : ''}>Class X — Section A (SSC Board)</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:0.8rem; font-weight:700; color:#475569; display:block; margin-bottom:4px;">Assessment Term</label>
+            <select id="cceTermSelect" onchange="renderCceMarksEntryScreen(document.getElementById('cceClassSelect').value, this.value, document.getElementById('cceSubjectSelect').value)" style="width:100%; padding:10px; border-radius:8px; border:1px solid #cbd5e1; font-weight:700;">
+              <option value="FA-1" ${selectedTerm === 'FA-1' ? 'selected' : ''}>Formative Assessment 1 (FA-1 — 50 Marks)</option>
+              <option value="FA-2" ${selectedTerm === 'FA-2' ? 'selected' : ''}>Formative Assessment 2 (FA-2 — 50 Marks)</option>
+              <option value="SA-1" ${selectedTerm === 'SA-1' ? 'selected' : ''}>Summative Assessment 1 (SA-1 — 80 Marks)</option>
+              <option value="FA-3" ${selectedTerm === 'FA-3' ? 'selected' : ''}>Formative Assessment 3 (FA-3 — 50 Marks)</option>
+              <option value="FA-4" ${selectedTerm === 'FA-4' ? 'selected' : ''}>Formative Assessment 4 (FA-4 — 50 Marks)</option>
+              <option value="SA-2" ${selectedTerm === 'SA-2' ? 'selected' : ''}>Summative Assessment 2 / Pre-Final (SA-2)</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:0.8rem; font-weight:700; color:#475569; display:block; margin-bottom:4px;">Subject</label>
+            <select id="cceSubjectSelect" onchange="renderCceMarksEntryScreen(document.getElementById('cceClassSelect').value, document.getElementById('cceTermSelect').value, this.value)" style="width:100%; padding:10px; border-radius:8px; border:1px solid #cbd5e1; font-weight:700;">
+              <option value="Mathematics" ${selectedSubject === 'Mathematics' ? 'selected' : ''}>Mathematics</option>
+              <option value="Physical Science" ${selectedSubject === 'Physical Science' ? 'selected' : ''}>Physical Science</option>
+              <option value="Biological Science" ${selectedSubject === 'Biological Science' ? 'selected' : ''}>Biological Science</option>
+              <option value="Social Studies" ${selectedSubject === 'Social Studies' ? 'selected' : ''}>Social Studies</option>
+              <option value="English" ${selectedSubject === 'English' ? 'selected' : ''}>English Language</option>
+              <option value="Telugu" ${selectedSubject === 'Telugu' ? 'selected' : ''}>Telugu (First Language)</option>
+              <option value="Hindi" ${selectedSubject === 'Hindi' ? 'selected' : ''}>Hindi (Second Language)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- MARKS ENTRY SPREADSHEET TABLE -->
+      <div class="panel-card">
+        <div class="panel-header" style="margin-bottom:16px;">
+          <div>
+            <h3 class="panel-title">${selectedClass} • ${selectedSubject} • ${selectedTerm} Evaluation</h3>
+            <span style="font-size:0.8rem; color:#64748b;">SCERT 4-Tool Rubric: Reflection (5M) + Written Works (5M) + Project (5M) + Slip Test (35M) = 50 Marks</span>
+          </div>
+          <span class="badge badge-primary">${studentsData.length} Students Listed</span>
+        </div>
+
+        <div style="overflow-x:auto;">
+          <table style="width:100%; border-collapse:collapse; font-size:0.88rem;" id="cceMarksTable">
+            <thead>
+              <tr style="background:#f8fafc; border-bottom:2px solid #e2e8f0; text-align:left;">
+                <th style="padding:10px;">Roll No</th>
+                <th style="padding:10px;">Student Name</th>
+                <th style="padding:10px; width:90px; text-align:center;">Tool 1: Refl. (5M)</th>
+                <th style="padding:10px; width:90px; text-align:center;">Tool 2: Book (5M)</th>
+                <th style="padding:10px; width:90px; text-align:center;">Tool 3: Proj (5M)</th>
+                <th style="padding:10px; width:90px; text-align:center;">Tool 4: Test (35M)</th>
+                <th style="padding:10px; width:90px; text-align:center;">Total (50M)</th>
+                <th style="padding:10px; width:80px; text-align:center;">Grade</th>
+                <th style="padding:10px; width:80px; text-align:center;">GPA</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${studentsData.map((s, idx) => {
+                const total = s.tool1 + s.tool2 + s.tool3 + s.tool4;
+                const g = calculateGrade(total);
+                return `
+                  <tr style="border-bottom:1px solid #f1f5f9;" id="cceRow_${idx}">
+                    <td style="padding:10px; font-weight:700; color:#4f46e5;">${s.roll}</td>
+                    <td style="padding:10px; font-weight:800;">${s.name}</td>
+                    <td style="padding:8px; text-align:center;">
+                      <input type="number" min="0" max="5" value="${s.tool1}" oninput="recalcCceRow(${idx})" class="cce-input tool1-inp" style="width:60px; text-align:center; padding:6px; border:1px solid #cbd5e1; border-radius:6px; font-weight:700;">
+                    </td>
+                    <td style="padding:8px; text-align:center;">
+                      <input type="number" min="0" max="5" value="${s.tool2}" oninput="recalcCceRow(${idx})" class="cce-input tool2-inp" style="width:60px; text-align:center; padding:6px; border:1px solid #cbd5e1; border-radius:6px; font-weight:700;">
+                    </td>
+                    <td style="padding:8px; text-align:center;">
+                      <input type="number" min="0" max="5" value="${s.tool3}" oninput="recalcCceRow(${idx})" class="cce-input tool3-inp" style="width:60px; text-align:center; padding:6px; border:1px solid #cbd5e1; border-radius:6px; font-weight:700;">
+                    </td>
+                    <td style="padding:8px; text-align:center;">
+                      <input type="number" min="0" max="35" value="${s.tool4}" oninput="recalcCceRow(${idx})" class="cce-input tool4-inp" style="width:60px; text-align:center; padding:6px; border:1px solid #cbd5e1; border-radius:6px; font-weight:700;">
+                    </td>
+                    <td style="padding:10px; text-align:center; font-weight:900; color:#0f172a;" id="cceTotal_${idx}">${total}</td>
+                    <td style="padding:10px; text-align:center;">
+                      <span id="cceGrade_${idx}" style="background:${g.bg}; color:${g.color}; padding:3px 8px; border-radius:6px; font-weight:900; font-size:0.8rem;">${g.grade}</span>
+                    </td>
+                    <td style="padding:10px; text-align:center; font-weight:800; color:#3b82f6;" id="cceGpa_${idx}">${g.gpa}</td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+
+    window.recalcCceRow = function(idx) {
+      const row = document.getElementById(`cceRow_${idx}`);
+      if (!row) return;
+      const t1 = parseFloat(row.querySelector('.tool1-inp')?.value) || 0;
+      const t2 = parseFloat(row.querySelector('.tool2-inp')?.value) || 0;
+      const t3 = parseFloat(row.querySelector('.tool3-inp')?.value) || 0;
+      const t4 = parseFloat(row.querySelector('.tool4-inp')?.value) || 0;
+      const total = t1 + t2 + t3 + t4;
+      const g = calculateGrade(total);
+
+      const totEl = document.getElementById(`cceTotal_${idx}`);
+      if (totEl) totEl.textContent = total;
+
+      const grEl = document.getElementById(`cceGrade_${idx}`);
+      if (grEl) {
+        grEl.textContent = g.grade;
+        grEl.style.color = g.color;
+        grEl.style.background = g.bg;
+      }
+
+      const gpaEl = document.getElementById(`cceGpa_${idx}`);
+      if (gpaEl) gpaEl.textContent = g.gpa;
+    };
+
+    window.saveCceMarksDraft = function() {
+      showToast(`✓ CCE marks draft for ${selectedClass} (${selectedSubject} - ${selectedTerm}) saved locally.`);
+    };
+
+    window.publishCceMarksAndNotify = function() {
+      showToast(`🎉 Published ${selectedTerm} ${selectedSubject} marks! Sent 8 WhatsApp CCE grade cards to parents.`);
+    };
+
+    refreshLucideIcons();
+  }
+
+  /* 31. BETI PADHAO APPLICATION MODAL */
+  window.openBetiPadhaoApplyModal = function() {
+    const existing = document.getElementById('betiPadhaoApplyModal');
+    if (existing) existing.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'betiPadhaoApplyModal';
+    modal.style.cssText = `
+      position: fixed; inset: 0; background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(5px); display: flex; align-items: center;
+      justify-content: center; z-index: 10000; padding: 20px; animation: fadeIn 0.2s ease;
+    `;
+
+    modal.innerHTML = `
+      <div style="background: white; border-radius: 20px; max-width: 520px; width: 100%; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3); overflow: hidden; animation: slideUp 0.3s ease;">
+        <div style="background: linear-gradient(135deg, #db2777 0%, #be185d 100%); padding: 20px 24px; color: white; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <span style="font-size:0.75rem; font-weight:800; text-transform:uppercase; letter-spacing:1px; opacity:0.9;">VGS National Scholarship Cell</span>
+            <h3 style="font-size:1.3rem; font-weight:900; margin:4px 0 0 0;">Apply for 100% STEM Fee Waiver</h3>
+          </div>
+          <button onclick="document.getElementById('betiPadhaoApplyModal').remove()" style="background: rgba(255,255,255,0.2); border:none; color:white; width:32px; height:32px; border-radius:50%; font-weight:900; cursor:pointer; font-size:1rem;">✕</button>
+        </div>
+
+        <form id="betiPadhaoApplyForm" style="padding: 24px; display:flex; flex-direction:column; gap:14px;">
+          <div>
+            <label style="font-size:0.8rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Girl Student Full Name</label>
+            <input type="text" id="bpStudentName" required placeholder="e.g. M. Deepthi" style="width:100%; padding:10px; border-radius:8px; border:1px solid #cbd5e1; font-weight:700;">
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div>
+              <label style="font-size:0.8rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Class & Section</label>
+              <select id="bpGrade" style="width:100%; padding:10px; border-radius:8px; border:1px solid #cbd5e1; font-weight:600;">
+                <option value="Class VI">Class VI</option>
+                <option value="Class VII">Class VII</option>
+                <option value="Class VIII">Class VIII</option>
+                <option value="Class IX">Class IX</option>
+                <option value="Class X">Class X</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:0.8rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Aadhaar Number</label>
+              <input type="text" id="bpAadhaar" placeholder="XXXX-XXXX-XXXX" style="width:100%; padding:10px; border-radius:8px; border:1px solid #cbd5e1; font-weight:700; font-family:monospace;">
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div>
+              <label style="font-size:0.8rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Annual Family Income</label>
+              <select id="bpIncome" style="width:100%; padding:10px; border-radius:8px; border:1px solid #cbd5e1; font-weight:600;">
+                <option value="Below ₹1,00,000">Below ₹1,00,000 / annum</option>
+                <option value="₹1,00,000 – ₹1,50,000">₹1,00,000 – ₹1,50,000 / annum</option>
+                <option value="Single Parent / Orphan">Single Parent / Guardian</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:0.8rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Parent Contact Phone</label>
+              <input type="tel" id="bpPhone" required placeholder="+91 98480 12345" style="width:100%; padding:10px; border-radius:8px; border:1px solid #cbd5e1; font-weight:700;">
+            </div>
+          </div>
+
+          <div>
+            <label style="font-size:0.8rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">STEM Interest / Academic Achievements</label>
+            <textarea id="bpReason" rows="2" placeholder="Robotics, mathematics olympiad, science exhibition interest..." style="width:100%; padding:10px; border-radius:8px; border:1px solid #cbd5e1; font-size:0.85rem;"></textarea>
+          </div>
+
+          <div style="background:#fdf2f8; border:1px solid #fbcfe8; border-radius:10px; padding:12px; font-size:0.78rem; color:#9d174d;">
+            ℹ️ 100% Tuition Fee Waiver covers entire academic tuition, lab fees, and STEM robotics lab kits at Vikas Grammar School.
+          </div>
+
+          <div style="display:flex; gap:10px; margin-top:8px;">
+            <button type="button" onclick="document.getElementById('betiPadhaoApplyModal').remove()" style="flex:1; padding:12px; border:1px solid #cbd5e1; background:white; color:#475569; border-radius:10px; font-weight:700; cursor:pointer;">
+              Cancel
+            </button>
+            <button type="submit" style="flex:2; padding:12px; border:none; background:linear-gradient(135deg, #db2777 0%, #be185d 100%); color:white; border-radius:10px; font-weight:800; font-size:0.92rem; cursor:pointer; box-shadow:0 4px 14px rgba(219,39,119,0.35);">
+              🌸 Submit Scholarship Application
+            </button>
+          </div>
+        </form>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    document.getElementById('betiPadhaoApplyForm')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const sName = document.getElementById('bpStudentName')?.value || 'Applicant';
+      const grade = document.getElementById('bpGrade')?.value || 'Class VIII';
+      document.getElementById('betiPadhaoApplyModal')?.remove();
+      showToast(`🌸 Beti Padhao Scholarship application registered for ${sName} (${grade})! Verification assigned to Principal Desk.`);
+    });
+  };
+
+  /* 32. OFFICIAL BETI PADHAO SCHOLARSHIP CERTIFICATE MODAL */
+  window.openBetiPadhaoCertificateModal = function(studentName, rollNo, grade, penId, gpa) {
+    const existing = document.getElementById('betiCertificateModal');
+    if (existing) existing.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'betiCertificateModal';
+    modal.style.cssText = `
+      position: fixed; inset: 0; background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(5px); display: flex; align-items: center;
+      justify-content: center; z-index: 10000; padding: 20px; animation: fadeIn 0.2s ease;
+    `;
+
+    modal.innerHTML = `
+      <div style="background: white; border-radius: 20px; max-width: 640px; width: 100%; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3); overflow: hidden; animation: slideUp 0.3s ease;">
+        <div style="background: linear-gradient(135deg, #831843 0%, #db2777 100%); padding: 16px 20px; color: white; display: flex; justify-content: space-between; align-items: center;">
+          <h4 style="margin:0; font-weight:800; font-size:1rem;">🏅 Official Digital Scholarship Award Certificate</h4>
+          <button onclick="document.getElementById('betiCertificateModal').remove()" style="background: rgba(255,255,255,0.2); border:none; color:white; width:28px; height:28px; border-radius:50%; font-weight:900; cursor:pointer;">✕</button>
+        </div>
+
+        <div style="padding: 24px; background:#fff; text-align:center;" id="printableCertificateContent">
+          <div style="border: 4px double #db2777; padding: 24px; border-radius: 12px; background: #fffdfd; position:relative;">
+            <div style="font-size:0.75rem; font-weight:900; color:#9d174d; text-transform:uppercase; letter-spacing:2px;">Government of Telangana Recognized • UDISE 36182100637</div>
+            <h2 style="font-size:1.5rem; font-weight:900; color:#831843; margin:6px 0 2px 0;">VIKAS GRAMMAR HIGH SCHOOL</h2>
+            <div style="font-size:0.8rem; color:#64748b;">Cherial Mandal, Siddipet Dist, Telangana — 506223</div>
+
+            <div style="margin: 16px 0; display:inline-block; border-bottom: 2px solid #f472b6; padding-bottom: 4px;">
+              <h3 style="font-size:1.15rem; font-weight:900; color:#db2777; margin:0; text-transform:uppercase; letter-spacing:1px;">
+                🌸 Beti Padhao Girl-Child STEM Fellowship Award
+              </h3>
+            </div>
+
+            <p style="font-size:0.88rem; color:#334155; line-height:1.6; margin: 12px 0;">
+              This is to proudly certify that <strong>${studentName}</strong>, studying in <strong>${grade}</strong> (Roll No: <code>${rollNo}</code>, State PEN: <code>${penId}</code>), has been awarded the <strong>100% Tuition Fee Waiver & STEM Fellowship</strong> for the Academic Year <strong>2026–2027</strong> in recognition of outstanding academic merit (GPA: <strong>${gpa} / 10.0</strong>) and science excellence.
+            </p>
+
+            <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:24px; padding-top:16px; border-top:1px dashed #fbcfe8;">
+              <div style="text-align:left;">
+                <div style="width:50px; height:50px; background:#fdf2f8; border:1px solid #fbcfe8; display:flex; align-items:center; justify-content:center; border-radius:6px; font-size:0.65rem; color:#db2777; font-weight:900;">
+                  QR SEAL
+                </div>
+                <div style="font-size:0.7rem; color:#94a3b8; margin-top:4px;">Verified on Telangana EduPortal</div>
+              </div>
+              <div style="text-align:center;">
+                <div style="color:#db2777; font-weight:900; font-size:0.8rem; border-bottom:1px solid #db2777; padding-bottom:2px;">[Digital VGS Stamp]</div>
+                <div style="font-size:0.75rem; color:#64748b; margin-top:2px;">Institutional Seal</div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-family:'Brush Script MT', cursive; font-size:1.2rem; color:#1e1b4b; font-weight:bold;">S. Anjaiah</div>
+                <div style="font-size:0.75rem; font-weight:800; color:#1e293b;">Headmaster & Principal</div>
+                <div style="font-size:0.7rem; color:#64748b;">Vikas Grammar High School</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="padding:14px 24px; background:#f8fafc; border-top:1px solid #e2e8f0; display:flex; justify-content:flex-end; gap:10px;">
+          <button onclick="document.getElementById('betiCertificateModal').remove()" style="padding:8px 16px; border:1px solid #cbd5e1; background:white; color:#475569; border-radius:8px; font-weight:700; cursor:pointer;">
+            Close
+          </button>
+          <button onclick="window.print()" style="padding:8px 18px; background:#db2777; color:white; border:none; border-radius:8px; font-weight:800; cursor:pointer;">
+            🖨️ Print Certificate
+          </button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+  };
 
   /* 22. GENERIC FALLBACK */
   function renderGenericView(viewName) {

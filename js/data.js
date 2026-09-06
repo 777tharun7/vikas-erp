@@ -1,10 +1,45 @@
 /* ==========================================================================
-   EDUPULSE SCHOOL OS v4.0 — VIKAS GRAMMAR COMPREHENSIVE DATASET
+   EDUPULSE SCHOOL OS v4.0 — VIKAS GRAMMAR COMPREHENSIVE DATASET & STORE
    UDISE Code: 36182100637 | Siddipet, Telangana Academic Year 2026-2027
-   Contains complete data for all 16 navigation views across 4 roles
+   Contains multi-tenant configuration, central state store & initial dataset
    ========================================================================== */
 
-const MOCK_DATA = {
+/**
+ * MULTI-TENANT CONFIGURATION LAYER
+ * Defines tenant identities and allows instant white-labeling across schools.
+ */
+const TENANT_CONFIG = {
+  currentTenantId: 'vikas-cherial-36182100637',
+  tenants: {
+    'vikas-cherial-36182100637': {
+      schoolId: 'vikas-cherial-36182100637',
+      name: 'Vikas Grammar School HS Cherial',
+      shortName: 'Vikas Grammar School',
+      motto: 'Learn • Grow • Excel',
+      location: 'Cheriyal, Siddipet, Telangana — 506223',
+      address: 'Near Gandhi Chowk, Cheriyal Mandal, Siddipet District, Telangana — 506223',
+      udiseCode: '36182100637',
+      board: 'Board of Secondary Education, Telangana (BSE Telangana)',
+      headmaster: 'K. Rajesham',
+      phone: '+91 98480 99887',
+      email: 'info@vikasgrammar.edu.in',
+      admissionsEmail: 'admissions@vikasgrammar.edu.in',
+      est: 2004,
+      affiliationNo: 'TS-BSE-2004-9821',
+      primaryColor: '#4f46e5',
+      secondaryColor: '#f59e0b',
+      accentColor: '#10b981',
+      academicYear: '2026 – 2027',
+      currency: 'INR',
+      currencySymbol: '₹'
+    }
+  },
+  get current() {
+    return this.tenants[this.currentTenantId] || this.tenants['vikas-cherial-36182100637'];
+  }
+};
+
+const DEFAULT_MOCK_DATA = {
   schoolInfo: {
     name: 'Vikas Grammar School HS Cherial',
     shortName: 'Vikas Grammar School',
@@ -2062,6 +2097,552 @@ const MOCK_DATA = {
         quote: '“Discipline on the playground translates into unshakeable character in life.”'
       }
     ]
+  },
+
+  // 17. ROLE-BASED AUTH CREDENTIALS & PROFILES
+  userCredentials: {
+    'principal@vikas.edu.in': {
+      role: 'principal',
+      password: 'vikas2026',
+      name: 'K. Rajesham',
+      designation: 'Headmaster & School Administrator',
+      phone: '+91 98480 99887',
+      email: 'principal@vikas.edu.in',
+      empId: 'EMP-VG-001',
+      penId: 'TS-STAFF-361821-001',
+      department: 'School Administration & Leadership',
+      bloodGroup: 'O+',
+      emergencyContact: 'School Office: 08716-242001',
+      address: 'House #4-12, Main Bazar Road, Cheriyal, Siddipet — 506223',
+      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80'
+    },
+    'teacher@vikas.edu.in': {
+      role: 'teacher',
+      password: 'teacher2026',
+      name: 'Mrs. S. Radhika',
+      designation: 'Class Teacher (VIII A) & Mathematics Head',
+      phone: '+91 98480 22334',
+      email: 'teacher@vikas.edu.in',
+      empId: 'EMP-VG-002',
+      penId: 'TS-STAFF-361821-002',
+      department: 'Mathematics & STEM Department',
+      bloodGroup: 'B+',
+      emergencyContact: 'Mr. S. Ramesh (+91 98481 99002)',
+      address: 'Plot #18, Teachers Colony, Cheriyal, Siddipet — 506223',
+      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=120&q=80'
+    },
+    'student@vikas.edu.in': {
+      role: 'student',
+      password: 'student2026',
+      name: 'Rahul Reddy',
+      designation: 'Student (Class VIII Section A)',
+      phone: '+91 98480 12345',
+      email: 'student@vikas.edu.in',
+      empId: 'VIII-014',
+      penId: 'PEN-36182100637-801',
+      department: 'Class VIII Section A (Secondary Wing)',
+      bloodGroup: 'A+',
+      emergencyContact: 'Father V. Reddy (+91 98480 12345)',
+      address: 'Maddur Road, Cheriyal Mandal, Siddipet — 506223',
+      avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=120&q=80'
+    },
+    'parent@vikas.edu.in': {
+      role: 'parent',
+      password: 'parent2026',
+      name: 'V. Reddy (Parent of Rahul Reddy)',
+      designation: 'Parent / Guardian (Class VIII A)',
+      phone: '+91 98480 12345',
+      email: 'parent@vikas.edu.in',
+      empId: 'PARENT-VG-801',
+      penId: 'PEN-36182100637-801',
+      department: 'Parent-Teacher Association (PTA)',
+      bloodGroup: 'O+',
+      emergencyContact: 'Emergency Contact: +91 98480 12345',
+      address: 'Maddur Road, Cheriyal Mandal, Siddipet — 506223',
+      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80'
+    }
   }
 };
+
+/**
+ * EDUPULSE CENTRAL REACTIVE STATE STORE WITH PERSISTENCE
+ * Serves as single source of truth for all role workspaces.
+ * Manages atomic cross-role event pipelines and syncs to localStorage.
+ */
+class EduPulseStateStore {
+  constructor(tenantConfig, defaultData) {
+    this.tenantConfig = tenantConfig;
+    this.defaultData = defaultData;
+    this.storageKey = `edupulse_school_state_v1_${tenantConfig.currentTenantId}`;
+    this.subscribers = new Set();
+    this.state = this.loadInitialState();
+  }
+
+  loadInitialState() {
+    try {
+      const stored = localStorage.getItem(this.storageKey);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        // Hydrate and merge with default schema to guarantee backward compatibility
+        return Object.assign({}, JSON.parse(JSON.stringify(this.defaultData)), parsed);
+      }
+    } catch (e) {
+      console.warn('Could not load stored school state, fallback to default dataset:', e);
+    }
+    return JSON.parse(JSON.stringify(this.defaultData));
+  }
+
+  save() {
+    try {
+      localStorage.setItem(this.storageKey, JSON.stringify(this.state));
+    } catch (e) {
+      console.error('Failed to persist school state to localStorage:', e);
+    }
+  }
+
+  reset() {
+    this.state = JSON.parse(JSON.stringify(this.defaultData));
+    this.save();
+    this.notifySubscribers({ type: 'RESET_STATE' });
+  }
+
+  getState() {
+    return this.state;
+  }
+
+  subscribe(listener) {
+    if (typeof listener === 'function') {
+      this.subscribers.add(listener);
+      return () => this.subscribers.delete(listener);
+    }
+    return () => {};
+  }
+
+  notifySubscribers(action) {
+    this.subscribers.forEach(listener => {
+      try {
+        listener(this.state, action);
+      } catch (err) {
+        console.error('Subscriber notification error:', err);
+      }
+    });
+  }
+
+  /**
+   * ATOMIC ACTION DISPATCHER & TRANSACTION REDUCER
+   */
+  dispatch(actionType, payload = {}) {
+    const s = this.state;
+    const now = new Date();
+    const todayStr = now.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
+    const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    switch (actionType) {
+      // 1. STUDENT/PARENT SUBMITS LEAVE REQUEST
+      case 'SUBMIT_LEAVE_REQUEST': {
+        const reqId = `lvr_${Date.now()}`;
+        const newReq = {
+          id: reqId,
+          studentName: payload.studentName || 'Rahul Reddy',
+          grade: payload.grade || 'Class VIII Section A',
+          rollNo: payload.rollNo || 'VIII-014',
+          leaveType: payload.leaveType || 'Medical Leave',
+          fromDate: payload.fromDate || todayStr,
+          toDate: payload.toDate || todayStr,
+          days: payload.days || 1,
+          reason: payload.reason || 'Medical / Personal Leave',
+          status: 'Pending Review',
+          statusClass: 'badge-warning',
+          appliedDate: todayStr,
+          appliedBy: payload.appliedBy || 'Student'
+        };
+
+        if (!Array.isArray(s.studentLeaveRequests)) s.studentLeaveRequests = [];
+        s.studentLeaveRequests.unshift(newReq);
+
+        // Add Notification for Teacher & Principal
+        if (!Array.isArray(s.notificationsList)) s.notificationsList = [];
+        s.notificationsList.unshift({
+          id: `notif_${Date.now()}`,
+          title: `New Leave Request — ${newReq.studentName}`,
+          desc: `${newReq.studentName} (${newReq.grade}) applied for ${newReq.days} Day(s) ${newReq.leaveType}.`,
+          time: 'Just now',
+          type: 'leave',
+          unread: true,
+          actionView: 'student_leave_approvals'
+        });
+        break;
+      }
+
+      // 2. TEACHER ACCEPTS OR REJECTS LEAVE REQUEST
+      case 'UPDATE_LEAVE_STATUS': {
+        if (Array.isArray(s.studentLeaveRequests)) {
+          const req = s.studentLeaveRequests.find(r => r.id === payload.id);
+          if (req) {
+            req.status = payload.newStatus;
+            req.statusClass = payload.newStatus === 'Accepted' ? 'badge-success' : 'badge-danger';
+            req.reviewedBy = payload.reviewedBy || 'Mrs. S. Radhika (Class Mentor)';
+            req.reviewedAt = `${todayStr} at ${timeStr}`;
+
+            // Cross-update student attendance counters if accepted
+            if (payload.newStatus === 'Accepted' && s.childAttendanceProfile) {
+              s.childAttendanceProfile.casualLeaves = (s.childAttendanceProfile.casualLeaves || 0) + (req.days || 1);
+            }
+
+            // Notification for Parent and Student
+            if (!Array.isArray(s.notificationsList)) s.notificationsList = [];
+            s.notificationsList.unshift({
+              id: `notif_${Date.now()}`,
+              title: `Leave Request ${payload.newStatus}`,
+              desc: `Leave application for ${req.studentName} was ${payload.newStatus.toLowerCase()} by class mentor.`,
+              time: 'Just now',
+              type: 'leave',
+              unread: true,
+              actionView: 'parent_attendance'
+            });
+          }
+        }
+        break;
+      }
+
+      // 3. CROSS-ROLE FEE PAYMENT (STUDENT/PARENT ONLINE OR TEACHER OFFLINE)
+      case 'PROCESS_FEE_PAYMENT': {
+        const studentId = payload.studentId || 'std_101';
+        const studentName = payload.studentName || 'Rahul Reddy';
+        const amount = Number(payload.amount) || 4500;
+        const receiptNo = payload.receiptNo || `REC-VG-2026-${Math.floor(250 + Math.random() * 500)}`;
+        const txnId = payload.transactionId || `TXN-UPI-${Math.floor(10000000 + Math.random() * 90000000)}`;
+        const mode = payload.paymentMode || 'Online UPI Gateway';
+
+        // 3a. Update Student Fee Statement
+        const feeAcc = s.studentFeeAccount;
+        if (feeAcc) {
+          feeAcc.paidAmount = feeAcc.totalAnnualFee;
+          feeAcc.dueAmount = Math.max(0, feeAcc.dueAmount - amount);
+          feeAcc.status = feeAcc.dueAmount === 0 ? 'Fully Paid' : 'Partial Due';
+
+          // Update last installment
+          if (Array.isArray(feeAcc.installmentSchedule) && feeAcc.installmentSchedule.length > 0) {
+            const pendingInst = feeAcc.installmentSchedule.find(i => i.status !== 'Paid') || feeAcc.installmentSchedule[feeAcc.installmentSchedule.length - 1];
+            if (pendingInst) {
+              pendingInst.paidAmount = pendingInst.amount;
+              pendingInst.status = 'Paid';
+              pendingInst.paidDate = todayStr;
+              pendingInst.mode = mode;
+              pendingInst.receiptNo = receiptNo;
+              pendingInst.transactionId = txnId;
+            }
+          }
+
+          // Prepend Receipt to History
+          if (!Array.isArray(feeAcc.receiptsHistory)) feeAcc.receiptsHistory = [];
+          feeAcc.receiptsHistory.unshift({
+            receiptNo: receiptNo,
+            date: todayStr,
+            description: payload.description || 'Term 3 Final Tuition & Board Exam Fee',
+            amount: amount,
+            mode: mode,
+            collectedBy: 'Online Portal Gateway (Auto-Reconciled)',
+            status: 'Success'
+          });
+        }
+
+        // 3b. Update Student Directory Roster
+        if (Array.isArray(s.studentDirectoryList)) {
+          const std = s.studentDirectoryList.find(x => x.name === studentName || x.id === studentId);
+          if (std) {
+            std.feeDue = Math.max(0, (std.feeDue || 0) - amount);
+            std.feeStatus = std.feeDue === 0 ? 'Paid' : 'Partial';
+          }
+        }
+
+        // 3c. Update Fee Ledger Full List (School-wide)
+        if (Array.isArray(s.feeLedgerFullList)) {
+          const feeRow = s.feeLedgerFullList.find(f => f.name === studentName);
+          if (feeRow) {
+            feeRow.paidFee += amount;
+            feeRow.dueFee = Math.max(0, feeRow.dueFee - amount);
+            feeRow.status = feeRow.dueFee === 0 ? 'Paid' : 'Partial';
+            feeRow.receiptNo = receiptNo;
+            feeRow.lastDate = todayStr;
+          }
+        }
+
+        // 3d. Update Teacher Class-wise Ledger
+        const classFee = s.teacherClassFeeData;
+        if (classFee) {
+          classFee.collectedClassFee += amount;
+          classFee.dueClassFee = Math.max(0, classFee.dueClassFee - amount);
+          classFee.defaultersCount = Math.max(0, classFee.defaultersCount - 1);
+          classFee.collectionPct = ((classFee.collectedClassFee / classFee.totalClassFee) * 100).toFixed(1);
+          if (Array.isArray(classFee.students)) {
+            const classStd = classFee.students.find(cs => cs.name === studentName);
+            if (classStd) {
+              classStd.paid += amount;
+              classStd.due = Math.max(0, classStd.due - amount);
+              classStd.status = classStd.due === 0 ? 'Paid' : 'Partial';
+              classStd.lastPaid = todayStr;
+            }
+          }
+        }
+
+        // 3e. Update Principal Management Cashflow & Operating Surplus
+        const mgmt = s.managementExpenditureData;
+        if (mgmt) {
+          mgmt.totalInflow += amount;
+          const totalSpent = (mgmt.categoriesSummary || []).reduce((sum, c) => sum + (c.spentAmount || 0), 0);
+          mgmt.totalExpensesAndInvestments = totalSpent;
+          mgmt.operatingSurplus = Math.max(0, mgmt.totalInflow - totalSpent);
+        }
+
+        // 3f. Add Notification Broadcast
+        if (!Array.isArray(s.notificationsList)) s.notificationsList = [];
+        s.notificationsList.unshift({
+          id: `notif_${Date.now()}`,
+          title: `Fee Payment Received (₹${amount.toLocaleString()})`,
+          desc: `Online UPI payment of ₹${amount.toLocaleString()} confirmed for ${studentName}. Receipt #${receiptNo} issued.`,
+          time: 'Just now',
+          type: 'fees',
+          unread: true,
+          actionView: 'fees'
+        });
+        break;
+      }
+
+      // 4. PUBLIC ADMISSIONS INQUIRY SUBMISSION
+      case 'CREATE_ADMISSION_INQUIRY': {
+        const inqId = `adm_${Date.now()}`;
+        const newLead = {
+          id: inqId,
+          applicantName: payload.applicantName || 'Prospective Student',
+          gradeApplied: payload.gradeApplied || 'Class VIII',
+          parentName: payload.parentName || 'Parent / Guardian',
+          phone: payload.phone || '+91 98480 00000',
+          testScore: 'Pending Evaluation',
+          status: 'Under Verification',
+          statusClass: 'badge-warning',
+          date: todayStr
+        };
+
+        if (!Array.isArray(s.admissionsLeadsList)) s.admissionsLeadsList = [];
+        s.admissionsLeadsList.unshift(newLead);
+
+        // Notify Admissions Desk & Principal
+        if (!Array.isArray(s.notificationsList)) s.notificationsList = [];
+        s.notificationsList.unshift({
+          id: `notif_${Date.now()}`,
+          title: `New Admission Inquiry`,
+          desc: `${newLead.applicantName} registered inquiry for ${newLead.gradeApplied}. Parent: ${newLead.phone}.`,
+          time: 'Just now',
+          type: 'admission',
+          unread: true,
+          actionView: 'admissions'
+        });
+        break;
+      }
+
+      // 5. UPDATE ADMISSION STATUS (Test Scheduled, Approved, Rejected)
+      case 'UPDATE_ADMISSION_STATUS': {
+        if (Array.isArray(s.admissionsLeadsList)) {
+          const lead = s.admissionsLeadsList.find(l => l.id === payload.id);
+          if (lead) {
+            lead.status = payload.status;
+            lead.statusClass = payload.status === 'Approved' ? 'badge-success' : payload.status === 'Enrolled' ? 'badge-primary' : payload.status === 'Rejected' ? 'badge-danger' : 'badge-warning';
+            if (payload.testScore) lead.testScore = payload.testScore;
+          }
+        }
+        break;
+      }
+
+      // 6. ENROLL ADMISSION LEAD -> GENERATE OFFICIAL STUDENT RECORD
+      case 'ENROLL_ADMISSION_LEAD': {
+        if (Array.isArray(s.admissionsLeadsList)) {
+          const lead = s.admissionsLeadsList.find(l => l.id === payload.id);
+          if (lead) {
+            lead.status = 'Enrolled';
+            lead.statusClass = 'badge-success';
+
+            const schoolUdise = s.schoolInfo?.udise || '36182100637';
+            const randomPenSuffix = Math.floor(100 + Math.random() * 899);
+            const genPenId = payload.penId || `PEN-${schoolUdise}-${randomPenSuffix}`;
+            const gradeNum = lead.gradeApplied.replace('Class ', '').trim();
+            const genRollNo = payload.rollNo || `${gradeNum}-0${Math.floor(20 + Math.random() * 25)}`;
+            const section = payload.section || 'Section A';
+
+            // Create new Student in Directory
+            const newStudent = {
+              id: `std_${Date.now()}`,
+              name: lead.applicantName,
+              grade: lead.gradeApplied,
+              section: section,
+              rollNo: genRollNo,
+              penId: genPenId,
+              parentName: lead.parentName,
+              parentContact: lead.phone,
+              attendancePct: 100.0,
+              gpaPct: 90.0,
+              gradeLetter: 'Grade A+',
+              feeStatus: 'Partial',
+              feeDue: 4500,
+              avatar: payload.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80'
+            };
+
+            if (!Array.isArray(s.studentDirectoryList)) s.studentDirectoryList = [];
+            s.studentDirectoryList.push(newStudent);
+
+            // Add to Fee Ledger
+            if (!Array.isArray(s.feeLedgerFullList)) s.feeLedgerFullList = [];
+            s.feeLedgerFullList.push({
+              id: `fee_${Date.now()}`,
+              name: lead.applicantName,
+              gradeSec: `${lead.gradeApplied} ${section}`,
+              totalFee: 22500,
+              paidFee: 18000,
+              dueFee: 4500,
+              status: 'Partial',
+              receiptNo: `REC-VG-2026-${Math.floor(300 + Math.random() * 500)}`,
+              lastDate: todayStr
+            });
+
+            // Notification
+            if (!Array.isArray(s.notificationsList)) s.notificationsList = [];
+            s.notificationsList.unshift({
+              id: `notif_${Date.now()}`,
+              title: `🎉 Student Enrolled: ${lead.applicantName}`,
+              desc: `Enrolled into ${lead.gradeApplied} ${section} (Roll: ${genRollNo} • PEN: ${genPenId}). Records initialized.`,
+              time: 'Just now',
+              type: 'admission',
+              unread: true,
+              actionView: 'students'
+            });
+          }
+        }
+        break;
+      }
+
+      // 7. PROFILE DETAILS UPDATE
+      case 'UPDATE_USER_PROFILE': {
+        const role = payload.role || 'principal';
+        const credKey = Object.keys(s.userCredentials || {}).find(k => s.userCredentials[k].role === role);
+        if (credKey && s.userCredentials[credKey]) {
+          const userObj = s.userCredentials[credKey];
+          if (payload.name) userObj.name = payload.name;
+          if (payload.phone) userObj.phone = payload.phone;
+          if (payload.email) userObj.email = payload.email;
+          if (payload.empId) userObj.empId = payload.empId;
+          if (payload.penId) userObj.penId = payload.penId;
+          if (payload.department) userObj.department = payload.department;
+          if (payload.bloodGroup) userObj.bloodGroup = payload.bloodGroup;
+          if (payload.emergencyContact) userObj.emergencyContact = payload.emergencyContact;
+          if (payload.address) userObj.address = payload.address;
+          if (payload.avatar) userObj.avatar = payload.avatar;
+        }
+        break;
+      }
+
+      // 8. PARENT ACKNOWLEDGES TEACHER FEEDBACK
+      case 'ACKNOWLEDGE_FEEDBACK_PARENT': {
+        if (Array.isArray(s.teacherStudentFeedbacks)) {
+          const item = s.teacherStudentFeedbacks.find(x => x.id === payload.id);
+          if (item) {
+            item.parentAcknowledged = true;
+            item.parentNote = payload.note || 'Reviewed and acknowledged by parent.';
+            item.acknowledgedDate = `${todayStr} at ${timeStr}`;
+          }
+        }
+        break;
+      }
+
+      // 9. PRINCIPAL ACKNOWLEDGES STUDENT FEEDBACK
+      case 'ACKNOWLEDGE_FEEDBACK_PRINCIPAL': {
+        if (Array.isArray(s.studentClassFeedbacks)) {
+          const item = s.studentClassFeedbacks.find(x => x.id === payload.id);
+          if (item) {
+            item.principalStatus = 'Acknowledged by Headmaster';
+            item.principalRemarks = payload.remarks || 'Reviewed by Headmaster K. Rajesham. Necessary actions delegated.';
+          }
+        }
+        break;
+      }
+
+      // 10. PLUG GPA LEARNING GAP
+      case 'PLUG_GPA_GAP': {
+        if (Array.isArray(s.gpaSubjectDiagnostics) && s.gpaSubjectDiagnostics[0]) {
+          const sub = s.gpaSubjectDiagnostics[0].subjects?.find(sub => sub.subject === payload.subjectName);
+          if (sub) {
+            sub.gapStatus = 'Plugged Successfully';
+          }
+        }
+        break;
+      }
+
+      // 11. ADVANCE INSTITUTIONAL IMPROVEMENT ACTION
+      case 'ADVANCE_IMPROVEMENT_ACTION': {
+        if (Array.isArray(s.whereToImprove)) {
+          const item = s.whereToImprove.find(x => x.id === payload.id);
+          if (item) {
+            item.progressPct = Math.min(100, (item.progressPct || 0) + 10);
+            if (item.progressPct === 100) item.status = 'Fully Accomplished';
+          }
+        }
+        break;
+      }
+
+      // 12. SUBMIT HOMEWORK ONLINE
+      case 'SUBMIT_HOMEWORK': {
+        if (Array.isArray(s.studentHomeworkList)) {
+          const hw = s.studentHomeworkList.find(x => x.id === payload.id);
+          if (hw) {
+            hw.status = 'Submitted Online';
+            hw.submissionTime = `${todayStr} at ${timeStr}`;
+          }
+        }
+        break;
+      }
+
+      // 13. DOWNLOAD STUDY VAULT MATERIAL
+      case 'DOWNLOAD_VAULT_ITEM': {
+        if (Array.isArray(s.studyVault)) {
+          const item = s.studyVault.find(x => x.id === payload.id);
+          if (item) {
+            item.downloads = (item.downloads || 0) + 1;
+          }
+        }
+        break;
+      }
+
+      // 14. ASSIGN PROXY TEACHER
+      case 'ASSIGN_PROXY_TEACHER': {
+        if (s.proxySystem) {
+          if (!Array.isArray(s.proxySystem.activeProxies)) s.proxySystem.activeProxies = [];
+          s.proxySystem.activeProxies.push({
+            leaveId: payload.leaveId,
+            period: payload.periodStr,
+            proxyTeacher: payload.proxyTeacherName,
+            originalTeacher: 'Staff on Leave',
+            status: 'Assigned & Confirmed'
+          });
+        }
+        break;
+      }
+
+      default:
+        console.warn('Unknown EduPulse action type:', actionType);
+    }
+
+    // Persist state to localStorage and notify all subscribers
+    this.save();
+    this.notifySubscribers({ type: actionType, payload });
+    return this.state;
+  }
+}
+
+// Global Store Instance
+const EduPulseStore = new EduPulseStateStore(TENANT_CONFIG, DEFAULT_MOCK_DATA);
+
+// Expose globals for window access
+window.TENANT_CONFIG = TENANT_CONFIG;
+window.EduPulseStore = EduPulseStore;
+window.MOCK_DATA = EduPulseStore.getState();
+
 

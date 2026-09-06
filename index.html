@@ -13,6 +13,9 @@
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
   
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
+  
   <!-- Custom Application Stylesheet -->
   <link rel="stylesheet" href="css/styles.css?v=20260903_1420">
 </head>
@@ -84,6 +87,9 @@
 
     </aside>
 
+    <!-- MOBILE SIDEBAR BACKDROP OVERLAY -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
     <!-- MAIN WRAPPER -->
     <div class="main-wrapper">
 
@@ -99,10 +105,25 @@
             <span>School Website</span>
           </button>
 
-          <div class="search-bar">
+          <div class="search-bar" style="position:relative;">
             <i data-lucide="search" class="search-icon"></i>
             <input type="text" id="globalSearchInput" placeholder="Search students, staff, classes, enquiries..." autocomplete="off">
             <kbd class="kbd-badge">⌘K</kbd>
+
+            <!-- LIVE SCOPED SEARCH RESULTS DROPDOWN -->
+            <div class="search-results-dropdown" id="globalSearchResults">
+              <div class="search-results-header">
+                <span>Quick Records Search</span>
+                <span id="searchRoleScopeBadge" style="color:var(--indigo);">Principal Scope</span>
+              </div>
+              <div class="search-results-list" id="searchResultsList">
+                <!-- Dynamically populated by JS search engine -->
+              </div>
+              <div class="search-results-footer">
+                <span><kbd style="padding:1px 4px; background:var(--border-color); border-radius:3px;">↵</kbd> Select</span>
+                <span><kbd style="padding:1px 4px; background:var(--border-color); border-radius:3px;">ESC</kbd> Close</span>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -143,13 +164,17 @@
             <i data-lucide="bot"></i>
           </button>
 
-          <div class="user-pill" id="userProfilePill">
+          <div class="user-pill" id="userProfilePill" title="Click to View & Edit Profile Details">
             <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" alt="Avatar" class="user-avatar" id="userAvatar">
             <div class="user-info">
               <span class="user-name" id="userName">K. Rajesham</span>
               <span class="user-role" id="userRole">Headmaster</span>
             </div>
           </div>
+
+          <button class="icon-btn" id="logoutBtn" onclick="window.handleLogout()" title="Sign Out / Switch Account" style="color:var(--text-muted); margin-left:2px;">
+            <i data-lucide="log-out"></i>
+          </button>
         </div>
       </header>
 
@@ -198,6 +223,32 @@
       </div>
     </aside>
 
+    <!-- MOBILE ERP BOTTOM NAVIGATION DOCK (PHONES & TABLETS) -->
+    <nav class="mobile-bottom-dock" id="mobileBottomDock">
+      <button type="button" class="dock-item active" id="dockBtnHome" onclick="window.navigateFromDock('home')">
+        <i data-lucide="layout-dashboard"></i>
+        <span>Home</span>
+      </button>
+      <button type="button" class="dock-item" id="dockBtnRoster" onclick="window.navigateFromDock('roster')">
+        <i data-lucide="users"></i>
+        <span>Roster</span>
+      </button>
+      <button type="button" class="dock-item ai-dock-btn" onclick="document.getElementById('openAiDrawerBtn')?.click()">
+        <div class="ai-dock-circle">
+          <i data-lucide="bot"></i>
+        </div>
+        <span>AI Copilot</span>
+      </button>
+      <button type="button" class="dock-item" id="dockBtnFees" onclick="window.navigateFromDock('fees')">
+        <i data-lucide="credit-card"></i>
+        <span>Fees</span>
+      </button>
+      <button type="button" class="dock-item" onclick="window.toggleMobileSidebar()">
+        <i data-lucide="menu"></i>
+        <span>Menu</span>
+      </button>
+    </nav>
+
   </div>
 
   <!-- LOGIN & ROLE IDENTIFICATION PORTAL OVERLAY -->
@@ -245,97 +296,142 @@
       <!-- RIGHT FORM PANEL -->
       <div class="login-form-panel">
         <div class="login-form-header">
-          <h3>Welcome Back 👋</h3>
-          <p>Sign in to your Vikas Grammar School ERP Workspace</p>
+          <h3 id="loginHeaderTitle">లాగిన్ / Portal Sign In 👋</h3>
+          <p id="loginHeaderSubtitle">సులభంగా ప్రవేశించండి • Vikas Grammar School Cherial (36182100637)</p>
         </div>
 
-        <!-- QUICK DEMO ACCOUNTS SELECTOR -->
-        <div class="quick-demo-accounts">
-          <div class="quick-title"><i data-lucide="zap"></i> Quick Demo Accounts (Click to Autofill):</div>
-          <div class="demo-chips-grid">
-            <button type="button" class="demo-chip active" data-email="principal@vikas.edu.in">
-              <span class="chip-icon">👑</span>
-              <span class="chip-text">Principal</span>
-            </button>
-            <button type="button" class="demo-chip" data-email="teacher@vikas.edu.in">
-              <span class="chip-icon">👩‍🏫</span>
-              <span class="chip-text">Teacher</span>
-            </button>
-            <button type="button" class="demo-chip" data-email="student@vikas.edu.in">
-              <span class="chip-icon">🎓</span>
-              <span class="chip-text">Student</span>
-            </button>
-            <button type="button" class="demo-chip" data-email="parent@vikas.edu.in">
-              <span class="chip-icon">👨‍👩‍👧</span>
-              <span class="chip-text">Parent</span>
-            </button>
-          </div>
+        <!-- ACCESSIBLE LOGIN TABS FOR 45YO PARENTS -->
+        <div class="login-mode-tabs" style="display:flex; background:#f1f5f9; padding:4px; border-radius:12px; margin-bottom:16px; gap:4px;">
+          <button type="button" id="tabParentEasy" class="tab-btn active" onclick="switchLoginMode('parent')" style="flex:1; padding:10px 14px; border:none; border-radius:8px; font-weight:800; font-size:0.9rem; cursor:pointer; background:#10b981; color:white; display:flex; align-items:center; justify-content:center; gap:6px; transition:all 0.2s;">
+            <span>📱 పేరెంట్ లాగిన్ (Mobile)</span>
+          </button>
+          <button type="button" id="tabStaff" class="tab-btn" onclick="switchLoginMode('staff')" style="flex:1; padding:10px 14px; border:none; border-radius:8px; font-weight:700; font-size:0.85rem; cursor:pointer; background:transparent; color:#64748b; display:flex; align-items:center; justify-content:center; gap:6px; transition:all 0.2s;">
+            <span>👑 స్టాఫ్ / Staff Sign In</span>
+          </button>
         </div>
 
-        <form id="loginForm" class="login-form">
-
-          <!-- EMAIL INPUT -->
-          <div class="form-group">
-            <label for="loginEmailInput">Registered Email Address</label>
-            <div class="input-with-icon">
-              <i data-lucide="mail"></i>
-              <input type="email" id="loginEmailInput" placeholder="e.g. principal@vikas.edu.in"
-                value="principal@vikas.edu.in" required autocomplete="email">
+        <!-- PARENT EASY MOBILE LOGIN FORM SECTION -->
+        <div id="parentEasySection">
+          <div style="background:#ecfdf5; border:1px solid #a7f3d0; border-radius:12px; padding:12px 14px; margin-bottom:16px;">
+            <div style="font-size:0.85rem; font-weight:800; color:#065f46; display:flex; align-items:center; gap:6px;">
+              <span>🟢 సులభమైన యాక్సెస్ / One-Tap Easy Sign In</span>
             </div>
+            <p style="font-size:0.78rem; color:#047857; margin:4px 0 0 0; line-height:1.4;">
+              పాస్‌వర్డ్ గుర్తుంచుకోవలసిన అవసరం లేదు! మీ 10-అంకెల మొబైల్ లేదా విద్యార్థి రోల్ నంబర్‌తో నేరుగా ప్రవేశించండి.
+            </p>
           </div>
 
-          <!-- REAL-TIME ROLE DETECTION & CONFIRMATION BOX -->
-          <div class="role-detection-box" id="roleDetectionBox">
-            <div class="detection-badge" id="detectionBadge">👑 Principal Command Center</div>
-            <div class="user-preview">
-              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80"
-                alt="Avatar" id="detectionAvatar">
-              <div class="user-details">
-                <div class="detected-name" id="detectionName">K. Rajesham</div>
-                <div class="detected-sub" id="detectionSub">Headmaster & School Administrator</div>
+          <form id="parentEasyForm" onsubmit="handleParentEasySubmit(event)" style="display:flex; flex-direction:column; gap:14px;">
+            <div class="form-group">
+              <label style="font-size:0.9rem; font-weight:800; color:#1e293b; display:block; margin-bottom:6px;">
+                మొబైల్ నంబర్ లేదా పిల్లల రోల్ నంబర్ (Mobile / Roll No)
+              </label>
+              <div class="input-with-icon" style="position:relative;">
+                <i data-lucide="phone" style="position:absolute; left:14px; top:50%; transform:translateY(-50%); color:#10b981;"></i>
+                <input type="text" id="parentMobileInput" placeholder="ఉదా: 98480 11223 లేదా 2026-VIII-014" value="98480 11223" required style="width:100%; padding:14px 14px 14px 44px; font-size:1.05rem; font-weight:800; border-radius:12px; border:2px solid #cbd5e1; background:white;">
               </div>
             </div>
-            <div class="detection-status" id="detectionStatus">
-              <i data-lucide="check-circle-2"></i> Verified School Account • Auto-assigned to <strong>Principal</strong> workspace
+
+            <!-- INSTANT STUDENT AUTO-DETECTION PREVIEW -->
+            <div id="childDetectionBox" style="background:#f8fafc; border:1.5px dashed #10b981; border-radius:12px; padding:12px 16px; display:flex; align-items:center; gap:12px;">
+              <img src="https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=120&q=80" style="width:44px; height:44px; border-radius:50%; border:2px solid #10b981; object-fit:cover;">
+              <div>
+                <div style="font-size:0.92rem; font-weight:900; color:#0f172a;">రాహుల్ రెడ్డి (Rahul Reddy)</div>
+                <div style="font-size:0.78rem; color:#475569; font-weight:700;">8వ తరగతి (Class VIII-A) • Roll No: <code>2026-VIII-014</code></div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                <label style="font-size:0.85rem; font-weight:800; color:#334155;">WhatsApp OTP / Security PIN</label>
+                <button type="button" onclick="showToast('📲 New OTP: 1234 sent via WhatsApp to registered mobile!')" style="background:none; border:none; color:#059669; font-size:0.8rem; font-weight:800; cursor:pointer;">
+                  🔄 Resend OTP
+                </button>
+              </div>
+              <div class="input-with-icon" style="position:relative;">
+                <i data-lucide="key" style="position:absolute; left:14px; top:50%; transform:translateY(-50%); color:#64748b;"></i>
+                <input type="password" id="parentOtpInput" value="1234" placeholder="Enter 4-Digit OTP" required style="width:100%; padding:14px 14px 14px 44px; font-size:1.1rem; font-weight:800; letter-spacing:4px; border-radius:12px; border:2px solid #cbd5e1; background:white;">
+              </div>
+            </div>
+
+            <button type="submit" style="padding:14px; background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:white; border:none; border-radius:12px; font-size:1.05rem; font-weight:900; cursor:pointer; box-shadow:0 4px 14px rgba(16,185,129,0.35); display:flex; align-items:center; justify-content:center; gap:8px;">
+              <span>✓ పేరెంట్ పోర్టల్‌లోకి ప్రవేశించండి (Sign In)</span>
+              <i data-lucide="arrow-right"></i>
+            </button>
+          </form>
+        </div>
+
+        <!-- STAFF & PRINCIPAL LOGIN SECTION (HIDDEN BY DEFAULT, TOGGLEABLE) -->
+        <div id="staffSection" style="display:none;">
+          <!-- QUICK DEMO ACCOUNTS SELECTOR -->
+          <div class="quick-demo-accounts" style="margin-bottom:12px;">
+            <div class="quick-title"><i data-lucide="zap"></i> Demo Accounts (Click to Autofill):</div>
+            <div class="demo-chips-grid">
+              <button type="button" class="demo-chip active" data-email="principal@vikas.edu.in">
+                <span class="chip-icon">👑</span>
+                <span class="chip-text">Principal</span>
+              </button>
+              <button type="button" class="demo-chip" data-email="teacher@vikas.edu.in">
+                <span class="chip-icon">👩‍🏫</span>
+                <span class="chip-text">Teacher</span>
+              </button>
+              <button type="button" class="demo-chip" data-email="student@vikas.edu.in">
+                <span class="chip-icon">🎓</span>
+                <span class="chip-text">Student</span>
+              </button>
+              <button type="button" class="demo-chip" data-email="parent@vikas.edu.in">
+                <span class="chip-icon">👨‍👩‍👧</span>
+                <span class="chip-text">Parent</span>
+              </button>
             </div>
           </div>
 
-          <!-- UNREGISTERED CUSTOM ROLE SELECTOR -->
-          <div class="form-group custom-role-group" id="customRoleGroup" style="display:none;">
-            <label>Unregistered Email — Choose Role to Sign In:</label>
-            <div class="role-selector-radios">
-              <label class="radio-chip"><input type="radio" name="customRole" value="principal" checked> <span>👑 Principal</span></label>
-              <label class="radio-chip"><input type="radio" name="customRole" value="teacher"> <span>👩‍🏫 Teacher</span></label>
-              <label class="radio-chip"><input type="radio" name="customRole" value="student"> <span>🎓 Student</span></label>
-              <label class="radio-chip"><input type="radio" name="customRole" value="parent"> <span>👨‍👩‍👧 Parent</span></label>
+          <form id="loginForm" class="login-form">
+
+            <!-- EMAIL INPUT -->
+            <div class="form-group">
+              <label for="loginEmailInput">Staff Registered Email</label>
+              <div class="input-with-icon">
+                <i data-lucide="mail"></i>
+                <input type="email" id="loginEmailInput" placeholder="e.g. principal@vikas.edu.in"
+                  value="principal@vikas.edu.in" required autocomplete="email">
+              </div>
             </div>
-          </div>
 
-          <!-- PASSWORD INPUT -->
-          <div class="form-group">
-            <label for="loginPasswordInput">Password / Security PIN</label>
-            <div class="input-with-icon">
-              <i data-lucide="lock"></i>
-              <input type="password" id="loginPasswordInput" value="vikas2026" placeholder="Enter password" required>
-              <button type="button" class="toggle-password-btn" id="togglePasswordBtn"><i data-lucide="eye"></i></button>
+            <!-- REAL-TIME ROLE DETECTION & CONFIRMATION BOX -->
+            <div class="role-detection-box" id="roleDetectionBox">
+              <div class="detection-badge" id="detectionBadge">👑 Principal Command Center</div>
+              <div class="user-preview">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80"
+                  alt="Avatar" id="detectionAvatar">
+                <div class="user-details">
+                  <div class="detected-name" id="detectionName">K. Rajesham</div>
+                  <div class="detected-sub" id="detectionSub">Headmaster & School Administrator</div>
+                </div>
+              </div>
+              <div class="detection-status" id="detectionStatus">
+                <i data-lucide="check-circle-2"></i> Verified School Account • Auto-assigned to <strong>Principal</strong> workspace
+              </div>
             </div>
-          </div>
 
-          <div class="form-options">
-            <label class="checkbox-label">
-              <input type="checkbox" checked id="rememberMeCheckbox">
-              <span>Remember this account</span>
-            </label>
-            <a href="#" class="forgot-link" onclick="event.preventDefault(); showToast('Password reset guidance sent to registered email!');">Forgot Password?</a>
-          </div>
+            <!-- PASSWORD INPUT -->
+            <div class="form-group">
+              <label for="loginPasswordInput">Password</label>
+              <div class="input-with-icon">
+                <i data-lucide="lock"></i>
+                <input type="password" id="loginPasswordInput" value="vikas#admin26" placeholder="Enter password" required>
+                <button type="button" class="toggle-password-btn" id="togglePasswordBtn"><i data-lucide="eye"></i></button>
+              </div>
+            </div>
 
-          <!-- SUBMIT BUTTON -->
-          <button type="submit" class="login-submit-btn" id="loginSubmitBtn">
-            <span>Sign In to ERP Workspace</span>
-            <i data-lucide="arrow-right"></i>
-          </button>
+            <!-- SUBMIT BUTTON -->
+            <button type="submit" class="login-submit-btn" id="loginSubmitBtn">
+              <span>Sign In as Staff</span>
+              <i data-lucide="arrow-right"></i>
+            </button>
 
-        </form>
+          </form>
+        </div>
       </div>
 
     </div>
@@ -472,6 +568,7 @@
     </div>
   </div>
 
+  <script src="js/api.js?v=20260904_1520"></script>
   <script src="js/data.js?v=20260903_1420"></script>
   <script src="js/app.js?v=20260903_1420"></script>
 </body>

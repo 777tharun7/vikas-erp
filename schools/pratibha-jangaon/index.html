@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pratibha Vidyalaya High School — Jangaon, Telangana</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏛️</text></svg>">
+  
+  <style>
+    :root {
+      --primary: #0284c7;
+      --primary-dark: #0369a1;
+      --secondary: #0d9488;
+      --accent: #f59e0b;
+      --bg-page: #f8fafc;
+      --bg-card: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --radius: 16px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+    body { background: var(--bg-page); color: var(--text-main); line-height: 1.6; }
+    h1, h2, h3, h4 { font-family: 'Outfit', sans-serif; font-weight: 800; color: #0c4a6e; }
+
+    /* Top Bar */
+    .top-bar { background: #082f49; color: #bae6fd; font-size: 0.82rem; padding: 8px 24px; display: flex; justify-content: space-between; align-items: center; }
+    .nav-header { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+    .school-logo { display: flex; align-items: center; gap: 14px; text-decoration: none; }
+    .logo-icon { width: 46px; height: 46px; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; font-weight: 800; }
+    .school-title { font-size: 1.25rem; font-weight: 800; color: #0c4a6e; line-height: 1.2; }
+    .school-subtitle { font-size: 0.78rem; color: var(--text-muted); font-weight: 600; }
+
+    .nav-links { display: flex; align-items: center; gap: 24px; }
+    .nav-links a { color: var(--text-main); font-weight: 700; text-decoration: none; font-size: 0.92rem; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--primary); }
+    .btn-login { padding: 10px 22px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; border: none; border-radius: 10px; font-weight: 800; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 14px rgba(2, 132, 199, 0.3); transition: transform 0.2s; }
+    .btn-login:hover { transform: translateY(-2px); }
+
+    /* Hero */
+    .hero { padding: 70px 32px; max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 48px; align-items: center; }
+    .hero-badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; background: #e0f2fe; color: #0369a1; border-radius: 999px; font-size: 0.82rem; font-weight: 800; margin-bottom: 16px; }
+    .hero h1 { font-size: 3rem; line-height: 1.15; margin-bottom: 18px; }
+    .hero p { font-size: 1.1rem; color: var(--text-muted); margin-bottom: 28px; }
+
+    /* Stats Banner */
+    .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 32px 0; }
+    .stat-box { background: white; padding: 20px; border-radius: 14px; border: 1px solid var(--border); text-align: center; }
+    .stat-num { font-size: 2rem; font-weight: 800; color: var(--primary); }
+    .stat-label { font-size: 0.82rem; color: var(--text-muted); font-weight: 700; margin-top: 4px; }
+
+    /* Cards */
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; max-width: 1200px; margin: 40px auto; padding: 0 32px; }
+    .feature-card { background: white; padding: 28px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
+    .feature-icon { width: 48px; height: 48px; background: #e0f2fe; color: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
+
+    /* Login Modal */
+    .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(6px); z-index: 1000; align-items: center; justify-content: center; }
+    .modal-content { background: white; width: 100%; max-width: 440px; border-radius: 20px; padding: 32px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+
+    /* Portal Container */
+    .portal-view { display: none; max-width: 1200px; margin: 32px auto; padding: 0 32px; }
+    .portal-header { background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%); border: 1px solid #7dd3fc; border-radius: 18px; padding: 24px 32px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; }
+      .stats-row { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div>📍 Station Road, Near Nehru Park, Jangaon • TS SCERT Recognized English & Telugu Medium</div>
+    <div>UDISE: <strong>36182200412</strong> • Phone: <strong>+91 98481 77221</strong></div>
+  </div>
+
+  <!-- Header -->
+  <header class="nav-header">
+    <a href="#" class="school-logo" onclick="location.reload()">
+      <div class="logo-icon">PV</div>
+      <div>
+        <div class="school-title">Pratibha Vidyalaya High School</div>
+        <div class="school-subtitle">Jangaon District, Telangana</div>
+      </div>
+    </a>
+
+    <nav class="nav-links" id="publicNav">
+      <a href="#about">About Us</a>
+      <a href="#academics">Smart Labs</a>
+      <a href="#sports">Sports Complex</a>
+      <a href="#admissions">Admissions 2026-27</a>
+      <button class="btn-login" onclick="openLoginModal()">
+        <i data-lucide="lock" style="width:16px; height:16px;"></i> School ERP Portal
+      </button>
+    </nav>
+
+    <div id="authenticatedNav" style="display:none; align-items:center; gap:16px;">
+      <span id="userBadge" style="font-size:0.88rem; font-weight:700; color:#0369a1; background:#e0f2fe; padding:6px 14px; border-radius:8px;"></span>
+      <button onclick="handleLogout()" style="padding:8px 16px; background:#ef4444; color:white; border:none; border-radius:8px; font-weight:700; cursor:pointer;">Logout</button>
+    </div>
+  </header>
+
+  <!-- PUBLIC WEBSITE -->
+  <div id="publicSite">
+    <section class="hero">
+      <div>
+        <div class="hero-badge">🌟 Knowledge, Discipline & Civic Leadership</div>
+        <h1>Nurturing Brilliance, Inspiring Leadership in Jangaon</h1>
+        <p>State-of-the-art computer labs, digital smart classrooms, and dedicated athletic training for students from Nursery to Class X.</p>
+
+        <div style="display:flex; gap:14px;">
+          <button class="btn-login" onclick="openInquiryModal()" style="background:#0d9488; box-shadow:0 4px 14px rgba(13,148,136,0.3);">
+            📝 Apply for Admission
+          </button>
+          <button onclick="openLoginModal()" style="padding:10px 22px; background:white; color:#0c4a6e; border:1px solid var(--border); border-radius:10px; font-weight:700; cursor:pointer;">
+            Student & Parent Login
+          </button>
+        </div>
+      </div>
+
+      <div style="background:white; border-radius:20px; padding:24px; border:1px solid var(--border); box-shadow:0 10px 30px rgba(0,0,0,0.05);">
+        <h3 style="margin-bottom:12px; font-size:1.1rem;"><i data-lucide="bell" style="color:var(--accent);"></i> Admissions Notice 2026-27</h3>
+        <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:16px;">
+          Registrations are now open for Class VI to Class X for the 2026-2027 academic session. Limited seats available in Telugu & English Medium streams.
+        </p>
+        <div style="background:#f0fdfa; border:1px solid #99f6e4; padding:12px; border-radius:10px; font-size:0.84rem; color:#0f766e; font-weight:700;">
+          ✓ Free Digital Assessment & Parent Counseling Daily 9:00 AM – 4:00 PM
+        </div>
+      </div>
+    </section>
+
+    <!-- Stats -->
+    <div style="max-width:1200px; margin:0 auto; padding:0 32px;">
+      <div class="stats-row">
+        <div class="stat-box">
+          <div class="stat-num">850+</div>
+          <div class="stat-label">Active Students</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">52</div>
+          <div class="stat-label">Expert Faculty</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">99.4%</div>
+          <div class="stat-label">SSC Board Pass Rate</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">4</div>
+          <div class="stat-label">Digital Smart Labs</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Features -->
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon"><i data-lucide="monitor"></i></div>
+        <h3>Smart Digital Classrooms</h3>
+        <p style="font-size:0.88rem; color:var(--text-muted); margin-top:8px;">Interactive digital smart boards and animated audio-visual SCERT curriculum in every classroom.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><i data-lucide="trophy"></i></div>
+        <h3>Athletics & Sports Complex</h3>
+        <p style="font-size:0.88rem; color:var(--text-muted); margin-top:8px;">District champions in Volleyball and Kho-Kho with dedicated sports coaches and ground facilities.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><i data-lucide="shield-check"></i></div>
+        <h3>100% Data-Driven ERP</h3>
+        <p style="font-size:0.88rem; color:var(--text-muted); margin-top:8px;">Real-time automated SMS attendance, online UPI fee payments, and monthly progress cards powered by EduPulse Cloud.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- PORTAL VIEW (AFTER LOGIN) -->
+  <div id="portalView" class="portal-view">
+    <div class="portal-header">
+      <div>
+        <h2 id="portalGreeting">Welcome to Pratibha Vidyalaya Portal</h2>
+        <p id="portalSubtext" style="color:#0369a1; font-size:0.88rem; font-weight:600; margin-top:4px;">Connecting to Central Multi-Tenant ERP Engine (School ID: 002)</p>
+      </div>
+      <div id="portalRoleBadge" style="background:#0284c7; color:white; padding:8px 16px; border-radius:10px; font-weight:800; font-size:0.85rem;"></div>
+    </div>
+
+    <!-- Dynamic Metrics Cards -->
+    <div id="portalCards" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:16px; margin-bottom:24px;"></div>
+
+    <!-- Data Table Container -->
+    <div style="background:white; border-radius:16px; border:1px solid var(--border); padding:24px; box-shadow:0 4px 20px rgba(0,0,0,0.03);">
+      <h3 id="tableTitle" style="margin-bottom:16px; font-size:1.15rem;">Live School Records (Isolated Tenant #2)</h3>
+      <div id="tableContent" style="overflow-x:auto;"></div>
+    </div>
+  </div>
+
+  <!-- LOGIN MODAL -->
+  <div class="modal-backdrop" id="loginModal" style="display:none;">
+    <div class="modal-content">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h3 style="font-size:1.3rem;">Pratibha ERP Sign In</h3>
+        <button onclick="closeLoginModal()" style="background:none; border:none; font-size:1.2rem; cursor:pointer; color:var(--text-muted);">✕</button>
+      </div>
+
+      <!-- Demo Chips for School B -->
+      <div style="background:#f0f9ff; border:1px solid #bae6fd; padding:12px; border-radius:10px; margin-bottom:16px;">
+        <div style="font-size:0.75rem; font-weight:800; color:#0369a1; text-transform:uppercase; margin-bottom:8px;">1-Click Pratibha Demo Logins:</div>
+        <div style="display:flex; flex-wrap:wrap; gap:6px;">
+          <button type="button" onclick="fillDemo('principal@pratibha.edu.in', 'pratibha#admin26')" style="padding:4px 10px; font-size:0.75rem; font-weight:700; background:#0284c7; color:white; border:none; border-radius:6px; cursor:pointer;">👑 Principal</button>
+          <button type="button" onclick="fillDemo('teacher@pratibha.edu.in', 'teacher#pratibha26')" style="padding:4px 10px; font-size:0.75rem; font-weight:700; background:#0d9488; color:white; border:none; border-radius:6px; cursor:pointer;">👩‍🏫 Teacher</button>
+          <button type="button" onclick="fillDemo('student@pratibha.edu.in', 'student#pratibha26')" style="padding:4px 10px; font-size:0.75rem; font-weight:700; background:#7c3aed; color:white; border:none; border-radius:6px; cursor:pointer;">🎓 Student (Priya)</button>
+          <button type="button" onclick="fillDemo('parent@pratibha.edu.in', 'parent#pratibha26')" style="padding:4px 10px; font-size:0.75rem; font-weight:700; background:#d97706; color:white; border:none; border-radius:6px; cursor:pointer;">👨‍👩‍👧 Parent</button>
+        </div>
+      </div>
+
+      <form id="loginForm" onsubmit="handlePratibhaLogin(event)">
+        <div style="margin-bottom:14px;">
+          <label style="font-size:0.82rem; font-weight:700; display:block; margin-bottom:4px;">Official Email</label>
+          <input type="email" id="loginEmail" value="principal@pratibha.edu.in" required style="width:100%; padding:10px 14px; border-radius:8px; border:1px solid var(--border); font-size:0.9rem;">
+        </div>
+        <div style="margin-bottom:20px;">
+          <label style="font-size:0.82rem; font-weight:700; display:block; margin-bottom:4px;">Password</label>
+          <input type="password" id="loginPassword" value="pratibha#admin26" required style="width:100%; padding:10px 14px; border-radius:8px; border:1px solid var(--border); font-size:0.9rem;">
+        </div>
+        <button type="submit" class="btn-login" style="width:100%; justify-content:center; padding:12px;">
+          Sign In to Pratibha ERP
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <footer style="background:#082f49; color:#bae6fd; padding:32px; text-align:center; font-size:0.85rem; margin-top:60px;">
+    <p><strong>Pratibha Vidyalaya High School</strong> • Station Road, Jangaon, Siddipet-Jangaon Highway, Telangana 506167</p>
+    <p style="margin-top:6px; opacity:0.75;">Powered by EduPulse Centralized Multi-Tenant Cloud OS</p>
+  </footer>
+
+  <script>
+    const API_URL = "http://127.0.0.1:8001/api/v1";
+    let currentUser = null;
+    let currentToken = null;
+
+    function openLoginModal() { document.getElementById('loginModal').style.display = 'flex'; }
+    function closeLoginModal() { document.getElementById('loginModal').style.display = 'none'; }
+
+    function fillDemo(email, pass) {
+      document.getElementById('loginEmail').value = email;
+      document.getElementById('loginPassword').value = pass;
+    }
+
+    async function handlePratibhaLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const pass = document.getElementById('loginPassword').value;
+
+      try {
+        const res = await fetch(`${API_URL}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password: pass, school_slug: 'pratibha-jangaon' })
+        });
+
+        if (!res.ok) {
+          const err = await res.json();
+          alert(err.detail || 'Login failed');
+          return;
+        }
+
+        const data = await res.json();
+        currentUser = data.user;
+        currentToken = data.access_token;
+        closeLoginModal();
+        renderPortalView();
+      } catch (err) {
+        alert('Could not connect to central backend: ' + err.message);
+      }
+    }
+
+    async function renderPortalView() {
+      document.getElementById('publicSite').style.display = 'none';
+      document.getElementById('portalView').style.display = 'block';
+      document.getElementById('publicNav').style.display = 'none';
+      document.getElementById('authenticatedNav').style.display = 'flex';
+      document.getElementById('userBadge').textContent = `👤 ${currentUser.full_name} (${currentUser.role.toUpperCase()})`;
+
+      document.getElementById('portalGreeting').textContent = `Welcome, ${currentUser.full_name}`;
+      document.getElementById('portalRoleBadge').textContent = `${currentUser.role.toUpperCase()} PORTAL`;
+
+      // Fetch role stats
+      const statsRes = await fetch(`${API_URL}/dashboard/stats`, {
+        headers: { 'Authorization': `Bearer ${currentToken}` }
+      });
+      const statsData = await statsRes.json();
+      
+      const cardsDiv = document.getElementById('portalCards');
+      cardsDiv.innerHTML = Object.entries(statsData.stats).map(([k, v]) => `
+        <div style="background:white; padding:18px; border-radius:14px; border:1px solid #e2e8f0;">
+          <div style="font-size:0.78rem; color:#64748b; font-weight:700; text-transform:uppercase;">${k.replace(/_/g, ' ')}</div>
+          <div style="font-size:1.6rem; font-weight:800; color:#0369a1; margin-top:4px;">${v}</div>
+        </div>
+      `).join('');
+
+      // Fetch students for School B
+      if (currentUser.role === 'principal' || currentUser.role === 'teacher') {
+        const stdRes = await fetch(`${API_URL}/students`, {
+          headers: { 'Authorization': `Bearer ${currentToken}` }
+        });
+        const students = await stdRes.json();
+        
+        document.getElementById('tableTitle').textContent = `Pratibha Vidyalaya Student Roster (${students.length} Enrolled)`;
+        document.getElementById('tableContent').innerHTML = `
+          <table style="width:100%; border-collapse:collapse; font-size:0.88rem;">
+            <thead>
+              <tr style="background:#f8fafc; border-bottom:2px solid #e2e8f0; text-align:left;">
+                <th style="padding:10px;">Roll No</th>
+                <th style="padding:10px;">Student Name</th>
+                <th style="padding:10px;">Grade</th>
+                <th style="padding:10px;">State PEN</th>
+                <th style="padding:10px;">Attendance</th>
+                <th style="padding:10px;">Academic Rank</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${students.map(s => `
+                <tr style="border-bottom:1px solid #f1f5f9;">
+                  <td style="padding:10px; font-weight:700; color:#0284c7;">${s.roll_no}</td>
+                  <td style="padding:10px; font-weight:700;">${s.full_name}</td>
+                  <td style="padding:10px;">${s.grade_level} ${s.section_name}</td>
+                  <td style="padding:10px;"><code>${s.udise_pen || 'PEN-TS-PENDING'}</code></td>
+                  <td style="padding:10px; color:#10b981; font-weight:700;">${s.attendance_pct}%</td>
+                  <td style="padding:10px; font-weight:700; color:#d97706;">Rank #${s.rank_in_class}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+      } else if (currentUser.role === 'student' || currentUser.role === 'parent') {
+        const feeRes = await fetch(`${API_URL}/fees/my-account`, {
+          headers: { 'Authorization': `Bearer ${currentToken}` }
+        });
+        const fee = await feeRes.json();
+        document.getElementById('tableTitle').textContent = `Fee Account Statement — ${fee.student_name}`;
+        document.getElementById('tableContent').innerHTML = `
+          <div style="display:flex; justify-content:space-between; padding:16px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px;">
+            <div>Total Annual Fee: <strong>₹${fee.total_annual_fee.toLocaleString()}</strong></div>
+            <div>Amount Paid: <strong style="color:#059669;">₹${fee.paid_amount.toLocaleString()}</strong></div>
+            <div>Balance Due: <strong style="color:${fee.due_amount > 0 ? '#dc2626' : '#059669'};">₹${fee.due_amount.toLocaleString()}</strong></div>
+            <div>Status: <span style="background:#10b981; color:white; padding:2px 8px; border-radius:6px; font-size:0.8rem; font-weight:700;">${fee.status}</span></div>
+          </div>
+        `;
+      }
+    }
+
+    function handleLogout() {
+      currentUser = null;
+      currentToken = null;
+      location.reload();
+    }
+
+    lucide.createIcons();
+  </script>
+</body>
+</html>
