@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tuition Classes for Kids in Nizampet | Kidhood Academic Support</title>
+  <meta name="description" content="After-school tuitions and foundation classes for primary school children (Class 1 to 5) in Nizampet. Math abacus, English reading, homework help, and personalized guidance.">
+
+  <!-- Google Fonts: Baloo 2 + DynaPuff + Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=DynaPuff:wght@500;600;700&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎈</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Interactive Dynamic HTML5 Canvas Background -->
+  <canvas id="kidsDoodleCanvas"></canvas>
+
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="top-bar-item">
+      <span>📍 2B Lane, Plot 449, Near Bandari Layout, Reddy's Avenue, Madhura Nagar, Nizampet, Hyderabad 500090</span>
+    </div>
+    <div class="top-bar-item" style="gap:16px;">
+      <span>🕒 Evening Tuitions: 4:30 PM – 7:30 PM (Mon–Fri)</span>
+      <a href="tel:+919429422434">📞 +91 9429422434</a>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="nav-header">
+    <a href="index.html" class="brand-logo">
+      <img src="images/branding/kidhood-logo.webp" alt="Kidhood Logo" class="brand-logo-img">
+      <div>
+        <div class="brand-name">Kid<span>hood</span></div>
+        <div class="brand-tag">Preschool & Daycare • Nizampet</div>
+      </div>
+    </a>
+
+    <nav class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="about.html" class="nav-link">About Us</a>
+      <a href="classes.html" class="nav-link">Classes</a>
+      
+      <div class="nav-dropdown">
+        <div class="nav-link dropdown-trigger active">
+          <span>Special Classes</span>
+          <i data-lucide="chevron-down" style="width:14px; height:14px;"></i>
+        </div>
+        <div class="dropdown-menu">
+          <a href="kuchipudi.html" class="dropdown-item"><span>💃</span> Kuchipudi Dance</a>
+          <a href="summer-camp.html" class="dropdown-item"><span>☀️</span> Summer Camp</a>
+          <a href="kung-fu.html" class="dropdown-item"><span>🥋</span> Kung Fu Martial Arts</a>
+          <a href="tuitions.html" class="dropdown-item" style="color:var(--accent-cyan);"><span>📚</span> Tuition Classes</a>
+        </div>
+      </div>
+
+      <a href="gallery.html" class="nav-link">Our Gallery</a>
+      <a href="contact.html" class="nav-link">Contact</a>
+    </nav>
+
+    <div class="nav-actions">
+      <button class="btn-pill btn-outline" onclick="openLoginModal()">
+        <i data-lucide="shield-check" style="width:18px; height:18px; color:var(--accent-cyan);"></i> ERP Portal
+      </button>
+      <button class="btn-pill btn-primary-yellow" onclick="openTourModal('Tuitions')">
+        <span>Enroll in Tuitions</span>
+        <i data-lucide="book-open" style="width:18px; height:18px;"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Page Banner -->
+  <section class="page-banner bg-mesh-banner" style="position:relative; overflow:hidden;">
+    <!-- ORDERED SKETCH: Crayon & Book Doodle -->
+    <div class="sketch-pod sketch-crayon" style="top:25px; right:40px;" title="Bright Young Minds! ✏️">
+      <svg width="105" height="85" viewBox="0 0 110 90" fill="none">
+        <path d="M 12 75 C 30 65, 45 80, 65 70 C 80 62, 95 72, 105 60" stroke="#00ACF3" stroke-width="3" stroke-linecap="round" stroke-dasharray="3 6"/>
+        <path d="M 20 55 C 35 48, 50 52, 55 58 C 60 52, 75 48, 90 55 L 88 75 C 73 68, 60 72, 55 76 C 50 72, 37 68, 22 75 Z" fill="#FFFFFF" stroke="#113163" stroke-width="2.2" stroke-linejoin="round"/>
+        <g transform="translate(68, 12) rotate(28)">
+          <polygon points="10,0 20,0 20,40 10,40" fill="#FEC802" stroke="#113163" stroke-width="2"/>
+          <polygon points="10,40 20,40 15,52" fill="#F8D3B0" stroke="#113163" stroke-width="2"/>
+          <polygon points="13,48 17,48 15,52" fill="#113163"/>
+          <polygon points="10,0 20,0 20,-8 10,-8" fill="#F3649E" stroke="#113163" stroke-width="1.8"/>
+        </g>
+        <circle cx="28" cy="25" r="3" fill="#FEC802"/>
+        <circle cx="85" cy="20" r="2.5" fill="#00ACF3"/>
+      </svg>
+    </div>
+
+    <div class="container page-banner-content reveal-up">
+      <div class="breadcrumb-trail">
+        <a href="index.html">Home</a>
+        <span>›</span>
+        <span>Special Classes</span>
+        <span>›</span>
+        <span>Tuitions</span>
+      </div>
+      <span class="pill-badge" style="background:#E0F5FE; color:#0189A5; border-color:#BAE6FD;">📖 Fun Learning, Strong Foundations</span>
+      <h1>Tuition Classes for Kids in Nizampet</h1>
+      <p>Learning made simple, engaging, and meaningful. Patient after-school guidance for Grades 1 to 5 covering mathematics, phonics, grammar, and daily homework.</p>
+    </div>
+  </section>
+
+  <!-- Overview -->
+  <section class="container" style="padding:80px 0;">
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:56px; align-items:center;">
+      
+      <div class="reveal-left">
+        <div class="photo-frame-curved class-tilt-3d" style="box-shadow:16px 16px 0px #00ACF3, 0 30px 60px rgba(0,0,0,0.12);">
+          <div class="class-tilt-inner">
+            <img src="images/special/tuitions-learning.webp" alt="Teacher tutoring primary school students at Kidhood Nizampet">
+            <div class="tilt-glare"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="reveal-right">
+        <span class="pill-badge" style="background:#E0F5FE; color:#0189A5; border-color:#BAE6FD;">
+          ✏️ No More Evening Homework Battles
+        </span>
+        <h2 style="font-size:2.8rem; margin-bottom:18px;">
+          Help Your Child Learn With <span style="color:var(--accent-cyan);">Confidence</span>
+        </h2>
+        <p style="color:var(--text-muted); font-size:1.05rem; line-height:1.8; margin-bottom:16px;">
+          After a tiring day of work, parents shouldn't have to spend their precious family evenings stressed over incomplete homework or struggling with new curriculum methods.
+        </p>
+        <p style="color:var(--text-muted); font-size:1.05rem; line-height:1.8; margin-bottom:24px;">
+          At Kidhood’s evening tuition hub, caring educators provide structured study routines. We ensure every concept is clearly understood through tactile abacus counters, phonics reading ladders, and interactive quizzes.
+        </p>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:30px;">
+          <div style="background:white; border-radius:18px; padding:16px; border:2px solid #F4E4D0;">
+            <div style="font-size:1.6rem; margin-bottom:6px;">🧮</div>
+            <h4 style="font-size:1.05rem; margin-bottom:4px;">Mental Math & Abacus</h4>
+            <p style="font-size:0.8rem; color:var(--text-muted);">Speed, mental calculation & numerical clarity.</p>
+          </div>
+          <div style="background:white; border-radius:18px; padding:16px; border:2px solid #F4E4D0;">
+            <div style="font-size:1.6rem; margin-bottom:6px;">📝</div>
+            <h4 style="font-size:1.05rem; margin-bottom:4px;">Daily Homework Completion</h4>
+            <p style="font-size:0.8rem; color:var(--text-muted);">Assuring 100% accurate school notebook work.</p>
+          </div>
+        </div>
+
+        <button class="btn-pill btn-cyan" onclick="openTourModal('Tuitions Free Demo')">
+          <span>Book Free Diagnostic Session</span>
+          <i data-lucide="arrow-right" style="width:18px; height:18px;"></i>
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Subjects Grid -->
+  <section style="background:#FFFDF9; padding:80px 0; border-top:2px solid #F6E7D2; border-bottom:2px solid #F6E7D2;">
+    <div class="container">
+      <div class="section-header reveal-up">
+        <span class="sub-tag">📚 What Children Learn</span>
+        <h2>Comprehensive Support for Grades 1 to 5</h2>
+        <p>Tailored to state board, CBSE, and ICSE curricula taught in Nizampet, Bachupally, and Kukatpally schools.</p>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:24px;">
+        <div class="card-organic reveal-up">
+          <div style="font-size:2.2rem; margin-bottom:12px;">📐</div>
+          <h3 style="font-size:1.3rem; margin-bottom:8px;">Mathematics & Number Logic</h3>
+          <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.6;">Multiplication tables, fractions, word problems, and geometry visual models building a fearless love for math.</p>
+        </div>
+
+        <div class="card-organic reveal-up">
+          <div style="font-size:2.2rem; margin-bottom:12px;">📖</div>
+          <h3 style="font-size:1.3rem; margin-bottom:8px;">English Fluency & Handwriting</h3>
+          <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.6;">Vocabulary expansion, sentence framing, neat cursive handwriting drills, and reading comprehension.</p>
+        </div>
+
+        <div class="card-organic reveal-up">
+          <div style="font-size:2.2rem; margin-bottom:12px;">🌿</div>
+          <h3 style="font-size:1.3rem; margin-bottom:8px;">EVS & General Science</h3>
+          <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.6;">Connecting textbook science diagrams to real-world plants, solar system models, and everyday physics.</p>
+        </div>
+      </div>
+
+      <!-- Schedule Strip -->
+      <div class="reveal-scale" style="background:#FFFFFF; border-radius:24px; padding:32px; margin-top:50px; border:2px solid #F4E4D0; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:20px;">
+        <div>
+          <h4 style="font-size:1.3rem; margin-bottom:4px;">Tuition Timings & Batch Caps</h4>
+          <p style="font-size:0.92rem; color:var(--text-muted);">
+            Batch 1: 4:30 PM – 6:00 PM | Batch 2: 6:00 PM – 7:30 PM • Capped at strictly 8 students per batch.
+          </p>
+        </div>
+        <button class="btn-pill btn-primary-yellow" onclick="openTourModal('Tuition Seat Booking')">
+          Reserve Batch Seat
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Banner -->
+  <section class="container" style="padding:80px 0;">
+    <div class="cta-banner reveal-scale">
+      <h2>Transform Academic Confidence</h2>
+      <p>Give your child the personal mentorship they need to excel at school without tears. Visit our Nizampet center today.</p>
+      <div class="cta-btn-group">
+        <button class="btn-pill" style="background:#113163; color:white; font-size:1.1rem; padding:12px 32px;" onclick="openTourModal('Tuitions')">
+          Book Free Assessment
+        </button>
+        <a href="tel:+919429422434" class="btn-pill btn-outline" style="font-size:1.1rem; padding:12px 26px;">
+          Call +91 9429422434
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="kidhood-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px;">
+            <img src="images/branding/kidhood-logo.webp" alt="Kidhood Logo" class="brand-logo-img" style="filter: brightness(0) invert(1); height:46px;">
+            <div class="brand-name" style="color:#FFFFFF; font-size:1.5rem;">Kid<span>hood</span></div>
+          </div>
+          <p style="font-size:0.88rem; color:#CBD5E1; line-height:1.6;">
+            Preschool, daycare and primary tuition center in Nizampet, Hyderabad.
+          </p>
+        </div>
+        <div class="footer-col">
+          <h4>Pages</h4>
+          <ul class="footer-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="classes.html">Preschool Classes</a></li>
+            <li><a href="tuitions.html">Tuitions</a></li>
+            <li><a href="gallery.html">Photo Gallery</a></li>
+            <li><a href="contact.html">Contact Us</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Contact</h4>
+          <div class="footer-contact-item">
+            <span>📞</span>
+            <span>+91 9429422434</span>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Address</h4>
+          <div class="footer-contact-item">
+            <span>📍</span>
+            <span>2B lane, Plot No. 449, Madhura Nagar, Nizampet, Hyderabad 500090</span>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div>© 2026 Kidhood Nizampet. All Rights Reserved.</div>
+      </div>
+    </div>
+  </footer>
+
+  <a href="https://wa.me/919429422434?text=Hello%20Kidhood%20Nizampet,%20I%20would%20like%20to%20know%20more%20about%20Tuitions" target="_blank" class="whatsapp-float">💬</a>
+
+  <!-- Modals -->
+  <div class="modal-backdrop" id="tourModal">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="closeTourModal()">✕</button>
+      <div style="text-align:center; margin-bottom:20px;">
+        <span style="font-size:2.4rem;">📚</span>
+        <h3 style="font-size:1.8rem; margin-top:4px;">Tuition Registration</h3>
+      </div>
+      <form onsubmit="handleTourSubmit(event)">
+        <div class="form-group">
+          <label class="form-label">Parent's Name *</label>
+          <input type="text" class="form-input" id="parentName" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mobile Number *</label>
+          <input type="tel" class="form-input" id="parentPhone" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Child's Class</label>
+          <select class="form-select">
+            <option>Class 1</option>
+            <option>Class 2</option>
+            <option>Class 3</option>
+            <option>Class 4</option>
+            <option>Class 5</option>
+          </select>
+        </div>
+        <button type="submit" class="btn-pill btn-cyan" style="width:100%; justify-content:center; padding:12px;">
+          Submit Registration ✓
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="loginModal">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="closeLoginModal()">✕</button>
+      <div style="text-align:center; margin-bottom:18px;">
+        <span style="font-size:2rem;">🏫</span>
+        <h3 style="font-size:1.6rem; margin-top:4px;">Kidhood ERP Portal</h3>
+      </div>
+      <form onsubmit="handleLoginSubmit(event)">
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="text" class="form-input" id="loginEmail" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-input" id="loginPass" required>
+        </div>
+        <button type="submit" class="btn-pill btn-cyan" style="width:100%; justify-content:center; padding:12px;">Sign In</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Kidhood | Preschool Admission Enquiry Nizampet</title>
+  <meta name="description" content="Get in touch with Kidhood Nizampet. Call +91 9429422434 or visit our campus at Madhura Nagar, Nizampet, Hyderabad for preschool & daycare admissions.">
+
+  <!-- Google Fonts: Baloo 2 + DynaPuff + Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=DynaPuff:wght@500;600;700&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎈</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Interactive Dynamic HTML5 Canvas Background -->
+  <canvas id="kidsDoodleCanvas"></canvas>
+
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="top-bar-item">
+      <span>📍 2B Lane, Plot 449, Near Bandari Layout, Reddy's Avenue, Madhura Nagar, Nizampet, Hyderabad 500090</span>
+    </div>
+    <div class="top-bar-item" style="gap:16px;">
+      <span>🕒 Mon–Fri: 9:00 AM – 8:00 PM | Sat: 11:00 AM – 3:00 PM</span>
+      <a href="tel:+919429422434">📞 +91 9429422434</a>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="nav-header">
+    <a href="index.html" class="brand-logo">
+      <img src="images/branding/kidhood-logo.webp" alt="Kidhood Logo" class="brand-logo-img">
+      <div>
+        <div class="brand-name">Kid<span>hood</span></div>
+        <div class="brand-tag">Preschool & Daycare • Nizampet</div>
+      </div>
+    </a>
+
+    <nav class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="about.html" class="nav-link">About Us</a>
+      <a href="classes.html" class="nav-link">Classes</a>
+      
+      <div class="nav-dropdown">
+        <div class="nav-link dropdown-trigger">
+          <span>Special Classes</span>
+          <i data-lucide="chevron-down" style="width:14px; height:14px;"></i>
+        </div>
+        <div class="dropdown-menu">
+          <a href="kuchipudi.html" class="dropdown-item"><span>💃</span> Kuchipudi Dance</a>
+          <a href="summer-camp.html" class="dropdown-item"><span>☀️</span> Summer Camp</a>
+          <a href="kung-fu.html" class="dropdown-item"><span>🥋</span> Kung Fu Martial Arts</a>
+          <a href="tuitions.html" class="dropdown-item"><span>📚</span> Tuition Classes</a>
+        </div>
+      </div>
+
+      <a href="gallery.html" class="nav-link">Our Gallery</a>
+      <a href="contact.html" class="nav-link active">Contact</a>
+    </nav>
+
+    <div class="nav-actions">
+      <button class="btn-pill btn-outline" onclick="openLoginModal()">
+        <i data-lucide="shield-check" style="width:18px; height:18px; color:var(--accent-cyan);"></i> ERP Portal
+      </button>
+      <button class="btn-pill btn-primary-yellow" onclick="openTourModal()">
+        <span>Book a Visit</span>
+        <i data-lucide="calendar" style="width:18px; height:18px;"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Page Banner -->
+  <section class="page-banner bg-mesh-banner" style="position:relative; overflow:hidden;">
+    <!-- ORDERED SKETCH: Origami Paper Airplane -->
+    <div class="sketch-pod sketch-airplane" style="top:25px; right:40px;" title="Send Us a Note! 💌✈️">
+      <svg width="105" height="80" viewBox="0 0 110 85" fill="none">
+        <path class="rocket-dashed-trail" d="M 10 70 C 35 75, 45 40, 25 35 C 10 32, 12 58, 38 52 C 55 48, 70 32, 88 20" fill="none" stroke="#F3649E" stroke-width="2.2" stroke-linecap="round"/>
+        <g transform="translate(68, 8) rotate(-15)">
+          <polygon points="0,18 36,0 12,24" fill="#FFFFFF" stroke="#113163" stroke-width="1.8" stroke-linejoin="round"/>
+          <polygon points="0,18 36,0 16,14" fill="#FDE8F1" stroke="#113163" stroke-width="1.8" stroke-linejoin="round"/>
+          <polygon points="12,24 36,0 16,28" fill="#F3649E" stroke="#113163" stroke-width="1.8" stroke-linejoin="round"/>
+        </g>
+        <circle cx="20" cy="22" r="3" fill="#FEC802"/>
+        <circle cx="95" cy="55" r="2.5" fill="#84D814"/>
+      </svg>
+    </div>
+
+    <div class="container page-banner-content reveal-up">
+      <div class="breadcrumb-trail">
+        <a href="index.html">Home</a>
+        <span>›</span>
+        <span>Contact Us</span>
+      </div>
+      <span class="pill-badge" style="background:#E0F5FE; color:#0189A5; border-color:#BAE6FD;">📞 We'd Love to Meet You</span>
+      <h1>Contact Kidhood Nizampet</h1>
+      <p>Have questions about admissions, programs, daycare, or our learning environment? Let’s talk about your child’s next step.</p>
+    </div>
+  </section>
+
+  <!-- Contact Grid -->
+  <section class="container" style="padding:70px 0 90px 0;">
+    <div style="display:grid; grid-template-columns:1fr 1.2fr; gap:50px; align-items:start;">
+      
+      <!-- Left: Contact Details & Info Cards -->
+      <div class="reveal-left">
+        <div class="card-organic class-tilt-3d" style="margin-bottom:24px; padding:12px; overflow:hidden;">
+          <div class="class-tilt-inner">
+            <img src="images/about/contact-campus-visit.webp" alt="Kidhood Nizampet Campus and Play Area" style="width:100%; height:220px; object-fit:cover; border-radius:18px;">
+            <div class="tilt-glare"></div>
+          </div>
+          <div style="padding:12px 6px 4px 6px; display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-weight:700; color:var(--text-dark); font-size:0.95rem;">🏫 Nizampet Campus & Play Zone</span>
+            <span class="subtag-pulse-beacon" style="font-size:0.75rem; padding:3px 10px;">Admissions Open</span>
+          </div>
+        </div>
+
+        <div class="card-organic" style="margin-bottom:24px;">
+          <h3 style="font-size:1.5rem; margin-bottom:16px;">Campus Location</h3>
+          <div style="display:flex; align-items:flex-start; gap:14px; margin-bottom:20px;">
+            <div style="width:44px; height:44px; border-radius:12px; background:#FFF3C4; display:flex; align-items:center; justify-content:center; font-size:1.4rem; flex-shrink:0;">📍</div>
+            <div>
+              <p style="font-size:0.95rem; font-weight:600; color:var(--text-dark); line-height:1.6;">
+                2B lane, Plot No. 449, near Bandari layout, Reddy's Avenue, Madhura Nagar, Nizampet, Hyderabad, Telangana — 500090
+              </p>
+              <a href="https://maps.google.com/?q=Kidhood+Preschool+Nizampet" target="_blank" style="color:var(--accent-cyan); font-weight:700; font-size:0.86rem; text-decoration:none; display:inline-block; margin-top:6px;">
+                Open in Google Maps →
+              </a>
+            </div>
+          </div>
+
+          <div style="display:flex; align-items:center; gap:14px; margin-bottom:20px;">
+            <div style="width:44px; height:44px; border-radius:12px; background:#E0F5FE; display:flex; align-items:center; justify-content:center; font-size:1.4rem; flex-shrink:0;">📞</div>
+            <div>
+              <h5 style="font-size:0.85rem; color:var(--text-muted); text-transform:uppercase;">Phone & WhatsApp</h5>
+              <a href="tel:+919429422434" style="font-size:1.2rem; font-weight:800; color:var(--text-dark); text-decoration:none;">+91 9429422434</a>
+            </div>
+          </div>
+
+          <div style="display:flex; align-items:center; gap:14px;">
+            <div style="width:44px; height:44px; border-radius:12px; background:#FDE8F1; display:flex; align-items:center; justify-content:center; font-size:1.4rem; flex-shrink:0;">✉️</div>
+            <div>
+              <h5 style="font-size:0.85rem; color:var(--text-muted); text-transform:uppercase;">Email Address</h5>
+              <a href="mailto:info@kidhoodnizampet.com" style="font-size:1.05rem; font-weight:700; color:var(--text-dark); text-decoration:none;">info@kidhoodnizampet.com</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-organic" style="border-top:6px solid var(--accent-green);">
+          <h4 style="font-size:1.2rem; margin-bottom:12px;">Visiting & Admission Timings</h4>
+          <ul style="list-style:none; font-size:0.9rem; color:var(--text-muted); line-height:1.8;">
+            <li><strong>Monday to Friday:</strong> 9:00 AM – 8:00 PM</li>
+            <li><strong>Saturday:</strong> 11:00 AM – 3:00 PM</li>
+            <li><strong>Sunday:</strong> Closed (Available on WhatsApp)</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Right: Direct Admission Enquiry Form -->
+      <div class="card-organic reveal-right" style="padding:40px; border-top:6px solid var(--accent-yellow);">
+        <h3 style="font-size:1.8rem; margin-bottom:6px;">Send Admission Enquiry</h3>
+        <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:24px;">Fill out this form and our admissions counselor will call you within 2 business hours.</p>
+
+        <form onsubmit="handleContactPageSubmit(event)">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+            <div class="form-group">
+              <label class="form-label">Parent's Full Name *</label>
+              <input type="text" class="form-input" id="cParentName" placeholder="e.g. Sumanth Reddy" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Phone Number *</label>
+              <input type="tel" class="form-input" id="cParentPhone" placeholder="+91 98765 43210" required>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+            <div class="form-group">
+              <label class="form-label">Child's Age</label>
+              <select class="form-select" id="cChildAge">
+                <option>1.5 – 2 Years</option>
+                <option>2 – 3 Years</option>
+                <option selected>3 – 4 Years</option>
+                <option>4 – 5 Years</option>
+                <option>5 – 6 Years</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Program of Interest</label>
+              <select class="form-select" id="cProgram">
+                <option>Toddler Class</option>
+                <option selected>Nursery</option>
+                <option>LKG</option>
+                <option>UKG</option>
+                <option>Daycare</option>
+                <option>Kuchipudi Dance</option>
+                <option>Kung Fu</option>
+                <option>Tuitions</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Your Questions or Notes</label>
+            <textarea class="form-textarea" rows="3" placeholder="Tell us if you need bus transport, specific daycare hours, or weekend visits..."></textarea>
+          </div>
+
+          <button type="submit" class="btn-pill btn-primary-yellow" style="width:100%; justify-content:center; padding:14px; font-size:1.15rem; margin-top:8px;">
+            Submit Enquiry & Schedule Call ✓
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Google Map Visual Strip -->
+  <section class="container" style="padding-bottom:80px;">
+    <div class="reveal-scale" style="background:#FFFFFF; border-radius:32px; overflow:hidden; border:4px solid #FFFFFF; box-shadow:0 15px 40px rgba(0,0,0,0.08);">
+      <div style="background:#FDF5E5; padding:20px 30px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+        <div>
+          <h4 style="font-size:1.25rem;">📍 Kidhood Preschool Campus Map</h4>
+          <p style="font-size:0.86rem; color:var(--text-muted);">Located conveniently near Bandari Layout & Madhura Nagar, Nizampet</p>
+        </div>
+        <a href="https://maps.google.com/?q=Kidhood+Preschool+Nizampet" target="_blank" class="btn-pill btn-cyan" style="font-size:0.95rem; padding:8px 20px;">
+          Get Driving Directions
+        </a>
+      </div>
+      <div style="height:350px; width:100%; background:#E2E8F0; display:flex; align-items:center; justify-content:center; position:relative;">
+        <iframe 
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15220.575510696863!2d78.3758364!3d17.5005847!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb91f3d5171783%3A0x6d9f7ad72d82991e!2sNizampet%2C%20Hyderabad%2C%20Telangana!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin" 
+          width="100%" 
+          height="100%" 
+          style="border:0;" 
+          allowfullscreen="" 
+          loading="lazy">
+        </iframe>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="kidhood-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px;">
+            <img src="images/branding/kidhood-logo.webp" alt="Kidhood Logo" class="brand-logo-img" style="filter: brightness(0) invert(1); height:46px;">
+            <div class="brand-name" style="color:#FFFFFF; font-size:1.5rem;">Kid<span>hood</span></div>
+          </div>
+          <p style="font-size:0.88rem; color:#CBD5E1; line-height:1.6;">
+            Preschool and daycare in Nizampet, Hyderabad.
+          </p>
+          <a href="tel:+919429422434" style="color:#FEC802; font-weight:700; font-size:0.92rem; text-decoration:none;">📞 +91 9429422434</a>
+        </div>
+        <div class="footer-col">
+          <h4>Pages</h4>
+          <ul class="footer-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="classes.html">Preschool Classes</a></li>
+            <li><a href="kuchipudi.html">Kuchipudi Dance</a></li>
+            <li><a href="summer-camp.html">Summer Camp</a></li>
+            <li><a href="kung-fu.html">Kung Fu Classes</a></li>
+            <li><a href="tuitions.html">Tuition Classes</a></li>
+            <li><a href="gallery.html">Photo Gallery</a></li>
+            <li><a href="contact.html">Contact Us</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Hours</h4>
+          <div class="footer-contact-item">
+            <span>🕒</span>
+            <span>Mon – Fri: 9:00 AM – 8:00 PM<br>Saturday: 11:00 AM – 3:00 PM</span>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Address</h4>
+          <div class="footer-contact-item">
+            <span>📍</span>
+            <span>2B lane, Plot No. 449, Madhura Nagar, Nizampet, Hyderabad 500090</span>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div>© 2026 Kidhood Nizampet. All Rights Reserved.</div>
+      </div>
+    </div>
+  </footer>
+
+  <a href="https://wa.me/919429422434?text=Hello%20Kidhood%20Nizampet,%20I%20have%20an%20admission%20enquiry" target="_blank" class="whatsapp-float">💬</a>
+
+  <!-- Modals -->
+  <div class="modal-backdrop" id="tourModal">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="closeTourModal()">✕</button>
+      <div style="text-align:center; margin-bottom:20px;">
+        <span style="font-size:2.4rem;">🎈</span>
+        <h3 style="font-size:1.8rem; margin-top:4px;">Book a Campus Visit</h3>
+      </div>
+      <form onsubmit="handleTourSubmit(event)">
+        <div class="form-group">
+          <label class="form-label">Parent's Name *</label>
+          <input type="text" class="form-input" id="parentName" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone Number *</label>
+          <input type="tel" class="form-input" id="parentPhone" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Preferred Date</label>
+          <input type="date" class="form-input" id="tourDate" required>
+        </div>
+        <button type="submit" class="btn-pill btn-primary-yellow" style="width:100%; justify-content:center; padding:12px;">
+          Confirm Tour Booking ✓
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="loginModal">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="closeLoginModal()">✕</button>
+      <div style="text-align:center; margin-bottom:18px;">
+        <span style="font-size:2rem;">🏫</span>
+        <h3 style="font-size:1.6rem; margin-top:4px;">Kidhood ERP Portal</h3>
+      </div>
+      <form onsubmit="handleLoginSubmit(event)">
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="text" class="form-input" id="loginEmail" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-input" id="loginPass" required>
+        </div>
+        <button type="submit" class="btn-pill btn-cyan" style="width:100%; justify-content:center; padding:12px;">Sign In</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+  <script>
+    function handleContactPageSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('cParentName').value;
+      const phone = document.getElementById('cParentPhone').value;
+      const prog = document.getElementById('cProgram').value;
+      alert(`🎉 Thank you, ${name}!\n\nYour enquiry for ${prog} has been successfully received.\nOur Admissions counselor will contact you at ${phone} shortly.`);
+      e.target.reset();
+    }
+  </script>
+</body>
+</html>

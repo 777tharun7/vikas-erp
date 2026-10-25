@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kuchipudi Classes for Kids in Nizampet | Kidhood Classical Dance</title>
+  <meta name="description" content="Discover the joy of Kuchipudi classical dance for kids in Nizampet at Kidhood. Certified dance gurus teaching mudras, rhythm, posture, and stage confidence.">
+
+  <!-- Google Fonts: Baloo 2 + DynaPuff + Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=DynaPuff:wght@500;600;700&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎈</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Interactive Dynamic HTML5 Canvas Background -->
+  <canvas id="kidsDoodleCanvas"></canvas>
+
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="top-bar-item">
+      <span>📍 2B Lane, Plot 449, Near Bandari Layout, Reddy's Avenue, Madhura Nagar, Nizampet, Hyderabad 500090</span>
+    </div>
+    <div class="top-bar-item" style="gap:16px;">
+      <span>🕒 Mon–Fri: 9:00 AM – 8:00 PM | Sat: 11:00 AM – 3:00 PM</span>
+      <a href="tel:+919429422434">📞 +91 9429422434</a>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="nav-header">
+    <a href="index.html" class="brand-logo">
+      <img src="images/branding/kidhood-logo.webp" alt="Kidhood Preschool Nizampet Logo" class="brand-logo-img">
+    </a>
+
+    <nav class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="about.html" class="nav-link">About Us</a>
+      <a href="classes.html" class="nav-link">Classes</a>
+      
+      <div class="nav-dropdown">
+        <div class="nav-link dropdown-trigger active">
+          <span>Special Classes</span>
+          <i data-lucide="chevron-down" style="width:14px; height:14px;"></i>
+        </div>
+        <div class="dropdown-menu">
+          <a href="kuchipudi.html" class="dropdown-item" style="color:var(--accent-cyan);"><span>💃</span> Kuchipudi Dance</a>
+          <a href="summer-camp.html" class="dropdown-item"><span>☀️</span> Summer Camp</a>
+          <a href="kung-fu.html" class="dropdown-item"><span>🥋</span> Kung Fu Martial Arts</a>
+          <a href="tuitions.html" class="dropdown-item"><span>📚</span> Tuition Classes</a>
+        </div>
+      </div>
+
+      <a href="gallery.html" class="nav-link">Our Gallery</a>
+      <a href="contact.html" class="nav-link">Contact</a>
+    </nav>
+
+    <div class="nav-actions">
+      <button class="btn-pill btn-outline" onclick="openLoginModal()">
+        <i data-lucide="shield-check" style="width:18px; height:18px; color:var(--accent-cyan);"></i> ERP Portal
+      </button>
+      <button class="btn-pill btn-primary-yellow" onclick="openTourModal('Kuchipudi Dance')">
+        <span>Join Dance Class</span>
+        <i data-lucide="sparkles" style="width:18px; height:18px;"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Page Banner -->
+  <section class="page-banner bg-mesh-arts" style="position:relative; overflow:hidden;">
+    <!-- ORDERED SKETCH: Performing Arts Rhythm & Music Doodle -->
+    <div class="sketch-pod sketch-arts-music" style="top:25px; right:40px;" title="Rhythm, Mudras & Melodies! 🎶">
+      <svg width="100" height="90" viewBox="0 0 100 90" fill="none">
+        <path d="M 25 70 C 15 65, 18 52, 28 54 C 36 56, 38 68, 28 72 C 22 75, 14 70, 18 60 C 22 45, 38 20, 36 8 C 34 2, 26 5, 24 14 C 20 28, 28 65, 28 85" stroke="#EE206E" stroke-width="3" stroke-linecap="round" fill="none"/>
+        <circle cx="28" cy="85" r="4" fill="#EE206E"/>
+        <path d="M 60 25 Q 70 20 80 25 T 100 20" stroke="#FEC802" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <circle cx="68" cy="48" r="5" fill="#FF8A3D"/>
+        <path d="M 73 48 L 73 24 L 92 20 L 92 44" stroke="#FF8A3D" stroke-width="2.2" fill="none"/>
+        <circle cx="87" cy="44" r="5" fill="#FF8A3D"/>
+        <path d="M 73 30 L 92 26" stroke="#FF8A3D" stroke-width="2.5"/>
+        <circle cx="50" cy="18" r="2" fill="#FEC802"/>
+        <circle cx="94" cy="62" r="2.5" fill="#80C41C"/>
+      </svg>
+    </div>
+
+    <div class="container page-banner-content reveal-up">
+      <div class="breadcrumb-trail">
+        <a href="index.html">Home</a>
+        <span>›</span>
+        <span>Special Classes</span>
+        <span>›</span>
+        <span>Kuchipudi Dance</span>
+      </div>
+      <span class="pill-badge" style="background:#FFE6D5; color:#FF8A3D; border-color:#FFD4B8;">💃 Little Steps, Beautiful Traditions</span>
+      <h1>Kuchipudi Classes for Kids in Nizampet</h1>
+      <p>More than dance, it’s a journey of artistic expression. Introducing young children to classical mudras, rhythm footwork, and lifelong stage confidence.</p>
+    </div>
+  </section>
+
+  <!-- Main Showcase -->
+  <section class="container" style="padding:80px 0;">
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:56px; align-items:center;">
+      
+      <div class="reveal-left" style="position:relative;">
+        <div class="photo-frame-curved interactive-tilt" style="box-shadow:-16px 16px 0px #FF8A3D, 0 30px 60px rgba(0,0,0,0.12);">
+          <img src="images/special/kuchipudi-main.webp" alt="Young girl dancing Kuchipudi at Kidhood Nizampet">
+        </div>
+
+        <!-- Living Mascot Pod for Kuchipudi -->
+        <div class="mascot-living-pod anim-float" style="top:-20px; right:-15px;" title="Tap for sparkles!">
+          <div class="mascot-svg-wrap" style="background:linear-gradient(135deg, #FFF0E6 0%, #FFD4B8 100%);">
+            <span style="font-size:1.8rem; animation:wiggle 1.2s infinite ease-in-out;">🩰</span>
+          </div>
+          <div>
+            <div class="mascot-info-title" style="color:#C05621;">
+              <span class="live-beacon" style="background:#FF8A3D;"></span> Certified Classical Guru
+            </div>
+            <div class="mascot-info-sub">Tradition • Balance • Poise ✨</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="reveal-right">
+        <span class="pill-badge" style="background:#FFF0E6; color:#FF8A3D; border-color:#FFD4B8;">
+          ✨ Ancient Telugu Classical Heritage
+        </span>
+        <h2 style="font-size:2.8rem; margin-bottom:18px;">
+          Let Your Child Discover the <span style="color:#FF8A3D;">Joy of Classical Dance</span>
+        </h2>
+        <p style="color:var(--text-muted); font-size:1.05rem; line-height:1.8; margin-bottom:16px;">
+          Kuchipudi is one of India's most expressive classical dance forms originating right here in Andhra Pradesh and Telangana. At Kidhood Nizampet, we introduce children as young as 4 years old to this rich heritage in an encouraging, fun-filled setting.
+        </p>
+        <p style="color:var(--text-muted); font-size:1.05rem; line-height:1.8; margin-bottom:24px;">
+          Under the guidance of patient, accredited dance gurus, children master rhythmic footwork (Adavus), delicate hand gestures (Hastas / Mudras), and facial expressions (Bhavas).
+        </p>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:30px;">
+          <div style="background:white; border-radius:18px; padding:16px; border:2px solid #F4E4D0;">
+            <div style="font-size:1.6rem; margin-bottom:6px;">🩰</div>
+            <h4 style="font-size:1.05rem; margin-bottom:4px;">Physical Poise</h4>
+            <p style="font-size:0.8rem; color:var(--text-muted);">Spine alignment, balance and graceful motor coordination.</p>
+          </div>
+          <div style="background:white; border-radius:18px; padding:16px; border:2px solid #F4E4D0;">
+            <div style="font-size:1.6rem; margin-bottom:6px;">🌟</div>
+            <h4 style="font-size:1.05rem; margin-bottom:4px;">Stage Courage</h4>
+            <p style="font-size:0.8rem; color:var(--text-muted);">Annual stage performances overcome stage fear permanently.</p>
+          </div>
+        </div>
+
+        <button class="btn-pill btn-primary-yellow" onclick="openTourModal('Kuchipudi Trial Class')">
+          <span>Book Free Dance Trial Class</span>
+          <i data-lucide="sparkles" style="width:18px; height:18px;"></i>
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Dance Curriculum Highlights -->
+  <section style="background:#FFFDF9; padding:80px 0; border-top:2px solid #F6E7D2; border-bottom:2px solid #F6E7D2;">
+    <div class="container">
+      <div class="section-header reveal-up">
+        <span class="sub-tag">🎵 Structured Curriculum</span>
+        <h2>What Children Learn in Our Kuchipudi Batches</h2>
+        <p>A step-by-step classical curriculum structured specifically for young developing bodies and minds.</p>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:24px;">
+        <div class="card-organic reveal-up">
+          <div style="font-size:2rem; margin-bottom:12px;">👐</div>
+          <h3 style="font-size:1.3rem; margin-bottom:8px;">Asamyukta & Samyukta Hastas</h3>
+          <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.6;">Learning single-hand and combined hand gestures depicting peacocks, flowers, nature, and storytelling characters.</p>
+        </div>
+
+        <div class="card-organic reveal-up">
+          <div style="font-size:2rem; margin-bottom:12px;">🦶</div>
+          <h3 style="font-size:1.3rem; margin-bottom:8px;">Basic Adavus (Steps)</h3>
+          <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.6;">Rhythmic stamping patterns synchronized with traditional Sanskrit and Telugu beats (Tha-Dhi-Thom-Nam).</p>
+        </div>
+
+        <div class="card-organic reveal-up">
+          <div style="font-size:2rem; margin-bottom:12px;">🎭</div>
+          <h3 style="font-size:1.3rem; margin-bottom:8px;">Abhinaya & Facial Expressions</h3>
+          <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.6;">Expressing joy, wonder, and devotion through graceful eye, eyebrow, and smile coordination.</p>
+        </div>
+
+        <div class="card-organic reveal-up">
+          <div style="font-size:2rem; margin-bottom:12px;">🎶</div>
+          <h3 style="font-size:1.3rem; margin-bottom:8px;">Carnatic Music Basics</h3>
+          <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.6;">Training musical ear, rhythm sensibility, and singing along with classical dance slokas.</p>
+        </div>
+      </div>
+
+      <!-- Batch Timings Strip -->
+      <div class="reveal-scale" style="background:#FFFFFF; border-radius:24px; padding:30px; margin-top:50px; border:2px solid #F4E4D0; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:20px;">
+        <div>
+          <h4 style="font-size:1.3rem; color:var(--text-dark); margin-bottom:4px;">Weekly Batch Timings</h4>
+          <p style="font-size:0.9rem; color:var(--text-muted);">Tuesday & Thursday Evening (4:30 PM – 5:30 PM) | Saturday Weekend Batch (10:00 AM – 11:30 AM)</p>
+        </div>
+        <button class="btn-pill btn-primary-yellow" onclick="openTourModal('Kuchipudi Batch Registration')">
+          Reserve Batch Spot
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Accordion -->
+  <section class="container" style="padding:80px 0;">
+    <div class="section-header reveal-up">
+      <span class="sub-tag">❓ Frequently Asked Questions</span>
+      <h2>Kuchipudi Dance FAQ</h2>
+    </div>
+
+    <div class="faq-container reveal-up">
+      <div class="faq-item active">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <span>What is the minimum age to enroll in Kuchipudi?</span>
+          <div class="faq-icon-toggle">▼</div>
+        </div>
+        <div class="faq-answer">
+          Children can join starting from 4 years old. The curriculum for ages 4 to 6 is designed with gentle stretches, playful hand gestures, and rhythm games.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <span>Are performance costumes provided for stage shows?</span>
+          <div class="faq-icon-toggle">▼</div>
+        </div>
+        <div class="faq-answer">
+          Yes! During our annual festivals and cultural showcases, the school coordinates traditional classical dance costumes, jewelry, and stage makeup.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <span>Can daycare children attend Kuchipudi classes?</span>
+          <div class="faq-icon-toggle">▼</div>
+        </div>
+        <div class="faq-answer">
+          Absolutely. Many parents who enroll their child in our extended daycare take advantage of the evening Kuchipudi classes without needing an extra commute.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Banner -->
+  <section class="container" style="padding-bottom:80px;">
+    <div class="cta-banner reveal-scale">
+      <h2>Let Your Child Shine on Stage</h2>
+      <p>Give your child the gift of classical dance, balance, and lifelong grace. Join a trial session at Kidhood Nizampet this week.</p>
+      <div class="cta-btn-group">
+        <button class="btn-pill" style="background:#113163; color:white; font-size:1.1rem; padding:12px 32px;" onclick="openTourModal('Kuchipudi Trial')">
+          Book Dance Trial
+        </button>
+        <a href="tel:+919429422434" class="btn-pill btn-outline" style="font-size:1.1rem; padding:12px 26px;">
+          Call +91 9429422434
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="kidhood-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <div style="margin-bottom:14px;">
+            <img src="images/branding/kidhood-logo.webp" alt="Kidhood Nizampet Logo" class="brand-logo-img" style="filter:brightness(0) invert(1) drop-shadow(0 4px 10px rgba(0,0,0,0.3)); max-height:48px;">
+          </div>
+          <p style="font-size:0.88rem; color:#CBD5E1; line-height:1.6;">
+            Kidhood Preschool & Classical Dance Academy in Nizampet, Hyderabad.
+          </p>
+        </div>
+        <div class="footer-col">
+          <h4>Special Classes</h4>
+          <ul class="footer-links">
+            <li><a href="kuchipudi.html">Kuchipudi Classical Dance</a></li>
+            <li><a href="summer-camp.html">Summer Camp</a></li>
+            <li><a href="kung-fu.html">Kung Fu Martial Arts</a></li>
+            <li><a href="tuitions.html">Tuition Classes</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Timings</h4>
+          <div class="footer-contact-item">
+            <span>🕒</span>
+            <span>Tue & Thu: 4:30 PM – 5:30 PM<br>Saturday: 10:00 AM – 11:30 AM</span>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Address</h4>
+          <div class="footer-contact-item">
+            <span>📍</span>
+            <span>2B lane, Plot No. 449, Madhura Nagar, Nizampet, Hyderabad 500090</span>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div>© 2026 Kidhood Nizampet. All Rights Reserved.</div>
+      </div>
+    </div>
+  </footer>
+
+  <a href="https://wa.me/919429422434?text=Hello%20Kidhood%20Nizampet,%20I%20would%20like%20to%20know%20more%20about%20Kuchipudi%20dance%20classes" target="_blank" class="whatsapp-float">💬</a>
+
+  <!-- Modals -->
+  <div class="modal-backdrop" id="tourModal">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="closeTourModal()">✕</button>
+      <div style="text-align:center; margin-bottom:20px;">
+        <span style="font-size:2.4rem;">💃</span>
+        <h3 style="font-size:1.8rem; margin-top:4px;">Kuchipudi Dance Registration</h3>
+      </div>
+      <form onsubmit="handleTourSubmit(event)">
+        <div class="form-group">
+          <label class="form-label">Parent's Name *</label>
+          <input type="text" class="form-input" id="parentName" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mobile Number *</label>
+          <input type="tel" class="form-input" id="parentPhone" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Child's Age (Ages 4+)</label>
+          <input type="number" class="form-input" min="4" max="14" value="5" required>
+        </div>
+        <button type="submit" class="btn-pill btn-primary-yellow" style="width:100%; justify-content:center; padding:12px;">
+          Confirm Dance Trial Spot ✓
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="loginModal">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="closeLoginModal()">✕</button>
+      <div style="text-align:center; margin-bottom:18px;">
+        <span style="font-size:2rem;">🏫</span>
+        <h3 style="font-size:1.6rem; margin-top:4px;">Kidhood ERP Portal</h3>
+      </div>
+      <form onsubmit="handleLoginSubmit(event)">
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="text" class="form-input" id="loginEmail" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-input" id="loginPass" required>
+        </div>
+        <button type="submit" class="btn-pill btn-cyan" style="width:100%; justify-content:center; padding:12px;">Sign In</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kung Fu Classes for Kids in Nizampet | Kidhood Martial Arts</title>
+  <meta name="description" content="Strong bodies, confident minds. Kung Fu and martial arts training for children in Nizampet, Hyderabad at Kidhood. Certified black belt coaches.">
+
+  <!-- Google Fonts: Baloo 2 + DynaPuff + Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=DynaPuff:wght@500;600;700&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎈</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Interactive Dynamic HTML5 Canvas Background -->
+  <canvas id="kidsDoodleCanvas"></canvas>
+
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="top-bar-item">
+      <span>📍 2B Lane, Plot 449, Near Bandari Layout, Reddy's Avenue, Madhura Nagar, Nizampet, Hyderabad 500090</span>
+    </div>
+    <div class="top-bar-item" style="gap:16px;">
+      <span>🥋 Free Kung Fu Trial Classes Available</span>
+      <a href="tel:+919429422434">📞 +91 9429422434</a>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="nav-header">
+    <a href="index.html" class="brand-logo">
+      <img src="images/branding/kidhood-logo.webp" alt="Kidhood Logo" class="brand-logo-img">
+      <div>
+        <div class="brand-name">Kid<span>hood</span></div>
+        <div class="brand-tag">Preschool & Daycare • Nizampet</div>
+      </div>
+    </a>
+
+    <nav class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="about.html" class="nav-link">About Us</a>
+      <a href="classes.html" class="nav-link">Classes</a>
+      
+      <div class="nav-dropdown">
+        <div class="nav-link dropdown-trigger active">
+          <span>Special Classes</span>
+          <i data-lucide="chevron-down" style="width:14px; height:14px;"></i>
+        </div>
+        <div class="dropdown-menu">
+          <a href="kuchipudi.html" class="dropdown-item"><span>💃</span> Kuchipudi Dance</a>
+          <a href="summer-camp.html" class="dropdown-item"><span>☀️</span> Summer Camp</a>
+          <a href="kung-fu.html" class="dropdown-item" style="color:var(--accent-cyan);"><span>🥋</span> Kung Fu Martial Arts</a>
+          <a href="tuitions.html" class="dropdown-item"><span>📚</span> Tuition Classes</a>
+        </div>
+      </div>
+
+      <a href="gallery.html" class="nav-link">Our Gallery</a>
+      <a href="contact.html" class="nav-link">Contact</a>
+    </nav>
+
+    <div class="nav-actions">
+      <button class="btn-pill btn-outline" onclick="openLoginModal()">
+        <i data-lucide="shield-check" style="width:18px; height:18px; color:var(--accent-cyan);"></i> ERP Portal
+      </button>
+      <button class="btn-pill btn-primary-yellow" onclick="openTourModal('Kung Fu Class')">
+        <span>Book Kung Fu Trial</span>
+        <i data-lucide="award" style="width:18px; height:18px;"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Page Banner -->
+  <section class="page-banner bg-mesh-banner" style="position:relative; overflow:hidden;">
+    <!-- ORDERED SKETCH: Origami Paper Airplane -->
+    <div class="sketch-pod sketch-airplane" style="top:25px; right:40px;" title="Focus & Agility! 🥋">
+      <svg width="105" height="80" viewBox="0 0 110 85" fill="none">
+        <path class="rocket-dashed-trail" d="M 10 70 C 35 75, 45 40, 25 35 C 10 32, 12 58, 38 52 C 55 48, 70 32, 88 20" fill="none" stroke="#EE206E" stroke-width="2.2" stroke-linecap="round"/>
+        <g transform="translate(68, 8) rotate(-15)">
+          <polygon points="0,18 36,0 12,24" fill="#FFFFFF" stroke="#113163" stroke-width="1.8" stroke-linejoin="round"/>
+          <polygon points="0,18 36,0 16,14" fill="#FDE8F1" stroke="#113163" stroke-width="1.8" stroke-linejoin="round"/>
+          <polygon points="12,24 36,0 16,28" fill="#FFCCE1" stroke="#113163" stroke-width="1.8" stroke-linejoin="round"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="container page-banner-content reveal-up">
+      <div class="breadcrumb-trail">
+        <a href="index.html">Home</a>
+        <span>›</span>
+        <span>Special Classes</span>
+        <span>›</span>
+        <span>Kung Fu</span>
+      </div>
+      <span class="pill-badge" style="background:#FDE8F1; color:#EE206E; border-color:#FFCCE1;">🥋 Little Moves, Big Confidence</span>
+      <h1>Strong Bodies. Confident Minds.</h1>
+      <p>More than martial arts, it’s a journey of character growth, self-discipline, agile reflexes, and healthy physical fitness for kids in Nizampet.</p>
+    </div>
+  </section>
+
+  <!-- Martial Arts Showcase -->
+  <section class="container" style="padding:80px 0;">
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:56px; align-items:center;">
+      
+      <div class="reveal-left">
+        <div class="photo-frame-curved class-tilt-3d" style="box-shadow:16px 16px 0px #EE206E, 0 30px 60px rgba(0,0,0,0.12);">
+          <div class="class-tilt-inner">
+            <img src="images/special/kung-fu-hero.webp" alt="Children training Kung Fu martial arts at Kidhood Nizampet">
+            <div class="tilt-glare"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="reveal-right">
+        <span class="pill-badge" style="background:#FDE8F1; color:#EE206E; border-color:#FFCCE1;">
+          ⭐ Certified Sensei Instruction
+        </span>
+        <h2 style="font-size:2.8rem; margin-bottom:18px;">
+          Let Your Child Discover the <span style="color:var(--accent-pink);">Joy of Kung Fu</span>
+        </h2>
+        <p style="color:var(--text-muted); font-size:1.05rem; line-height:1.8; margin-bottom:16px;">
+          Kung Fu at Kidhood isn’t about aggression — it is an ancient art of mindfulness, core balance, and inner calm. We teach children how to channel their boundless physical energy into positive focus and respectful posture.
+        </p>
+        <p style="color:var(--text-muted); font-size:1.05rem; line-height:1.8; margin-bottom:24px;">
+          Through interactive obstacle drills, kicking stances, and balance blocks, children develop strong reflexes, healthy stamina, and the courage to stand tall against playground bullying.
+        </p>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:30px;">
+          <div style="background:white; border-radius:18px; padding:16px; border:2px solid #F4E4D0;">
+            <div style="font-size:1.6rem; margin-bottom:6px;">🛡️</div>
+            <h4 style="font-size:1.05rem; margin-bottom:4px;">Self-Defense Skills</h4>
+            <p style="font-size:0.8rem; color:var(--text-muted);">Practical awareness and personal safety habits.</p>
+          </div>
+          <div style="background:white; border-radius:18px; padding:16px; border:2px solid #F4E4D0;">
+            <div style="font-size:1.6rem; margin-bottom:6px;">🧘</div>
+            <h4 style="font-size:1.05rem; margin-bottom:4px;">Discipline & Focus</h4>
+            <p style="font-size:0.8rem; color:var(--text-muted);">Improves concentration in academic study hours.</p>
+          </div>
+        </div>
+
+        <button class="btn-pill btn-pink" onclick="openTourModal('Kung Fu Free Trial')">
+          <span>Book Free Kung Fu Trial</span>
+          <i data-lucide="arrow-right" style="width:18px; height:18px;"></i>
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Belt System & Benefits -->
+  <section style="background:#FFFDF9; padding:80px 0; border-top:2px solid #F6E7D2; border-bottom:2px solid #F6E7D2;">
+    <div class="container">
+      <div class="section-header reveal-up">
+        <span class="sub-tag">🥋 Structured Progression</span>
+        <h2>Why Nizampet Parents Choose Kidhood Martial Arts</h2>
+        <p>A fun, safe training mat with age-tailored belt grading ceremonies that instill pride.</p>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:24px;">
+        <div class="card-organic reveal-up">
+          <div style="font-size:2.2rem; margin-bottom:12px;">🏆</div>
+          <h3 style="font-size:1.3rem; margin-bottom:8px;">Gradual Belt Progression</h3>
+          <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.6;">White, Yellow, Green, and Blue belt advancement tests giving children clear goals and triumphant milestones.</p>
+        </div>
+
+        <div class="card-organic reveal-up">
+          <div style="font-size:2.2rem; margin-bottom:12px;">🏃</div>
+          <h3 style="font-size:1.3rem; margin-bottom:8px;">Agility & Motor Strength</h3>
+          <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.6;">Builds spine flexibility, core muscle stamina, jump agility, and quick mental reaction times.</p>
+        </div>
+
+        <div class="card-organic reveal-up">
+          <div style="font-size:2.2rem; margin-bottom:12px;">🤝</div>
+          <h3 style="font-size:1.3rem; margin-bottom:8px;">Respect & Courtesy (Rei)</h3>
+          <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.6;">Every class begins and ends with bows of gratitude to teachers, training peers, and parents.</p>
+        </div>
+      </div>
+
+      <!-- Schedule Strip -->
+      <div class="reveal-scale" style="background:#FFFFFF; border-radius:24px; padding:32px; margin-top:50px; border:2px solid #F4E4D0; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:20px;">
+        <div>
+          <h4 style="font-size:1.3rem; margin-bottom:4px;">Kung Fu Batch Schedules</h4>
+          <p style="font-size:0.92rem; color:var(--text-muted);">
+            Mon, Wed & Fri Batches (5:00 PM – 6:00 PM) | Saturday Morning Special (9:00 AM – 10:30 AM)
+          </p>
+        </div>
+        <button class="btn-pill btn-pink" onclick="openTourModal('Kung Fu Batch Booking')">
+          Reserve Trial Class
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Banner -->
+  <section class="container" style="padding:80px 0;">
+    <div class="cta-banner reveal-scale">
+      <h2>Build Unstoppable Confidence</h2>
+      <p>Watch your child transform into a focused, respectful, and energetic leader. Book a free trial uniform session at Kidhood Nizampet today.</p>
+      <div class="cta-btn-group">
+        <button class="btn-pill" style="background:#113163; color:white; font-size:1.1rem; padding:12px 32px;" onclick="openTourModal('Kung Fu')">
+          Join Free Trial Session
+        </button>
+        <a href="tel:+919429422434" class="btn-pill btn-outline" style="font-size:1.1rem; padding:12px 26px;">
+          Call +91 9429422434
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="kidhood-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px;">
+            <img src="images/branding/kidhood-logo.webp" alt="Kidhood Logo" class="brand-logo-img" style="filter: brightness(0) invert(1); height:46px;">
+            <div class="brand-name" style="color:#FFFFFF; font-size:1.5rem;">Kid<span>hood</span></div>
+          </div>
+          <p style="font-size:0.88rem; color:#CBD5E1; line-height:1.6;">
+            Kung Fu, Kuchipudi classical dance, daycare and preschool in Nizampet, Hyderabad.
+          </p>
+        </div>
+        <div class="footer-col">
+          <h4>Classes</h4>
+          <ul class="footer-links">
+            <li><a href="kung-fu.html">Kung Fu Classes</a></li>
+            <li><a href="kuchipudi.html">Kuchipudi Dance</a></li>
+            <li><a href="summer-camp.html">Summer Camp</a></li>
+            <li><a href="tuitions.html">Tuition Classes</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Contact</h4>
+          <div class="footer-contact-item">
+            <span>📞</span>
+            <span>+91 9429422434</span>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Address</h4>
+          <div class="footer-contact-item">
+            <span>📍</span>
+            <span>2B lane, Plot No. 449, Madhura Nagar, Nizampet, Hyderabad 500090</span>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div>© 2026 Kidhood Nizampet. All Rights Reserved.</div>
+      </div>
+    </div>
+  </footer>
+
+  <a href="https://wa.me/919429422434?text=Hello%20Kidhood%20Nizampet,%20I%20would%20like%20to%20know%20more%20about%20Kung%20Fu%20classes" target="_blank" class="whatsapp-float">💬</a>
+
+  <!-- Modals -->
+  <div class="modal-backdrop" id="tourModal">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="closeTourModal()">✕</button>
+      <div style="text-align:center; margin-bottom:20px;">
+        <span style="font-size:2.4rem;">🥋</span>
+        <h3 style="font-size:1.8rem; margin-top:4px;">Kung Fu Trial Registration</h3>
+      </div>
+      <form onsubmit="handleTourSubmit(event)">
+        <div class="form-group">
+          <label class="form-label">Parent's Name *</label>
+          <input type="text" class="form-input" id="parentName" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">WhatsApp Mobile Number *</label>
+          <input type="tel" class="form-input" id="parentPhone" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Child's Age (Ages 4+)</label>
+          <input type="number" class="form-input" min="4" max="14" value="5" required>
+        </div>
+        <button type="submit" class="btn-pill btn-pink" style="width:100%; justify-content:center; padding:12px;">
+          Confirm Kung Fu Trial Spot ✓
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="loginModal">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="closeLoginModal()">✕</button>
+      <div style="text-align:center; margin-bottom:18px;">
+        <span style="font-size:2rem;">🏫</span>
+        <h3 style="font-size:1.6rem; margin-top:4px;">Kidhood ERP Portal</h3>
+      </div>
+      <form onsubmit="handleLoginSubmit(event)">
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="text" class="form-input" id="loginEmail" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-input" id="loginPass" required>
+        </div>
+        <button type="submit" class="btn-pill btn-cyan" style="width:100%; justify-content:center; padding:12px;">Sign In</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

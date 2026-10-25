@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kidhood Gallery | Preschool Photos in Nizampet, Hyderabad</title>
+  <meta name="description" content="Take a visual tour of Kidhood Nizampet. See our bright Montessori playrooms, art studios, Kuchipudi classical dance stages, and joyful outdoor gardens.">
+
+  <!-- Google Fonts: Baloo 2 + DynaPuff + Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=DynaPuff:wght@500;600;700&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎈</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+
+  <style>
+    .gallery-filter-btn {
+      font-family: 'Baloo 2', cursive;
+      font-size: 1.05rem;
+      font-weight: 700;
+      padding: 9px 22px;
+      border-radius: var(--radius-pill);
+      background: #FFFFFF;
+      color: var(--text-dark);
+      border: 2px solid #EADBCA;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .gallery-filter-btn:hover {
+      background: #FFF5E0;
+      border-color: var(--accent-yellow);
+    }
+
+    .gallery-filter-btn.active {
+      background: var(--text-dark);
+      color: #FFFFFF;
+      border-color: var(--text-dark);
+      box-shadow: 0 6px 18px rgba(17, 49, 99, 0.25);
+    }
+
+    .gallery-card {
+      position: relative;
+      border-radius: 28px;
+      overflow: hidden;
+      border: 6px solid #FFFFFF;
+      box-shadow: 0 12px 30px rgba(17, 49, 99, 0.08);
+      aspect-ratio: 4 / 3;
+      cursor: pointer;
+      transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .gallery-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 20px 45px rgba(17, 49, 99, 0.16);
+    }
+
+    .gallery-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.5s ease;
+    }
+
+    .gallery-card:hover img {
+      transform: scale(1.08);
+    }
+
+    .gallery-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(17, 49, 99, 0.85) 0%, rgba(17, 49, 99, 0.1) 60%, transparent 100%);
+      opacity: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 24px;
+      color: white;
+      transition: opacity 0.3s ease;
+    }
+
+    .gallery-card:hover .gallery-overlay {
+      opacity: 1;
+    }
+
+    .gallery-overlay h4 {
+      color: #FEC802;
+      font-size: 1.25rem;
+      margin-bottom: 4px;
+    }
+
+    .gallery-overlay p {
+      font-size: 0.85rem;
+      color: #E2E8F0;
+    }
+  </style>
+</head>
+<body>
+  <!-- Interactive Dynamic HTML5 Canvas Background -->
+  <canvas id="kidsDoodleCanvas"></canvas>
+
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="top-bar-item">
+      <span>📍 2B Lane, Plot 449, Near Bandari Layout, Reddy's Avenue, Madhura Nagar, Nizampet, Hyderabad 500090</span>
+    </div>
+    <div class="top-bar-item" style="gap:16px;">
+      <span>🕒 Mon–Fri: 9:00 AM – 8:00 PM | Sat: 11:00 AM – 3:00 PM</span>
+      <a href="tel:+919429422434">📞 +91 9429422434</a>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="nav-header">
+    <a href="index.html" class="brand-logo">
+      <img src="images/branding/kidhood-logo.webp" alt="Kidhood Preschool Nizampet Logo" class="brand-logo-img">
+    </a>
+
+    <nav class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="about.html" class="nav-link">About Us</a>
+      <a href="classes.html" class="nav-link">Classes</a>
+      
+      <div class="nav-dropdown">
+        <div class="nav-link dropdown-trigger">
+          <span>Special Classes</span>
+          <i data-lucide="chevron-down" style="width:14px; height:14px;"></i>
+        </div>
+        <div class="dropdown-menu">
+          <a href="kuchipudi.html" class="dropdown-item"><span>💃</span> Kuchipudi Dance</a>
+          <a href="summer-camp.html" class="dropdown-item"><span>☀️</span> Summer Camp</a>
+          <a href="kung-fu.html" class="dropdown-item"><span>🥋</span> Kung Fu Martial Arts</a>
+          <a href="tuitions.html" class="dropdown-item"><span>📚</span> Tuition Classes</a>
+        </div>
+      </div>
+
+      <a href="gallery.html" class="nav-link active">Our Gallery</a>
+      <a href="contact.html" class="nav-link">Contact</a>
+    </nav>
+
+    <div class="nav-actions">
+      <button class="btn-pill btn-outline" onclick="openLoginModal()">
+        <i data-lucide="shield-check" style="width:18px; height:18px; color:var(--accent-cyan);"></i> ERP Portal
+      </button>
+      <button class="btn-pill btn-primary-yellow" onclick="openTourModal()">
+        <span>Book a Visit</span>
+        <i data-lucide="calendar" style="width:18px; height:18px;"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Page Banner -->
+  <section class="page-banner bg-mesh-banner" style="position:relative; overflow:hidden;">
+    <!-- ORDERED SKETCH: Artist Palette & Color Sketch -->
+    <div class="sketch-pod sketch-palette" style="top:25px; right:40px;" title="Capturing Beautiful Memories! 🎨📸">
+      <svg width="105" height="90" viewBox="0 0 115 100" fill="none">
+        <path d="M 25 75 C 10 60, 10 30, 35 15 C 60 0, 95 15, 105 40 C 112 60, 98 85, 75 90 C 60 93, 50 82, 42 82 C 34 82, 30 85, 25 75 Z" fill="#FFFFFF" stroke="#113163" stroke-width="2.5" stroke-linejoin="round"/>
+        <circle cx="35" cy="70" r="7" fill="#EADBCA" stroke="#113163" stroke-width="1.8"/>
+        <circle cx="35" cy="30" r="6" fill="#F3649E"/>
+        <circle cx="55" cy="22" r="6" fill="#FEC802"/>
+        <circle cx="78" cy="28" r="6" fill="#84D814"/>
+        <circle cx="92" cy="48" r="6" fill="#00ACF3"/>
+        <circle cx="75" cy="72" r="6" fill="#A855F7"/>
+        <g transform="translate(48, 25) rotate(-35)">
+          <rect x="0" y="0" width="6" height="52" rx="3" fill="#EADBCA" stroke="#113163" stroke-width="1.8"/>
+          <path d="M -1 0 L 7 0 L 5 -12 L 1 -12 Z" fill="#00ACF3" stroke="#113163" stroke-width="1.8"/>
+          <circle cx="3" cy="-14" r="2.5" class="paint-drop" fill="#00ACF3"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="container page-banner-content reveal-up">
+      <div class="breadcrumb-trail">
+        <a href="index.html">Home</a>
+        <span>›</span>
+        <span>Campus Photo Gallery</span>
+      </div>
+      <span class="pill-badge" style="background:#FFF0D4; color:#B38600; border-color:#FFE4B5;">📸 Moments of Joy & Discovery</span>
+      <h1>Our Gallery — Kidhood Preschool Photos</h1>
+      <p>A peek into our joyful everyday life: sensory activity corners, dance rehearsals, lawn outdoor games, and quiet afternoon story hours.</p>
+    </div>
+  </section>
+
+  <!-- Gallery Section -->
+  <section class="container" style="padding:60px 0 90px 0;">
+    
+    <!-- Filter Category Tabs -->
+    <div style="display:flex; justify-content:center; flex-wrap:wrap; gap:10px; margin-bottom:40px;" class="reveal-up">
+      <button class="gallery-filter-btn active" onclick="filterGallery('all', this)">All Photos (6)</button>
+      <button class="gallery-filter-btn" onclick="filterGallery('classroom', this)">Classroom Learning</button>
+      <button class="gallery-filter-btn" onclick="filterGallery('arts', this)">Creative Arts & Painting</button>
+      <button class="gallery-filter-btn" onclick="filterGallery('dance', this)">Kuchipudi Classical</button>
+      <button class="gallery-filter-btn" onclick="filterGallery('camp', this)">Summer Camp & Games</button>
+    </div>
+
+    <!-- Gallery Grid with Real Downloaded Photos -->
+    <div id="galleryContainer" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:24px;">
+      
+      <!-- Photo 1: Bonalu Festival Celebration -->
+      <div class="gallery-card reveal-scale gallery-item" data-cat="classroom" onclick="openLightbox('images/gallery/gallery-event-27.jpeg', 'Bonalu Traditional Cultural Celebration at Kidhood Nizampet')">
+        <img src="images/gallery/gallery-event-27.jpeg" alt="Bonalu festival celebration at Kidhood Nizampet">
+        <div class="gallery-overlay">
+          <h4>Bonalu Celebration</h4>
+          <p>Traditional attire & festive joy • Click to zoom 🔍</p>
+        </div>
+      </div>
+
+      <!-- Photo 2: Creative Art & Craft Display -->
+      <div class="gallery-card reveal-scale gallery-item" data-cat="arts" onclick="openLightbox('images/gallery/gallery-event-83.jpeg', 'Classroom Craft & Creative Work Display')">
+        <img src="images/gallery/gallery-event-83.jpeg" alt="Preschool craft activity Kidhood Nizampet gallery">
+        <div class="gallery-overlay">
+          <h4>Creative Craft Corner</h4>
+          <p>Handmade paper crafts & finger painting • Click to zoom 🔍</p>
+        </div>
+      </div>
+
+      <!-- Photo 3: Authentic Kuchipudi Dance Stage -->
+      <div class="gallery-card reveal-scale gallery-item" data-cat="dance" onclick="openLightbox('images/special/kuchipudi-main.webp', 'Authentic Kuchipudi Classical Dance Training at Kidhood')">
+        <img src="images/special/kuchipudi-main.webp" alt="Kuchipudi dance training at Kidhood Nizampet">
+        <div class="gallery-overlay">
+          <h4>Kuchipudi Academy</h4>
+          <p>Mudras, rhythmic footwork & Telugu poise • Click to zoom 🔍</p>
+        </div>
+      </div>
+
+      <!-- Photo 4: Independence Day Celebration -->
+      <div class="gallery-card reveal-scale gallery-item" data-cat="classroom" onclick="openLightbox('images/gallery/gallery-event-55.jpeg', 'Preschool Independence Day Activity Performance')">
+        <img src="images/gallery/gallery-event-55.jpeg" alt="Preschool Independence Day celebration at Kidhood">
+        <div class="gallery-overlay">
+          <h4>Independence Day</h4>
+          <p>Patriotic songs & flag-waving smiles • Click to zoom 🔍</p>
+        </div>
+      </div>
+
+      <!-- Photo 5: Summer Camp Pottery & Arts -->
+      <div class="gallery-card reveal-scale gallery-item" data-cat="camp" onclick="openLightbox('images/special/summer-camp-art.webp', 'Creative Arts & Toddler Summer Camp Workshop')">
+        <img src="images/special/summer-camp-art.webp" alt="Summer camp arts and crafts at Kidhood">
+        <div class="gallery-overlay">
+          <h4>Summer Camp Workshops</h4>
+          <p>Clay modeling, robotics & fun • Click to zoom 🔍</p>
+        </div>
+      </div>
+
+      <!-- Photo 6: Kung Fu Karate Dojo -->
+      <div class="gallery-card reveal-scale gallery-item" data-cat="camp" onclick="openLightbox('images/special/kung-fu-hero.webp', 'Kung Fu Martial Arts Training for Preschoolers')">
+        <img src="images/special/kung-fu-hero.webp" alt="Kung Fu classes for kids in Nizampet">
+        <div class="gallery-overlay">
+          <h4>Martial Arts Dojo</h4>
+          <p>Discipline, agility & belt tests • Click to zoom 🔍</p>
+        </div>
+      </div>
+
+      <!-- Photo 7: Annual Day Stage Performance -->
+      <div class="gallery-card reveal-scale gallery-item" data-cat="dance" onclick="openLightbox('images/gallery/gallery-event-79.jpeg', 'Kidhood Annual Day Rehearsal and Costume Presentation')">
+        <img src="images/gallery/gallery-event-79.jpeg" alt="Preschool annual day celebration Nizampet">
+        <div class="gallery-overlay">
+          <h4>Annual Day Celebrations</h4>
+          <p>Costumed performances & stage courage • Click to zoom 🔍</p>
+        </div>
+      </div>
+
+      <!-- Photo 8: Vinayaka Chavithi Puja -->
+      <div class="gallery-card reveal-scale gallery-item" data-cat="classroom" onclick="openLightbox('images/gallery/gallery-event-45.jpeg', 'Vinayaka Chavithi Celebration with Eco-Friendly Idols')">
+        <img src="images/gallery/gallery-event-45.jpeg" alt="Vinayaka chavithi celebration at Kidhood preschool">
+        <div class="gallery-overlay">
+          <h4>Vinayaka Chavithi</h4>
+          <p>Clay idol making & devotional hymns • Click to zoom 🔍</p>
+        </div>
+      </div>
+
+      <!-- Photo 9: Story Time & Puppet Circle -->
+      <div class="gallery-card reveal-scale gallery-item" data-cat="classroom" onclick="openLightbox('images/gallery/gallery-event-109.jpeg', 'Classroom Story Circle and Picture Book Time')">
+        <img src="images/gallery/gallery-event-109.jpeg" alt="Kidhood Nizampet classroom story time">
+        <div class="gallery-overlay">
+          <h4>Story Circle Time</h4>
+          <p>Interactive fairy tales & phonics • Click to zoom 🔍</p>
+        </div>
+      </div>
+
+      <!-- Photo 10: Fun Mela Lawn Games -->
+      <div class="gallery-card reveal-scale gallery-item" data-cat="camp" onclick="openLightbox('images/gallery/gallery-event-101.jpeg', 'Kidhood Nizampet Fun Mela Group Activity')">
+        <img src="images/gallery/gallery-event-101.jpeg" alt="Kidhood Nizampet Fun Mela group photo">
+        <div class="gallery-overlay">
+          <h4>Fun Mela Carnival</h4>
+          <p>Outdoor obstacle courses & races • Click to zoom 🔍</p>
+        </div>
+      </div>
+
+      <!-- Photo 11: Outdoor Playground Lawn -->
+      <div class="gallery-card reveal-scale gallery-item" data-cat="camp" onclick="openLightbox('images/gallery/gallery-event-110.jpeg', 'Outdoor Play Session in Safe Enclosed Garden')">
+        <img src="images/gallery/gallery-event-110.jpeg" alt="Kidhood Nizampet outdoor play session">
+        <div class="gallery-overlay">
+          <h4>Lawn Play Session</h4>
+          <p>Tricycles, slides & fresh air • Click to zoom 🔍</p>
+        </div>
+      </div>
+
+      <!-- Photo 12: Daycare Hygienic Nap Suite -->
+      <div class="gallery-card reveal-scale gallery-item" data-cat="classroom" onclick="openLightbox('images/gallery/gallery-event-121.jpeg', 'Clean, Supervised Afternoon Nap & Resting Room')">
+        <img src="images/gallery/gallery-event-121.jpeg" alt="Kidhood Nizampet students quiet resting time">
+        <div class="gallery-overlay">
+          <h4>Peaceful Daycare Rest</h4>
+          <p>Sanitized cots & soothing lullabies • Click to zoom 🔍</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CTA Banner -->
+  <section class="container" style="padding-bottom:80px;">
+    <div class="cta-banner reveal-scale">
+      <h2>Experience Our Warm Campus in Person</h2>
+      <p>Photos can only capture a glimpse. Book a campus tour to feel the caring energy and meet our wonderful teachers.</p>
+      <div class="cta-btn-group">
+        <button class="btn-pill" style="background:#113163; color:white; font-size:1.1rem; padding:12px 32px;" onclick="openTourModal()">
+          📅 Schedule a Visit
+        </button>
+        <a href="tel:+919429422434" class="btn-pill btn-outline" style="font-size:1.1rem; padding:12px 26px;">
+          Call +91 9429422434
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="kidhood-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <div style="margin-bottom:14px;">
+            <img src="images/branding/kidhood-logo.webp" alt="Kidhood Nizampet Logo" class="brand-logo-img" style="filter:brightness(0) invert(1) drop-shadow(0 4px 10px rgba(0,0,0,0.3)); max-height:48px;">
+          </div>
+          <p style="font-size:0.88rem; color:#CBD5E1; line-height:1.6;">
+            Preschool, daycare and activity learning center in Nizampet, Hyderabad.
+          </p>
+        </div>
+        <div class="footer-col">
+          <h4>Quick Pages</h4>
+          <ul class="footer-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="classes.html">Preschool Programs</a></li>
+            <li><a href="kuchipudi.html">Kuchipudi Dance</a></li>
+            <li><a href="gallery.html">Photo Gallery</a></li>
+            <li><a href="contact.html">Contact Us</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Hours</h4>
+          <div class="footer-contact-item">
+            <span>🕒</span>
+            <span>Mon – Fri: 9:00 AM – 8:00 PM</span>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Location</h4>
+          <div class="footer-contact-item">
+            <span>📍</span>
+            <span>2B lane, Plot 449, Madhura Nagar, Nizampet, Hyderabad 500090</span>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div>© 2026 Kidhood Nizampet. All Rights Reserved.</div>
+      </div>
+    </div>
+  </footer>
+
+  <a href="https://wa.me/919429422434?text=Hello%20Kidhood%20Nizampet,%20I%20would%20like%20to%20visit%20your%20campus" target="_blank" class="whatsapp-float">💬</a>
+
+  <!-- Modals -->
+  <div class="modal-backdrop" id="tourModal">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="closeTourModal()">✕</button>
+      <div style="text-align:center; margin-bottom:20px;">
+        <span style="font-size:2.4rem;">🎈</span>
+        <h3 style="font-size:1.8rem; margin-top:4px;">Book a Campus Visit</h3>
+      </div>
+      <form onsubmit="handleTourSubmit(event)">
+        <div class="form-group">
+          <label class="form-label">Parent's Name *</label>
+          <input type="text" class="form-input" id="parentName" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone Number *</label>
+          <input type="tel" class="form-input" id="parentPhone" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Preferred Date</label>
+          <input type="date" class="form-input" id="tourDate" required>
+        </div>
+        <button type="submit" class="btn-pill btn-primary-yellow" style="width:100%; justify-content:center; padding:12px;">
+          Confirm Tour Booking ✓
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="loginModal">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="closeLoginModal()">✕</button>
+      <div style="text-align:center; margin-bottom:18px;">
+        <span style="font-size:2rem;">🏫</span>
+        <h3 style="font-size:1.6rem; margin-top:4px;">Kidhood ERP Portal</h3>
+      </div>
+      <form onsubmit="handleLoginSubmit(event)">
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="text" class="form-input" id="loginEmail" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-input" id="loginPass" required>
+        </div>
+        <button type="submit" class="btn-pill btn-cyan" style="width:100%; justify-content:center; padding:12px;">Sign In</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+  <script>
+    function filterGallery(category, btn) {
+      document.querySelectorAll('.gallery-filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const items = document.querySelectorAll('.gallery-item');
+      items.forEach(item => {
+        if (category === 'all' || item.getAttribute('data-cat') === category) {
+          item.style.display = 'block';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    }
+  </script>
+</body>
+</html>

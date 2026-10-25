@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Kidhood Nizampet | Preschool Teachers & Philosophy</title>
+  <meta name="description" content="Discover why we started Kidhood in Nizampet, Hyderabad — our loving teachers, child-centric Montessori philosophy, safe campus, and joyful early learning.">
+
+  <!-- Google Fonts: Baloo 2 + DynaPuff + Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=DynaPuff:wght@500;600;700&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎈</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Interactive Dynamic HTML5 Canvas Background -->
+  <canvas id="kidsDoodleCanvas"></canvas>
+
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="top-bar-item">
+      <span>📍 2B Lane, Plot 449, Near Bandari Layout, Reddy's Avenue, Madhura Nagar, Nizampet, Hyderabad 500090</span>
+    </div>
+    <div class="top-bar-item" style="gap:16px;">
+      <span>🕒 Mon–Fri: 9:00 AM – 8:00 PM | Sat: 11:00 AM – 3:00 PM</span>
+      <a href="tel:+919429422434">📞 +91 9429422434</a>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="nav-header">
+    <a href="index.html" class="brand-logo">
+      <img src="images/branding/kidhood-logo.webp" alt="Kidhood Preschool Nizampet Logo" class="brand-logo-img">
+    </a>
+
+    <nav class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="about.html" class="nav-link active">About Us</a>
+      <a href="classes.html" class="nav-link">Classes</a>
+      
+      <div class="nav-dropdown">
+        <div class="nav-link dropdown-trigger">
+          <span>Special Classes</span>
+          <i data-lucide="chevron-down" style="width:14px; height:14px;"></i>
+        </div>
+        <div class="dropdown-menu">
+          <a href="kuchipudi.html" class="dropdown-item"><span>💃</span> Kuchipudi Dance</a>
+          <a href="summer-camp.html" class="dropdown-item"><span>☀️</span> Summer Camp</a>
+          <a href="kung-fu.html" class="dropdown-item"><span>🥋</span> Kung Fu Martial Arts</a>
+          <a href="tuitions.html" class="dropdown-item"><span>📚</span> Tuition Classes</a>
+        </div>
+      </div>
+
+      <a href="gallery.html" class="nav-link">Our Gallery</a>
+      <a href="contact.html" class="nav-link">Contact</a>
+    </nav>
+
+    <div class="nav-actions">
+      <button class="btn-pill btn-outline" onclick="openLoginModal()">
+        <i data-lucide="shield-check" style="width:18px; height:18px; color:var(--accent-cyan);"></i> ERP Portal
+      </button>
+      <button class="btn-pill btn-primary-yellow" onclick="openTourModal()">
+        <span>Book a Visit</span>
+        <i data-lucide="calendar" style="width:18px; height:18px;"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Page Banner -->
+  <section class="page-banner bg-mesh-banner" style="position:relative; overflow:hidden;">
+    <!-- ORDERED SKETCH: Origami Paper Airplane -->
+    <div class="sketch-pod sketch-airplane" style="top:25px; right:40px;" title="Imagination Taking Flight! ✈️">
+      <svg width="105" height="80" viewBox="0 0 110 85" fill="none">
+        <path class="rocket-dashed-trail" d="M 10 70 C 35 75, 45 40, 25 35 C 10 32, 12 58, 38 52 C 55 48, 70 32, 88 20" fill="none" stroke="#FEC802" stroke-width="2.2" stroke-linecap="round"/>
+        <g transform="translate(68, 8) rotate(-15)">
+          <polygon points="0,18 36,0 12,24" fill="#FFFFFF" stroke="#113163" stroke-width="1.8" stroke-linejoin="round"/>
+          <polygon points="0,18 36,0 16,14" fill="#E0F5FE" stroke="#113163" stroke-width="1.8" stroke-linejoin="round"/>
+          <polygon points="12,24 36,0 16,28" fill="#B3E5FC" stroke="#113163" stroke-width="1.8" stroke-linejoin="round"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="container page-banner-content reveal-up">
+      <div class="breadcrumb-trail">
+        <a href="index.html">Home</a>
+        <span>›</span>
+        <span>About Kidhood Nizampet</span>
+      </div>
+      <span class="pill-badge" style="background:#FFF0D4; color:#B38600; border-color:#FFE4B5;">🌱 Our Story & Educational Mission</span>
+      <h1>Preschool Teachers & Philosophy in Nizampet</h1>
+      <p>Building a place where young children feel safe enough to be curious, and cared for enough that parents can trust us with their whole day.</p>
+    </div>
+  </section>
+
+  <!-- Story & Philosophy -->
+  <section class="container" style="padding:80px 0;">
+    <div style="display:grid; grid-template-columns:1.1fr 0.9fr; gap:56px; align-items:center;">
+      
+      <div class="reveal-left">
+        <span class="pill-badge" style="background:var(--accent-cyan-light); color:var(--accent-cyan-dark); border-color:#BAE6FD;">
+          ✨ How It All Began
+        </span>
+        <h2 style="font-size:2.8rem; margin-bottom:18px;">Why We Started <span style="color:var(--accent-cyan);">Kidhood in Nizampet</span></h2>
+        <p style="color:var(--text-muted); font-size:1.05rem; line-height:1.8; margin-bottom:16px;">
+          Kidhood is a preschool and daycare for children aged 1.5 to 6 years, located in the heart of Nizampet, Hyderabad. We started with one single, heartfelt goal — to build a sanctuary where young children feel safe enough to explore without fear of failure, and where working parents find absolute peace of mind.
+        </p>
+        <p style="color:var(--text-muted); font-size:1.05rem; line-height:1.8; margin-bottom:24px;">
+          Most preschools in the surrounding areas were either rigid worksheet factories or simple holding rooms. We chose a different path: small classrooms where loving teachers interact closely with each child individually, fostering natural inquiry, artistic expression, and cultural grounding.
+        </p>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px;">
+          <div style="background:white; padding:18px; border-radius:18px; border:2px solid #F3E4D1;">
+            <div style="font-size:1.8rem; margin-bottom:6px;">❤️</div>
+            <h4 style="font-size:1.1rem; margin-bottom:4px;">Child-Led Learning</h4>
+            <p style="font-size:0.82rem; color:var(--text-muted);">Curiosity over worksheets and tests.</p>
+          </div>
+          <div style="background:white; padding:18px; border-radius:18px; border:2px solid #F3E4D1;">
+            <div style="font-size:1.8rem; margin-bottom:6px;">🤝</div>
+            <h4 style="font-size:1.1rem; margin-bottom:4px;">Parent Partnership</h4>
+            <p style="font-size:0.82rem; color:var(--text-muted);">Daily photo updates and open communication.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="reveal-right" style="position:relative;">
+        <div class="photo-frame-curved interactive-tilt">
+          <img src="images/about/philosophy-action.webp" alt="Teachers and children learning together at Kidhood Nizampet">
+        </div>
+
+        <!-- Living Mascot Pod for About Us -->
+        <div class="mascot-living-pod anim-float" style="bottom:-20px; right:-15px;" title="Tap for sparkles!">
+          <div class="mascot-svg-wrap" style="background:linear-gradient(135deg, #FFF7D1 0%, #FFDF73 100%);">
+            <svg width="34" height="34" viewBox="0 0 48 48" fill="none">
+              <!-- Animated Solar Rays -->
+              <g class="sun-rays">
+                <line x1="24" y1="2" x2="24" y2="8" stroke="#E6A100" stroke-width="3" stroke-linecap="round"/>
+                <line x1="24" y1="40" x2="24" y2="46" stroke="#E6A100" stroke-width="3" stroke-linecap="round"/>
+                <line x1="2" y1="24" x2="8" y2="24" stroke="#E6A100" stroke-width="3" stroke-linecap="round"/>
+                <line x1="40" y1="24" x2="46" y2="24" stroke="#E6A100" stroke-width="3" stroke-linecap="round"/>
+                <line x1="8.5" y1="8.5" x2="13" y2="13" stroke="#E6A100" stroke-width="3" stroke-linecap="round"/>
+                <line x1="35" y1="35" x2="39.5" y2="39.5" stroke="#E6A100" stroke-width="3" stroke-linecap="round"/>
+                <line x1="8.5" y1="39.5" x2="13" y2="35" stroke="#E6A100" stroke-width="3" stroke-linecap="round"/>
+                <line x1="35" y1="13" x2="39.5" y2="8.5" stroke="#E6A100" stroke-width="3" stroke-linecap="round"/>
+              </g>
+              <!-- Sun Center -->
+              <circle cx="24" cy="24" r="12" fill="#FFC800" stroke="#113163" stroke-width="2"/>
+              <!-- Smiling Face -->
+              <circle cx="20" cy="22" r="1.5" fill="#113163"/>
+              <circle cx="28" cy="22" r="1.5" fill="#113163"/>
+              <path d="M20 26 Q24 29 28 26" stroke="#113163" stroke-width="2" stroke-linecap="round" fill="none"/>
+            </svg>
+          </div>
+          <div>
+            <div class="mascot-info-title">
+              <span class="live-beacon"></span> Warm & Safe Haven
+            </div>
+            <div class="mascot-info-sub">1:8 Loving Care Ratio • Tap me ✨</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Core Values Grid -->
+  <section style="background:#FFFDF9; padding:80px 0; border-top:2px solid #F6E7D2; border-bottom:2px solid #F6E7D2;">
+    <div class="container">
+      <div class="section-header reveal-up">
+        <span class="sub-tag">🌈 What Sets Us Apart</span>
+        <h2>Learning That Feels Like Joyful Play</h2>
+        <p>Four cornerstones that guide every teacher, classroom, and activity at Kidhood.</p>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:24px;">
+        
+        <div class="card-organic reveal-up" style="border-top:6px solid var(--accent-yellow);">
+          <div style="font-size:2.4rem; margin-bottom:12px;">🌱</div>
+          <h3 style="font-size:1.35rem; margin-bottom:10px;">Individual Pacing</h3>
+          <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.6;">Every child blooms in their own time. We adapt our sensory and early numeracy tools to match your child’s emotional rhythm.</p>
+        </div>
+
+        <div class="card-organic reveal-up" style="border-top:6px solid var(--accent-green);">
+          <div style="font-size:2.4rem; margin-bottom:12px;">🛡️</div>
+          <h3 style="font-size:1.35rem; margin-bottom:10px;">Safety Without Compromise</h3>
+          <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.6;">Full campus CCTV coverage, child-safe rounded furniture, sanitized play equipment, and trained female caretakers.</p>
+        </div>
+
+        <div class="card-organic reveal-up" style="border-top:6px solid var(--accent-cyan);">
+          <div style="font-size:2.4rem; margin-bottom:12px;">🎭</div>
+          <h3 style="font-size:1.35rem; margin-bottom:10px;">Cultural Enrichment</h3>
+          <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.6;">Alongside ABCs and numbers, children learn Kuchipudi classical dance, singing and karate that build poise and pride in heritage.</p>
+        </div>
+
+        <div class="card-organic reveal-up" style="border-top:6px solid var(--accent-pink);">
+          <div style="font-size:2.4rem; margin-bottom:12px;">🧸</div>
+          <h3 style="font-size:1.35rem; margin-bottom:10px;">Healthy Living & Care</h3>
+          <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.6;">Hygienic nap rooms, balanced warm snacks, and continuous hydration checks throughout the extended daycare hours.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Banner -->
+  <section class="container" style="padding:40px 0;">
+    <div class="cta-banner reveal-scale">
+      <h2>Every Child Deserves a Happy Beginning</h2>
+      <p>Schedule a personal visit to meet our educators and see why Nizampet families love Kidhood.</p>
+      <div class="cta-btn-group">
+        <button class="btn-pill" style="background:#113163; color:white; font-size:1.1rem; padding:12px 32px;" onclick="openTourModal()">
+          Book a Campus Walkthrough
+        </button>
+        <a href="tel:+919429422434" class="btn-pill btn-outline" style="font-size:1.1rem; padding:12px 26px;">
+          Call +91 9429422434
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="kidhood-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <div style="margin-bottom:14px;">
+            <img src="images/branding/kidhood-logo.webp" alt="Kidhood Nizampet Logo" class="brand-logo-img" style="filter:brightness(0) invert(1) drop-shadow(0 4px 10px rgba(0,0,0,0.3)); max-height:48px;">
+          </div>
+          <p style="font-size:0.88rem; color:#CBD5E1; line-height:1.6; margin-bottom:18px;">
+            Nurturing preschool and daycare in Nizampet where children learn through play, curiosity, and cultural expression.
+          </p>
+          <a href="tel:+919429422434" style="color:#FEC802; font-weight:700; font-size:0.92rem; text-decoration:none;">📞 +91 9429422434</a>
+        </div>
+
+        <div class="footer-col">
+          <h4>Pages & Programs</h4>
+          <ul class="footer-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About Us & Philosophy</a></li>
+            <li><a href="classes.html">Preschool Programs (Toddler – UKG)</a></li>
+            <li><a href="kuchipudi.html">Kuchipudi Dance Classes</a></li>
+            <li><a href="summer-camp.html">Summer Camp</a></li>
+            <li><a href="kung-fu.html">Kung Fu Classes</a></li>
+            <li><a href="tuitions.html">Tuition Classes</a></li>
+            <li><a href="gallery.html">Our Photo Gallery</a></li>
+            <li><a href="contact.html">Contact Us</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Operating Hours</h4>
+          <div class="footer-contact-item">
+            <span>🕒</span>
+            <span>Monday to Friday:<br><strong>9:00 AM – 8:00 PM</strong></span>
+          </div>
+          <div class="footer-contact-item">
+            <span>🕒</span>
+            <span>Saturday:<br><strong>11:00 AM – 3:00 PM</strong></span>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h4>Campus Address</h4>
+          <div class="footer-contact-item">
+            <span>📍</span>
+            <span>2B lane, Plot No. 449, Near Bandari Layout, Reddy's Avenue, Madhura Nagar, Nizampet, Hyderabad, Telangana 500090</span>
+          </div>
+          <div class="footer-contact-item">
+            <span>✉️</span>
+            <span>info@kidhoodnizampet.com</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>© 2026 Kidhood Nizampet. All Rights Reserved.</div>
+        <div>Multi-Tenant Connected School Node • EduPulse Platform</div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Floating WhatsApp -->
+  <a href="https://wa.me/919429422434?text=Hello%20Kidhood%20Nizampet,%20I%20would%20like%20to%20know%20more%20about%20your%20philosophy" target="_blank" class="whatsapp-float">💬</a>
+
+  <!-- Modals -->
+  <div class="modal-backdrop" id="tourModal">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="closeTourModal()">✕</button>
+      <div style="text-align:center; margin-bottom:20px;">
+        <span style="font-size:2.4rem;">🎈</span>
+        <h3 style="font-size:1.8rem; margin-top:4px;">Book a Campus Visit</h3>
+        <p style="font-size:0.86rem; color:var(--text-muted);">Come see our cheerful classrooms & meet our caring teachers.</p>
+      </div>
+
+      <form onsubmit="handleTourSubmit(event)">
+        <div class="form-group">
+          <label class="form-label">Parent's Full Name *</label>
+          <input type="text" class="form-input" id="parentName" placeholder="e.g. Ramesh Reddy" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mobile Number *</label>
+          <input type="tel" class="form-input" id="parentPhone" placeholder="+91 98765 43210" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Preferred Date for Tour</label>
+          <input type="date" class="form-input" id="tourDate" required>
+        </div>
+        <button type="submit" class="btn-pill btn-primary-yellow" style="width:100%; justify-content:center; padding:12px; font-size:1.1rem; margin-top:10px;">
+          Confirm Tour Booking ✓
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="loginModal">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="closeLoginModal()">✕</button>
+      <div style="text-align:center; margin-bottom:18px;">
+        <span style="font-size:2rem;">🏫</span>
+        <h3 style="font-size:1.6rem; margin-top:4px;">Kidhood ERP Portal</h3>
+        <p style="font-size:0.84rem; color:var(--text-muted);">Sign in to access student reports & fee ledger</p>
+      </div>
+      <form onsubmit="handleLoginSubmit(event)">
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="text" class="form-input" id="loginEmail" placeholder="e.g. parent@kidhood.in" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-input" id="loginPass" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn-pill btn-cyan" style="width:100%; justify-content:center; padding:12px;">
+          Sign In to Portal
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
