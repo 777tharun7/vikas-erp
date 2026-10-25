@@ -301,22 +301,30 @@ function openTourModal(programName) {
     }
   }
   const modal = document.getElementById('tourModal');
-  if (modal) modal.style.display = 'flex';
+  if (modal) {
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
 }
 
 function closeTourModal() {
   const modal = document.getElementById('tourModal');
   if (modal) modal.style.display = 'none';
+  document.body.style.overflow = '';
 }
 
 function openLoginModal() {
   const modal = document.getElementById('loginModal');
-  if (modal) modal.style.display = 'flex';
+  if (modal) {
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
 }
 
 function closeLoginModal() {
   const modal = document.getElementById('loginModal');
   if (modal) modal.style.display = 'none';
+  document.body.style.overflow = '';
 }
 
 window.onclick = function(event) {
@@ -324,10 +332,25 @@ window.onclick = function(event) {
   const loginModal = document.getElementById('loginModal');
   const lightboxModal = document.getElementById('lightboxModal');
 
-  if (event.target === tourModal) tourModal.style.display = 'none';
-  if (event.target === loginModal) loginModal.style.display = 'none';
-  if (event.target === lightboxModal) lightboxModal.style.display = 'none';
+  if (event.target === tourModal) closeTourModal();
+  if (event.target === loginModal) closeLoginModal();
+  if (event.target === lightboxModal) {
+    lightboxModal.style.display = 'none';
+    document.body.style.overflow = '';
+  }
 };
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closeTourModal();
+    closeLoginModal();
+    const lightboxModal = document.getElementById('lightboxModal');
+    if (lightboxModal) {
+      lightboxModal.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+  }
+});
 
 // ==========================================================================
 // ACCORDION FAQ CONTROLS
@@ -345,31 +368,72 @@ function toggleFaq(questionEl) {
 }
 
 // ==========================================================================
-// FORM SUBMISSION HANDLERS
+// FORM SUBMISSION & ROLE LAUNCH HANDLERS
 // ==========================================================================
 function handleTourSubmit(e) {
   e.preventDefault();
   const parentName = document.getElementById('parentName')?.value || 'Parent';
   const phone = document.getElementById('parentPhone')?.value || '';
-  const date = document.getElementById('tourDate')?.value || '';
-  const program = document.getElementById('programChoice')?.value || 'Preschool';
+  const date = document.getElementById('tourDate')?.value || new Date().toISOString().split('T')[0];
+  const program = document.getElementById('programChoice')?.value || document.querySelector('#tourModal h3')?.textContent || 'Preschool Class';
 
-  alert(`🎉 Thank you, ${parentName}!\n\nYour campus tour for ${program} has been scheduled for ${date}.\nA confirmation WhatsApp has been sent to ${phone}.\n\nWe look forward to meeting your family at Kidhood Nizampet!`);
-  closeTourModal();
+  const formBox = document.querySelector('#tourModal .modal-box');
+  if (formBox) {
+    formBox.innerHTML = `
+      <button class="modal-close-btn" onclick="closeTourModal()">✕</button>
+      <div style="text-align:center; padding:15px 5px;">
+        <div style="font-size:3.5rem; margin-bottom:10px;">🎉</div>
+        <h3 style="font-size:1.8rem; color:var(--text-dark); margin-bottom:6px;">Visit Booked Successfully!</h3>
+        <p style="font-size:0.95rem; color:var(--accent-green-dark); font-weight:700; margin-bottom:16px;">
+          ✓ Confirmation sent to ${phone || 'your WhatsApp'}
+        </p>
+        <div style="background:#FFF9ED; border:2px dashed #FEC802; border-radius:18px; padding:16px; margin-bottom:20px; text-align:left;">
+          <div style="font-size:0.9rem; margin-bottom:6px;"><strong>Parent:</strong> ${parentName}</div>
+          <div style="font-size:0.9rem; margin-bottom:6px;"><strong>Program:</strong> ${program}</div>
+          <div style="font-size:0.9rem; margin-bottom:6px;"><strong>Scheduled Tour Date:</strong> ${date}</div>
+          <div style="font-size:0.9rem;"><strong>Campus:</strong> 2B Lane, Madhura Nagar, Nizampet</div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <a href="https://wa.me/919429422434?text=Hello%20Kidhood%20Nizampet,%20I%20have%20booked%20a%20campus%20tour%20for%20${encodeURIComponent(program)}%20on%20${encodeURIComponent(date)}" target="_blank" class="btn-pill btn-green" style="width:100%; justify-content:center; text-decoration:none; padding:12px;">
+            <span>Chat on WhatsApp With Admissions 💬</span>
+          </a>
+          <button class="btn-pill btn-outline" onclick="closeTourModal()" style="width:100%; justify-content:center; padding:10px;">
+            Close Window ✓
+          </button>
+        </div>
+      </div>
+    `;
+    if (typeof triggerMascotSparkle === 'function') {
+      triggerMascotSparkle({ clientX: window.innerWidth / 2, clientY: window.innerHeight / 2 });
+    }
+  }
 }
 
-function fillLogin(email, pass) {
+function fillLogin(email, pass, role) {
   const emailInput = document.getElementById('loginEmail');
   const passInput = document.getElementById('loginPass');
   if (emailInput) emailInput.value = email;
   if (passInput) passInput.value = pass;
+  if (role) {
+    try { localStorage.setItem('edupulse_active_role', role); } catch(e) {}
+  }
+}
+
+function quickLaunchRole(role) {
+  try { localStorage.setItem('edupulse_active_role', role); } catch(e) {}
+  window.location.href = '../../index.html?role=' + encodeURIComponent(role);
 }
 
 function handleLoginSubmit(e) {
   e.preventDefault();
   const email = document.getElementById('loginEmail')?.value || '';
-  alert(`🔐 Authentication Successful!\n\nWelcome to Kidhood Central ERP.\nUser: ${email}\nRedirecting to Management Console...`);
-  window.location.href = '../../index.html';
+  let role = 'principal';
+  if (email.includes('teacher')) role = 'teacher';
+  if (email.includes('parent')) role = 'parent';
+  if (email.includes('student')) role = 'student';
+
+  try { localStorage.setItem('edupulse_active_role', role); } catch(err) {}
+  window.location.href = '../../index.html?role=' + encodeURIComponent(role);
 }
 
 // ==========================================================================
