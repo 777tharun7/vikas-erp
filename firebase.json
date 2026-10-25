@@ -6,11 +6,18 @@
       "**/.*",
       "**/node_modules/**",
       "backend/**",
-      "tests/**"
+      "tests/**",
+      "*.tar.gz",
+      "*.db",
+      "*.sh"
     ],
     "rewrites": [
       {
-        "source": "**",
+        "source": "/schools/kidhood-nizampet",
+        "destination": "/schools/kidhood-nizampet/index.html"
+      },
+      {
+        "source": "!/schools/**",
         "destination": "/index.html"
       }
     ],

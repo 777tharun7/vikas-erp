@@ -5,7 +5,7 @@
 set -e
 
 export PATH="/Users/devanboinatharun/.local/node/bin:$PATH"
-PROJECT_ID="erp-schools-507610"
+PROJECT_ID="erp-schools-507610-250f9"
 
 echo "=========================================================="
 echo "🌐 DEPLOYING FRONTEND TO FIREBASE HOSTING / CLOUD CDN"
